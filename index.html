@@ -43,7 +43,49 @@
         }
 
         .app.frenzy-active {
-            filter: invert(1);
+            background: radial-gradient(circle at 30% 20%, #fff4bf 0%, #ffd76a 42%, #d79b16 100%);
+        }
+
+        .app.frenzy-active .header {
+            background: rgba(255, 248, 216, 0.9);
+            border-bottom-color: rgba(128, 84, 14, 0.35);
+        }
+
+        .app.frenzy-active .cookie-total,
+        .app.frenzy-active .stats-row strong,
+        .app.frenzy-active .audio-controls button,
+        .app.frenzy-active .tab-btn.active {
+            color: #6c4300;
+        }
+
+        .app.frenzy-active .cookie-total .label,
+        .app.frenzy-active .stats-row,
+        .app.frenzy-active .audio-controls,
+        .app.frenzy-active .tab-btn {
+            color: #8b5b00;
+        }
+
+        .app.frenzy-active .tabs {
+            background: rgba(255, 246, 204, 0.95);
+            border-top-color: rgba(128, 84, 14, 0.35);
+        }
+
+        .app.frenzy-active .tab-btn.active {
+            background: linear-gradient(180deg, #ffe08a 0%, #f7c957 100%);
+        }
+
+        .app.frenzy-active .upgrade-row,
+        .app.frenzy-active .audio-controls button {
+            background: rgba(255, 247, 218, 0.92);
+            border-color: rgba(128, 84, 14, 0.28);
+        }
+
+        .app.frenzy-active .big-cookie {
+            filter: drop-shadow(0 0 12px rgba(255, 199, 61, 0.85));
+        }
+
+        .app.frenzy-active .golden-cookie {
+            box-shadow: 0 0 26px rgba(255, 193, 7, 1);
         }
 
         .header {
