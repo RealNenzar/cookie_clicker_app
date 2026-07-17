@@ -35,11 +35,84 @@
             color: #4a3728;
         }
 
+        :root {
+            --app-text: #4a3728;
+            --app-bg-1: #faf3e8;
+            --app-bg-2: #f0e0c8;
+            --header-bg: rgba(255, 252, 245, 0.7);
+            --header-border: rgba(139, 90, 43, 0.15);
+            --total-color: #6b4423;
+            --label-color: #a08060;
+            --stats-color: #8b6914;
+            --stats-strong: #6b4423;
+            --audio-color: #8b7355;
+            --audio-label: #8b6914;
+            --audio-accent: #8b6914;
+            --ctrl-border: rgba(139, 90, 43, 0.2);
+            --ctrl-bg: rgba(255, 252, 245, 0.85);
+            --ctrl-bg-hover: rgba(255, 252, 245, 1);
+            --ctrl-fg: #6b4423;
+            --tap-hint: #a08060;
+            --float-plus: #6b4423;
+            --float-shadow: #fff8f0;
+            --shop-card-bg: rgba(255, 252, 245, 0.85);
+            --tabs-bg: rgba(255, 252, 245, 0.95);
+            --tab-fg: #a08060;
+            --tab-hover-bg: rgba(232, 212, 184, 0.45);
+            --tab-active-bg: #e8d4b8;
+            --tab-active-fg: #6b4423;
+            --theme-btn-bg: rgba(255, 252, 245, 0.9);
+            --theme-btn-fg: #8b6914;
+            --theme-btn-shadow: rgba(139, 90, 43, 0.18);
+            --shop-icon-color: #8b6914;
+            --shop-name-color: #4a3728;
+            --shop-desc-color: #8b7355;
+            --shop-cost-color: #6b4423;
+            --shop-owned-color: #a08060;
+        }
+
+        .app.dark-mode {
+            --app-text: #f6f6f6;
+            --app-bg-1: #191919;
+            --app-bg-2: #111111;
+            --header-bg: rgba(20, 20, 20, 0.78);
+            --header-border: rgba(255, 255, 255, 0.14);
+            --total-color: #fff7ea;
+            --label-color: #ece7df;
+            --stats-color: #f3eee6;
+            --stats-strong: #ffffff;
+            --audio-color: #efebe4;
+            --audio-label: #fff5e4;
+            --audio-accent: #f0c785;
+            --ctrl-border: rgba(255, 255, 255, 0.2);
+            --ctrl-bg: rgba(32, 32, 32, 0.88);
+            --ctrl-bg-hover: rgba(45, 45, 45, 0.96);
+            --ctrl-fg: #f7f4ef;
+            --tap-hint: #e5dfd7;
+            --float-plus: #fff0d6;
+            --float-shadow: #000000;
+            --shop-card-bg: rgba(34, 34, 34, 0.9);
+            --tabs-bg: rgba(18, 18, 18, 0.95);
+            --tab-fg: #ece5dc;
+            --tab-hover-bg: rgba(240, 199, 133, 0.18);
+            --tab-active-bg: rgba(240, 199, 133, 0.3);
+            --tab-active-fg: #fffaf1;
+            --theme-btn-bg: rgba(31, 31, 31, 0.9);
+            --theme-btn-fg: #fff4de;
+            --theme-btn-shadow: rgba(255, 255, 255, 0.2);
+            --shop-icon-color: #f2eadf;
+            --shop-name-color: #ffffff;
+            --shop-desc-color: #ede8e0;
+            --shop-cost-color: #fff7ea;
+            --shop-owned-color: #dfd8cf;
+        }
+
         .app {
             display: flex;
             flex-direction: column;
             height: 100%;
-            background: linear-gradient(180deg, #faf3e8 0%, #f0e0c8 100%);
+            background: linear-gradient(180deg, var(--app-bg-1) 0%, var(--app-bg-2) 100%);
+            color: var(--app-text);
         }
 
         .app.frenzy-active {
@@ -91,14 +164,42 @@
         .header {
             padding: 0.75rem 1rem 0.5rem;
             text-align: center;
-            border-bottom: 1px solid rgba(139, 90, 43, 0.15);
-            background: rgba(255, 252, 245, 0.7);
+            border-bottom: 1px solid var(--header-border);
+            background: var(--header-bg);
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0.7rem;
+            right: 0.9rem;
+            border: 1px solid var(--ctrl-border);
+            background: var(--theme-btn-bg);
+            color: var(--theme-btn-fg);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px var(--theme-btn-shadow);
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.06);
+            background: var(--ctrl-bg-hover);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
 
         .cookie-total {
             font-size: 1.75rem;
             font-weight: 800;
-            color: #6b4423;
+            color: var(--total-color);
             line-height: 1.2;
         }
 
@@ -108,7 +209,7 @@
             font-weight: 600;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: #a08060;
+            color: var(--label-color);
             margin-bottom: 0.15rem;
         }
 
@@ -118,11 +219,11 @@
             gap: 1.25rem;
             margin-top: 0.35rem;
             font-size: 0.75rem;
-            color: #8b6914;
+            color: var(--stats-color);
         }
 
         .stats-row strong {
-            color: #6b4423;
+            color: var(--stats-strong);
         }
 
         .audio-controls {
@@ -132,25 +233,25 @@
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.72rem;
-            color: #8b7355;
+            color: var(--audio-color);
         }
 
         .audio-controls label {
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            color: #8b6914;
+            color: var(--audio-label);
         }
 
         .audio-controls input[type='range'] {
             width: 7.5rem;
-            accent-color: #8b6914;
+            accent-color: var(--audio-accent);
         }
 
         .audio-controls button {
-            border: 1px solid rgba(139, 90, 43, 0.2);
-            background: rgba(255, 252, 245, 0.85);
-            color: #6b4423;
+            border: 1px solid var(--ctrl-border);
+            background: var(--ctrl-bg);
+            color: var(--ctrl-fg);
             border-radius: 0.45rem;
             padding: 0.25rem 0.45rem;
             font-size: 0.72rem;
@@ -160,7 +261,7 @@
         }
 
         .audio-controls button:hover {
-            background: rgba(255, 252, 245, 1);
+            background: var(--ctrl-bg-hover);
             transform: scale(1.03);
         }
 
@@ -341,7 +442,7 @@
             bottom: 1.25rem;
             text-align: center;
             font-size: 0.8rem;
-            color: #a08060;
+            color: var(--tap-hint);
             z-index: 1;
         }
 
@@ -349,10 +450,10 @@
             position: absolute;
             font-weight: 800;
             font-size: 1.1rem;
-            color: #6b4423;
+            color: var(--float-plus);
             pointer-events: none;
             animation: float-up 1.3s ease-out forwards;
-            text-shadow: 0 1px 0 #fff8f0;
+            text-shadow: 0 1px 0 var(--float-shadow);
         }
 
         @keyframes float-up {
@@ -421,9 +522,9 @@
             width: 100%;
             padding: 0.65rem 0.75rem;
             margin-bottom: 0.5rem;
-            border: 1px solid rgba(139, 90, 43, 0.2);
+            border: 1px solid var(--ctrl-border);
             border-radius: 0.75rem;
-            background: rgba(255, 252, 245, 0.85);
+            background: var(--shop-card-bg);
             text-align: left;
             cursor: pointer;
             transition: background 0.12s, transform 0.12s, border-color 0.12s;
@@ -451,7 +552,7 @@
             justify-content: center;
             width: 2rem;
             flex-shrink: 0;
-            color: #8b6914;
+            color: var(--shop-icon-color);
         }
 
         .upgrade-row .icon i {
@@ -466,12 +567,12 @@
         .upgrade-row .name {
             font-weight: 700;
             font-size: 0.9rem;
-            color: #4a3728;
+            color: var(--shop-name-color);
         }
 
         .upgrade-row .desc {
             font-size: 0.7rem;
-            color: #8b7355;
+            color: var(--shop-desc-color);
             margin-top: 0.1rem;
         }
 
@@ -483,12 +584,12 @@
         .upgrade-row .cost {
             font-weight: 700;
             font-size: 0.85rem;
-            color: #6b4423;
+            color: var(--shop-cost-color);
         }
 
         .upgrade-row .owned {
             font-size: 0.65rem;
-            color: #a08060;
+            color: var(--shop-owned-color);
             margin-top: 0.15rem;
         }
 
@@ -496,7 +597,7 @@
         .tabs {
             display: flex;
             border-top: 1px solid rgba(139, 90, 43, 0.2);
-            background: rgba(255, 252, 245, 0.95);
+            background: var(--tabs-bg);
             padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0));
         }
 
@@ -507,7 +608,7 @@
             padding: 0.55rem;
             font-size: 0.8rem;
             font-weight: 600;
-            color: #a08060;
+            color: var(--tab-fg);
             border-radius: 0.5rem;
             cursor: pointer;
             touch-action: manipulation;
@@ -519,13 +620,13 @@
         }
 
         .tab-btn:hover:not(.active) {
-            background: rgba(232, 212, 184, 0.45);
-            color: #6b4423;
+            background: var(--tab-hover-bg);
+            color: var(--tab-active-fg);
         }
 
         .tab-btn.active {
-            background: #e8d4b8;
-            color: #6b4423;
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
         }
 
         .tab-btn:active {
@@ -536,6 +637,9 @@
 <body>
     <div class="app" id="app">
         <header class="header">
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Darkmode" aria-pressed="false">
+                <i class="fa-solid fa-moon" aria-hidden="true"></i>
+            </button>
             <div class="cookie-total">
                 <span class="label">Kekse</span>
                 <span id="total-display">0</span>
@@ -588,6 +692,7 @@
         const TICK_MS = 100
         const AUTOSAVE_MS = 15000
         const DEFAULT_VOLUME = 0.7
+        const DEFAULT_DARK_MODE = false
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -630,6 +735,7 @@
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
+            darkMode: DEFAULT_DARK_MODE,
         }
 
         const $ = (id) => document.getElementById(id)
@@ -677,7 +783,9 @@
         function addCookies(amount, refreshShop) {
             state.cookies += amount * incomeMult()
             renderHeader()
-            if (refreshShop) renderShop()
+            const shopPanel = $('panel-shop')
+            const shouldRefreshShop = refreshShop || (shopPanel && shopPanel.classList.contains('active'))
+            if (shouldRefreshShop) renderShop()
         }
 
         function isFrenzyActive() {
@@ -710,6 +818,14 @@
             $('mute-toggle').textContent = state.audioMuted ? 'Ton an' : 'Stumm'
             $('mute-toggle').setAttribute('aria-pressed', String(state.audioMuted))
             updateAudioOutput()
+        }
+
+        function renderThemeToggle() {
+            const icon = $('theme-toggle').querySelector('i')
+            $('app').classList.toggle('dark-mode', state.darkMode)
+            $('theme-toggle').setAttribute('aria-pressed', String(state.darkMode))
+            $('theme-toggle').setAttribute('aria-label', state.darkMode ? 'Hellmodus' : 'Darkmode')
+            icon.className = state.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'
         }
 
         function buildShop() {
@@ -1040,6 +1156,7 @@
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
+                darkMode: DEFAULT_DARK_MODE,
             }
         }
 
@@ -1062,6 +1179,7 @@
                 lastSave: state.lastSave,
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
+                darkMode: state.darkMode,
             }
             try {
                 localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
@@ -1082,6 +1200,7 @@
                     ? Math.min(1, Math.max(0, data.audioVolume))
                     : DEFAULT_VOLUME
                 state.audioMuted = data.audioMuted === true
+                state.darkMode = data.darkMode === true
 
                 for (const p of PRODUCERS) {
                     const n = data.producers?.[p.id]
@@ -1133,6 +1252,7 @@
             renderHeader()
             renderShop()
             renderAudioControls()
+            renderThemeToggle()
 
             $('big-cookie').addEventListener('mousedown', onCookieMouseDown)
             $('big-cookie').addEventListener('keydown', (ev) => {
@@ -1149,6 +1269,11 @@
             $('mute-toggle').addEventListener('click', () => {
                 state.audioMuted = !state.audioMuted
                 renderAudioControls()
+                save()
+            })
+            $('theme-toggle').addEventListener('click', () => {
+                state.darkMode = !state.darkMode
+                renderThemeToggle()
                 save()
             })
 
