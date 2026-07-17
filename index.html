@@ -83,6 +83,49 @@
             color: #6b4423;
         }
 
+        .audio-controls {
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.72rem;
+            color: #8b7355;
+        }
+
+        .audio-controls label {
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #8b6914;
+        }
+
+        .audio-controls input[type='range'] {
+            width: 7.5rem;
+            accent-color: #8b6914;
+        }
+
+        .audio-controls button {
+            border: 1px solid rgba(139, 90, 43, 0.2);
+            background: rgba(255, 252, 245, 0.85);
+            color: #6b4423;
+            border-radius: 0.45rem;
+            padding: 0.25rem 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.12s, transform 0.12s;
+        }
+
+        .audio-controls button:hover {
+            background: rgba(255, 252, 245, 1);
+            transform: scale(1.03);
+        }
+
+        .audio-controls button:active {
+            transform: scale(0.98);
+        }
+
         .panels {
             flex: 1;
             overflow: hidden;
@@ -459,6 +502,11 @@
                 <span>per tap <strong id="tap-display">1</strong></span>
                 <span>per sec <strong id="cps-display">0</strong></span>
             </div>
+            <div class="audio-controls" aria-label="Audio controls">
+                <label for="volume-slider">Sound</label>
+                <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Volume" />
+                <button type="button" id="mute-toggle" aria-pressed="false">Mute</button>
+            </div>
         </header>
 
         <div class="panels">
@@ -497,6 +545,7 @@
         const FRENZY_MULT = 2
         const TICK_MS = 100
         const AUTOSAVE_MS = 15000
+        const DEFAULT_VOLUME = 0.7
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 cookies/sec' },
@@ -537,6 +586,8 @@
             frenzyUntil: 0,
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
+            audioVolume: DEFAULT_VOLUME,
+            audioMuted: false,
         }
 
         const $ = (id) => document.getElementById(id)
@@ -600,6 +651,23 @@
             $('tap-display').textContent = formatNum(calcTap() * incomeMult())
             $('cps-display').textContent = formatNum(calcCps() * incomeMult())
             updateFrenzyVisuals()
+        }
+
+        function effectiveVolume() {
+            return state.audioMuted ? 0 : state.audioVolume
+        }
+
+        function updateAudioOutput() {
+            if (tapMasterGain && tapAudioCtx) {
+                tapMasterGain.gain.setValueAtTime(effectiveVolume(), tapAudioCtx.currentTime)
+            }
+        }
+
+        function renderAudioControls() {
+            $('volume-slider').value = String(Math.round(state.audioVolume * 100))
+            $('mute-toggle').textContent = state.audioMuted ? 'Unmute' : 'Mute'
+            $('mute-toggle').setAttribute('aria-pressed', String(state.audioMuted))
+            updateAudioOutput()
         }
 
         function buildShop() {
@@ -794,14 +862,18 @@
         }
 
         let tapAudioCtx = null
+        let tapMasterGain = null
 
         function ensureTapAudio() {
             if (!tapAudioCtx) {
                 tapAudioCtx = new (window.AudioContext || window.webkitAudioContext)()
+                tapMasterGain = tapAudioCtx.createGain()
+                tapMasterGain.connect(tapAudioCtx.destination)
             }
             if (tapAudioCtx.state === 'suspended') {
                 tapAudioCtx.resume()
             }
+            updateAudioOutput()
             return tapAudioCtx
         }
 
@@ -818,7 +890,7 @@
             thumpGain.gain.setValueAtTime(0.0001, now)
             thumpGain.gain.exponentialRampToValueAtTime(0.28, now + 0.006)
             thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09)
-            thump.connect(thumpGain).connect(ctx.destination)
+            thump.connect(thumpGain).connect(tapMasterGain)
             thump.start(now)
             thump.stop(now + 0.1)
 
@@ -839,9 +911,14 @@
             const crunchGain = ctx.createGain()
             crunchGain.gain.setValueAtTime(0.11, now)
             crunchGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045)
-            crunch.connect(crunchFilter).connect(crunchGain).connect(ctx.destination)
+            crunch.connect(crunchFilter).connect(crunchGain).connect(tapMasterGain)
             crunch.start(now)
             crunch.stop(now + 0.05)
+        }
+
+        function onCookieMouseDown(ev) {
+            if (ev.button !== 0) return
+            onTapCookie(ev)
         }
 
         function onTapCookie(ev) {
@@ -919,6 +996,8 @@
                 frenzyUntil: 0,
                 goldenVisible: false,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
+                audioVolume: DEFAULT_VOLUME,
+                audioMuted: false,
             }
         }
 
@@ -939,6 +1018,8 @@
                 producers: { ...state.producers },
                 clicks: { ...state.clicks },
                 lastSave: state.lastSave,
+                audioVolume: state.audioVolume,
+                audioMuted: state.audioMuted,
             }
             try {
                 localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
@@ -955,6 +1036,10 @@
 
                 state.cookies = data.cookies
                 state.lastSave = typeof data.lastSave === 'number' ? data.lastSave : Date.now()
+                state.audioVolume = typeof data.audioVolume === 'number'
+                    ? Math.min(1, Math.max(0, data.audioVolume))
+                    : DEFAULT_VOLUME
+                state.audioMuted = data.audioMuted === true
 
                 for (const p of PRODUCERS) {
                     const n = data.producers?.[p.id]
@@ -1005,9 +1090,25 @@
             buildShop()
             renderHeader()
             renderShop()
+            renderAudioControls()
 
-            $('big-cookie').addEventListener('click', onTapCookie)
+            $('big-cookie').addEventListener('mousedown', onCookieMouseDown)
+            $('big-cookie').addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' || ev.key === ' ') {
+                    ev.preventDefault()
+                }
+            })
             $('golden-cookie').addEventListener('click', startFrenzy)
+            $('volume-slider').addEventListener('input', (ev) => {
+                state.audioVolume = Math.min(1, Math.max(0, Number(ev.target.value) / 100))
+                renderAudioControls()
+                save()
+            })
+            $('mute-toggle').addEventListener('click', () => {
+                state.audioMuted = !state.audioMuted
+                renderAudioControls()
+                save()
+            })
 
             initTabs()
 
