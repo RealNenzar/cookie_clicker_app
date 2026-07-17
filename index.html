@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Cookies!</title>
+    <title>Kekse!</title>
     <link href="./vendor/fontawesome/css/all.min.css" rel="stylesheet" />
     <style>
         @font-face {
@@ -35,84 +35,11 @@
             color: #4a3728;
         }
 
-        :root {
-            --app-text: #4a3728;
-            --app-bg-1: #faf3e8;
-            --app-bg-2: #f0e0c8;
-            --header-bg: rgba(255, 252, 245, 0.7);
-            --header-border: rgba(139, 90, 43, 0.15);
-            --total-color: #6b4423;
-            --label-color: #a08060;
-            --stats-color: #8b6914;
-            --stats-strong: #6b4423;
-            --audio-color: #8b7355;
-            --audio-label: #8b6914;
-            --audio-accent: #8b6914;
-            --ctrl-border: rgba(139, 90, 43, 0.2);
-            --ctrl-bg: rgba(255, 252, 245, 0.85);
-            --ctrl-bg-hover: rgba(255, 252, 245, 1);
-            --ctrl-fg: #6b4423;
-            --tap-hint: #a08060;
-            --float-plus: #6b4423;
-            --float-shadow: #fff8f0;
-            --shop-card-bg: rgba(255, 252, 245, 0.85);
-            --tabs-bg: rgba(255, 252, 245, 0.95);
-            --tab-fg: #a08060;
-            --tab-hover-bg: rgba(232, 212, 184, 0.45);
-            --tab-active-bg: #e8d4b8;
-            --tab-active-fg: #6b4423;
-            --theme-btn-bg: rgba(255, 252, 245, 0.9);
-            --theme-btn-fg: #8b6914;
-            --theme-btn-shadow: rgba(139, 90, 43, 0.18);
-            --shop-icon-color: #8b6914;
-            --shop-name-color: #4a3728;
-            --shop-desc-color: #8b7355;
-            --shop-cost-color: #6b4423;
-            --shop-owned-color: #a08060;
-        }
-
-        .app.dark-mode {
-            --app-text: #f6f6f6;
-            --app-bg-1: #191919;
-            --app-bg-2: #111111;
-            --header-bg: rgba(20, 20, 20, 0.78);
-            --header-border: rgba(255, 255, 255, 0.14);
-            --total-color: #fff7ea;
-            --label-color: #ece7df;
-            --stats-color: #f3eee6;
-            --stats-strong: #ffffff;
-            --audio-color: #efebe4;
-            --audio-label: #fff5e4;
-            --audio-accent: #f0c785;
-            --ctrl-border: rgba(255, 255, 255, 0.2);
-            --ctrl-bg: rgba(32, 32, 32, 0.88);
-            --ctrl-bg-hover: rgba(45, 45, 45, 0.96);
-            --ctrl-fg: #f7f4ef;
-            --tap-hint: #e5dfd7;
-            --float-plus: #fff0d6;
-            --float-shadow: #000000;
-            --shop-card-bg: rgba(34, 34, 34, 0.9);
-            --tabs-bg: rgba(18, 18, 18, 0.95);
-            --tab-fg: #ece5dc;
-            --tab-hover-bg: rgba(240, 199, 133, 0.18);
-            --tab-active-bg: rgba(240, 199, 133, 0.3);
-            --tab-active-fg: #fffaf1;
-            --theme-btn-bg: rgba(31, 31, 31, 0.9);
-            --theme-btn-fg: #fff4de;
-            --theme-btn-shadow: rgba(255, 255, 255, 0.2);
-            --shop-icon-color: #f2eadf;
-            --shop-name-color: #ffffff;
-            --shop-desc-color: #ede8e0;
-            --shop-cost-color: #fff7ea;
-            --shop-owned-color: #dfd8cf;
-        }
-
         .app {
             display: flex;
             flex-direction: column;
             height: 100%;
-            background: linear-gradient(180deg, var(--app-bg-1) 0%, var(--app-bg-2) 100%);
-            color: var(--app-text);
+            background: linear-gradient(180deg, #faf3e8 0%, #f0e0c8 100%);
         }
 
         .app.frenzy-active {
@@ -122,42 +49,14 @@
         .header {
             padding: 0.75rem 1rem 0.5rem;
             text-align: center;
-            border-bottom: 1px solid var(--header-border);
-            background: var(--header-bg);
-            position: relative;
-        }
-
-        .theme-toggle {
-            position: absolute;
-            top: 0.7rem;
-            right: 0.9rem;
-            border: 1px solid var(--ctrl-border);
-            background: var(--theme-btn-bg);
-            color: var(--theme-btn-fg);
-            width: 2rem;
-            height: 2rem;
-            border-radius: 999px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px var(--theme-btn-shadow);
-            transition: transform 0.12s ease, background 0.12s ease;
-        }
-
-        .theme-toggle:hover {
-            transform: scale(1.06);
-            background: var(--ctrl-bg-hover);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.95);
+            border-bottom: 1px solid rgba(139, 90, 43, 0.15);
+            background: rgba(255, 252, 245, 0.7);
         }
 
         .cookie-total {
             font-size: 1.75rem;
             font-weight: 800;
-            color: var(--total-color);
+            color: #6b4423;
             line-height: 1.2;
         }
 
@@ -167,7 +66,7 @@
             font-weight: 600;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: var(--label-color);
+            color: #a08060;
             margin-bottom: 0.15rem;
         }
 
@@ -177,11 +76,11 @@
             gap: 1.25rem;
             margin-top: 0.35rem;
             font-size: 0.75rem;
-            color: var(--stats-color);
+            color: #8b6914;
         }
 
         .stats-row strong {
-            color: var(--stats-strong);
+            color: #6b4423;
         }
 
         .audio-controls {
@@ -191,25 +90,25 @@
             justify-content: center;
             gap: 0.5rem;
             font-size: 0.72rem;
-            color: var(--audio-color);
+            color: #8b7355;
         }
 
         .audio-controls label {
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            color: var(--audio-label);
+            color: #8b6914;
         }
 
         .audio-controls input[type='range'] {
             width: 7.5rem;
-            accent-color: var(--audio-accent);
+            accent-color: #8b6914;
         }
 
         .audio-controls button {
-            border: 1px solid var(--ctrl-border);
-            background: var(--ctrl-bg);
-            color: var(--ctrl-fg);
+            border: 1px solid rgba(139, 90, 43, 0.2);
+            background: rgba(255, 252, 245, 0.85);
+            color: #6b4423;
             border-radius: 0.45rem;
             padding: 0.25rem 0.45rem;
             font-size: 0.72rem;
@@ -219,7 +118,7 @@
         }
 
         .audio-controls button:hover {
-            background: var(--ctrl-bg-hover);
+            background: rgba(255, 252, 245, 1);
             transform: scale(1.03);
         }
 
@@ -400,7 +299,7 @@
             bottom: 1.25rem;
             text-align: center;
             font-size: 0.8rem;
-            color: var(--tap-hint);
+            color: #a08060;
             z-index: 1;
         }
 
@@ -408,10 +307,10 @@
             position: absolute;
             font-weight: 800;
             font-size: 1.1rem;
-            color: var(--float-plus);
+            color: #6b4423;
             pointer-events: none;
             animation: float-up 1.3s ease-out forwards;
-            text-shadow: 0 1px 0 var(--float-shadow);
+            text-shadow: 0 1px 0 #fff8f0;
         }
 
         @keyframes float-up {
@@ -480,9 +379,9 @@
             width: 100%;
             padding: 0.65rem 0.75rem;
             margin-bottom: 0.5rem;
-            border: 1px solid var(--ctrl-border);
+            border: 1px solid rgba(139, 90, 43, 0.2);
             border-radius: 0.75rem;
-            background: var(--shop-card-bg);
+            background: rgba(255, 252, 245, 0.85);
             text-align: left;
             cursor: pointer;
             transition: background 0.12s, transform 0.12s, border-color 0.12s;
@@ -490,7 +389,7 @@
         }
 
         .upgrade-row:hover:not(:disabled) {
-            background: var(--ctrl-bg-hover);
+            background: rgba(255, 252, 245, 1);
             border-color: rgba(139, 90, 43, 0.35);
             transform: scale(1.01);
         }
@@ -510,7 +409,7 @@
             justify-content: center;
             width: 2rem;
             flex-shrink: 0;
-            color: var(--shop-icon-color);
+            color: #8b6914;
         }
 
         .upgrade-row .icon i {
@@ -525,12 +424,12 @@
         .upgrade-row .name {
             font-weight: 700;
             font-size: 0.9rem;
-            color: var(--shop-name-color);
+            color: #4a3728;
         }
 
         .upgrade-row .desc {
             font-size: 0.7rem;
-            color: var(--shop-desc-color);
+            color: #8b7355;
             margin-top: 0.1rem;
         }
 
@@ -542,12 +441,12 @@
         .upgrade-row .cost {
             font-weight: 700;
             font-size: 0.85rem;
-            color: var(--shop-cost-color);
+            color: #6b4423;
         }
 
         .upgrade-row .owned {
             font-size: 0.65rem;
-            color: var(--shop-owned-color);
+            color: #a08060;
             margin-top: 0.15rem;
         }
 
@@ -555,7 +454,7 @@
         .tabs {
             display: flex;
             border-top: 1px solid rgba(139, 90, 43, 0.2);
-            background: var(--tabs-bg);
+            background: rgba(255, 252, 245, 0.95);
             padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0));
         }
 
@@ -566,7 +465,7 @@
             padding: 0.55rem;
             font-size: 0.8rem;
             font-weight: 600;
-            color: var(--tab-fg);
+            color: #a08060;
             border-radius: 0.5rem;
             cursor: pointer;
             touch-action: manipulation;
@@ -578,13 +477,13 @@
         }
 
         .tab-btn:hover:not(.active) {
-            background: var(--tab-hover-bg);
-            color: var(--tab-active-fg);
+            background: rgba(232, 212, 184, 0.45);
+            color: #6b4423;
         }
 
         .tab-btn.active {
-            background: var(--tab-active-bg);
-            color: var(--tab-active-fg);
+            background: #e8d4b8;
+            color: #6b4423;
         }
 
         .tab-btn:active {
@@ -595,47 +494,44 @@
 <body>
     <div class="app" id="app">
         <header class="header">
-            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Dark mode" aria-pressed="false">
-                <i class="fa-solid fa-moon" aria-hidden="true"></i>
-            </button>
             <div class="cookie-total">
-                <span class="label">Cookies</span>
+                <span class="label">Kekse</span>
                 <span id="total-display">0</span>
             </div>
             <div class="stats-row">
-                <span>per tap <strong id="tap-display">1</strong></span>
-                <span>per sec <strong id="cps-display">0</strong></span>
+                <span>pro Klick <strong id="tap-display">1</strong></span>
+                <span>pro Sek <strong id="cps-display">0</strong></span>
             </div>
-            <div class="audio-controls" aria-label="Audio controls">
-                <label for="volume-slider">Sound</label>
-                <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Volume" />
-                <button type="button" id="mute-toggle" aria-pressed="false">Mute</button>
+            <div class="audio-controls" aria-label="Audio-Steuerung">
+                <label for="volume-slider">Ton</label>
+                <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstaerke" />
+                <button type="button" id="mute-toggle" aria-pressed="false">Stumm</button>
             </div>
         </header>
 
         <div class="panels">
-            <section class="panel active" id="panel-play" aria-label="Play">
+            <section class="panel active" id="panel-play" aria-label="Spielen">
                 <div class="play-area" id="play-area">
                     <div class="cookie-rain-layer" id="cookie-rain" aria-hidden="true"></div>
                     <div class="effects-layer" id="effects-layer" aria-hidden="true"></div>
                     <div class="play-center">
                         <div class="cookie-tap-zone">
-                            <button type="button" class="big-cookie" id="big-cookie" aria-label="Tap cookie">🍪</button>
+                            <button type="button" class="big-cookie" id="big-cookie" aria-label="Keks klicken">🍪</button>
                         </div>
                     </div>
-                    <p class="tap-hint">Tap the cookie</p>
-                    <button type="button" class="golden-cookie" id="golden-cookie" aria-label="Golden cookie">⭐</button>
+                    <p class="tap-hint">Klicke den Keks</p>
+                    <button type="button" class="golden-cookie" id="golden-cookie" aria-label="Goldener Keks">⭐</button>
                 </div>
             </section>
 
-            <section class="panel" id="panel-shop" aria-label="Shop">
+            <section class="panel" id="panel-shop" aria-label="Laden">
                 <div class="shop" id="shop-root"></div>
             </section>
         </div>
 
         <nav class="tabs" aria-label="Navigation">
-            <button type="button" class="tab-btn active" data-tab="play">Cookie</button>
-            <button type="button" class="tab-btn" data-tab="shop">Shop</button>
+            <button type="button" class="tab-btn active" data-tab="play">Keks</button>
+            <button type="button" class="tab-btn" data-tab="shop">Laden</button>
         </nav>
     </div>
 
@@ -650,37 +546,36 @@
         const TICK_MS = 100
         const AUTOSAVE_MS = 15000
         const DEFAULT_VOLUME = 0.7
-        const DEFAULT_DARK_MODE = false
 
         const PRODUCERS = [
-            { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 cookies/sec' },
-            { id: 'grandma', name: 'Grandma', icon: 'fa-solid fa-person-cane', cps: 1, baseCost: 100, desc: '+1 cookie/sec' },
-            { id: 'bakery', name: 'Bakery', icon: 'fa-solid fa-store', cps: 8, baseCost: 500, desc: '+8 cookies/sec' },
-            { id: 'factory', name: 'Factory', icon: 'fa-solid fa-industry', cps: 47, baseCost: 3000, desc: '+47 cookies/sec' },
-            { id: 'warehouse', name: 'Warehouse', icon: 'fa-solid fa-warehouse', cps: 260, baseCost: 20000, desc: '+260 cookies/sec' },
-            { id: 'shipping', name: 'Shipping Hub', icon: 'fa-solid fa-truck-fast', cps: 1400, baseCost: 120000, desc: '+1.4K cookies/sec' },
-            { id: 'chain', name: 'Cookie Chain', icon: 'fa-solid fa-link', cps: 8200, baseCost: 750000, desc: '+8.2K cookies/sec' },
-            { id: 'mega', name: 'Mega Bakery', icon: 'fa-solid fa-city', cps: 52000, baseCost: 6200000, desc: '+52K cookies/sec' },
-            { id: 'bank', name: 'Cookie Bank', icon: 'fa-solid fa-building-columns', cps: 310000, baseCost: 68000000, desc: '+310K cookies/sec' },
-            { id: 'campus', name: 'Research Campus', icon: 'fa-solid fa-graduation-cap', cps: 1200000, baseCost: 520000000, desc: '+1.2M cookies/sec' },
-            { id: 'lab', name: 'Cookie Lab', icon: 'fa-solid fa-flask', cps: 280000, baseCost: 2470000000, desc: '+280K cookies/sec' },
-            { id: 'orbital', name: 'Orbital Oven', icon: 'fa-solid fa-satellite', cps: 1350000, baseCost: 8730000000, desc: '+1.35M cookies/sec' },
-            { id: 'quantum', name: 'Quantum Mill', icon: 'fa-solid fa-atom', cps: 9200000, baseCost: 42800000000, desc: '+9.2M cookies/sec' },
-            { id: 'singularity', name: 'Singularity Baker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M cookies/sec' },
+            { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
+            { id: 'grandma', name: 'Oma', icon: 'fa-solid fa-person-cane', cps: 1, baseCost: 100, desc: '+1 Keks/Sek' },
+            { id: 'bakery', name: 'Baeckerei', icon: 'fa-solid fa-store', cps: 8, baseCost: 500, desc: '+8 Kekse/Sek' },
+            { id: 'factory', name: 'Fabrik', icon: 'fa-solid fa-industry', cps: 47, baseCost: 3000, desc: '+47 Kekse/Sek' },
+            { id: 'warehouse', name: 'Lagerhaus', icon: 'fa-solid fa-warehouse', cps: 260, baseCost: 20000, desc: '+260 Kekse/Sek' },
+            { id: 'shipping', name: 'Versandzentrum', icon: 'fa-solid fa-truck-fast', cps: 1400, baseCost: 120000, desc: '+1.4K Kekse/Sek' },
+            { id: 'chain', name: 'Keks-Kette', icon: 'fa-solid fa-link', cps: 8200, baseCost: 750000, desc: '+8.2K Kekse/Sek' },
+            { id: 'mega', name: 'Mega-Baeckerei', icon: 'fa-solid fa-city', cps: 52000, baseCost: 6200000, desc: '+52K Kekse/Sek' },
+            { id: 'bank', name: 'Keks-Bank', icon: 'fa-solid fa-building-columns', cps: 310000, baseCost: 68000000, desc: '+310K Kekse/Sek' },
+            { id: 'campus', name: 'Forschungscampus', icon: 'fa-solid fa-graduation-cap', cps: 1200000, baseCost: 520000000, desc: '+1.2M Kekse/Sek' },
+            { id: 'lab', name: 'Keks-Labor', icon: 'fa-solid fa-flask', cps: 280000, baseCost: 2470000000, desc: '+280K Kekse/Sek' },
+            { id: 'orbital', name: 'Orbital-Ofen', icon: 'fa-solid fa-satellite', cps: 1350000, baseCost: 8730000000, desc: '+1.35M Kekse/Sek' },
+            { id: 'quantum', name: 'Quanten-Muehle', icon: 'fa-solid fa-atom', cps: 9200000, baseCost: 42800000000, desc: '+9.2M Kekse/Sek' },
+            { id: 'singularity', name: 'Singularitaets-Baecker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M Kekse/Sek' },
         ]
 
         const CLICKS = [
-            { id: 'strong', name: 'Strong Finger', icon: 'fa-solid fa-dumbbell', bonus: 1, baseCost: 50, desc: '+1 per tap' },
-            { id: 'iron', name: 'Iron Thumb', icon: 'fa-solid fa-hand-back-fist', bonus: 5, baseCost: 500, desc: '+5 per tap' },
-            { id: 'diamond', name: 'Diamond Tap', icon: 'fa-solid fa-gem', bonus: 25, baseCost: 5000, desc: '+25 per tap' },
-            { id: 'steel', name: 'Steel Tap', icon: 'fa-solid fa-hammer', bonus: 250, baseCost: 60000, desc: '+250 per tap' },
-            { id: 'golden', name: 'Golden Knuckles', icon: 'fa-solid fa-crown', bonus: 1800, baseCost: 450000, desc: '+1.8K per tap' },
-            { id: 'hydraulic', name: 'Hydraulic Punch', icon: 'fa-solid fa-robot', bonus: 12000, baseCost: 6000000, desc: '+12K per tap' },
-            { id: 'laser', name: 'Laser Finger', icon: 'fa-solid fa-wand-magic-sparkles', bonus: 42000, baseCost: 120000000, desc: '+42K per tap' },
-            { id: 'titanium', name: 'Titanium Tap', icon: 'fa-solid fa-hand', bonus: 52000, baseCost: 680000000, desc: '+52K per tap' },
-            { id: 'plasma', name: 'Plasma Punch', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K per tap' },
-            { id: 'neutron', name: 'Neutron Knuckle', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M per tap' },
-            { id: 'cosmic', name: 'Cosmic Click', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M per tap' },
+            { id: 'strong', name: 'Starker Finger', icon: 'fa-solid fa-dumbbell', bonus: 1, baseCost: 50, desc: '+1 pro Klick' },
+            { id: 'iron', name: 'Eiserner Daumen', icon: 'fa-solid fa-hand-back-fist', bonus: 5, baseCost: 500, desc: '+5 pro Klick' },
+            { id: 'diamond', name: 'Diamant-Klick', icon: 'fa-solid fa-gem', bonus: 25, baseCost: 5000, desc: '+25 pro Klick' },
+            { id: 'steel', name: 'Stahl-Klick', icon: 'fa-solid fa-hammer', bonus: 250, baseCost: 60000, desc: '+250 pro Klick' },
+            { id: 'golden', name: 'Goldene Knoechel', icon: 'fa-solid fa-crown', bonus: 1800, baseCost: 450000, desc: '+1.8K pro Klick' },
+            { id: 'hydraulic', name: 'Hydraulik-Schlag', icon: 'fa-solid fa-robot', bonus: 12000, baseCost: 6000000, desc: '+12K pro Klick' },
+            { id: 'laser', name: 'Laser-Finger', icon: 'fa-solid fa-wand-magic-sparkles', bonus: 42000, baseCost: 120000000, desc: '+42K pro Klick' },
+            { id: 'titanium', name: 'Titan-Klick', icon: 'fa-solid fa-hand', bonus: 52000, baseCost: 680000000, desc: '+52K pro Klick' },
+            { id: 'plasma', name: 'Plasma-Schlag', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K pro Klick' },
+            { id: 'neutron', name: 'Neutron-Knoechel', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M pro Klick' },
+            { id: 'cosmic', name: 'Kosmischer Klick', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M pro Klick' },
         ]
 
         const state = {
@@ -693,7 +588,6 @@
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
-            darkMode: DEFAULT_DARK_MODE,
         }
 
         const $ = (id) => document.getElementById(id)
@@ -741,9 +635,7 @@
         function addCookies(amount, refreshShop) {
             state.cookies += amount * incomeMult()
             renderHeader()
-            const shopPanel = $('panel-shop')
-            const shouldRefreshShop = refreshShop || (shopPanel && shopPanel.classList.contains('active'))
-            if (shouldRefreshShop) renderShop()
+            if (refreshShop) renderShop()
         }
 
         function isFrenzyActive() {
@@ -773,17 +665,9 @@
 
         function renderAudioControls() {
             $('volume-slider').value = String(Math.round(state.audioVolume * 100))
-            $('mute-toggle').textContent = state.audioMuted ? 'Unmute' : 'Mute'
+            $('mute-toggle').textContent = state.audioMuted ? 'Ton an' : 'Stumm'
             $('mute-toggle').setAttribute('aria-pressed', String(state.audioMuted))
             updateAudioOutput()
-        }
-
-        function renderThemeToggle() {
-            const icon = $('theme-toggle').querySelector('i')
-            $('app').classList.toggle('dark-mode', state.darkMode)
-            $('theme-toggle').setAttribute('aria-pressed', String(state.darkMode))
-            $('theme-toggle').setAttribute('aria-label', state.darkMode ? 'Light mode' : 'Dark mode')
-            icon.className = state.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'
         }
 
         function buildShop() {
@@ -792,7 +676,7 @@
 
             const prodTitle = document.createElement('h2')
             prodTitle.className = 'shop-section-title'
-            prodTitle.textContent = 'Producers'
+            prodTitle.textContent = 'Produktion'
             root.appendChild(prodTitle)
 
             for (const p of PRODUCERS) {
@@ -801,7 +685,7 @@
 
             const clickTitle = document.createElement('h2')
             clickTitle.className = 'shop-section-title'
-            clickTitle.textContent = 'Click boosts'
+            clickTitle.textContent = 'Klick-Verstaerkung'
             root.appendChild(clickTitle)
 
             for (const c of CLICKS) {
@@ -827,7 +711,7 @@
                 </span>
                 <span class="meta">
                     <div class="cost">${formatNum(cost)}</div>
-                    <div class="owned">owned: ${owned}</div>
+                    <div class="owned">Besitz: ${owned}</div>
                 </span>
             `
 
@@ -851,7 +735,7 @@
             const cost = upgradeCost(item.baseCost, owned)
             btn.disabled = !canAfford(cost)
             btn.querySelector('.cost').textContent = formatNum(cost)
-            btn.querySelector('.owned').textContent = `owned: ${owned}`
+            btn.querySelector('.owned').textContent = `Besitz: ${owned}`
         }
 
         function buyUpgrade(kind, id) {
@@ -1114,7 +998,6 @@
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
-                darkMode: DEFAULT_DARK_MODE,
             }
         }
 
@@ -1137,7 +1020,6 @@
                 lastSave: state.lastSave,
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
-                darkMode: state.darkMode,
             }
             try {
                 localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
@@ -1158,7 +1040,6 @@
                     ? Math.min(1, Math.max(0, data.audioVolume))
                     : DEFAULT_VOLUME
                 state.audioMuted = data.audioMuted === true
-                state.darkMode = data.darkMode === true
 
                 for (const p of PRODUCERS) {
                     const n = data.producers?.[p.id]
@@ -1210,7 +1091,6 @@
             renderHeader()
             renderShop()
             renderAudioControls()
-            renderThemeToggle()
 
             $('big-cookie').addEventListener('mousedown', onCookieMouseDown)
             $('big-cookie').addEventListener('keydown', (ev) => {
@@ -1227,11 +1107,6 @@
             $('mute-toggle').addEventListener('click', () => {
                 state.audioMuted = !state.audioMuted
                 renderAudioControls()
-                save()
-            })
-            $('theme-toggle').addEventListener('click', () => {
-                state.darkMode = !state.darkMode
-                renderThemeToggle()
                 save()
             })
 
