@@ -532,9 +532,18 @@
         }
 
         .upgrade-row:hover:not(:disabled) {
-            background: rgba(255, 252, 245, 1);
-            border-color: rgba(139, 90, 43, 0.35);
+            background: var(--tab-hover-bg);
+            border-color: var(--ctrl-border);
+            color: var(--tab-active-fg);
             transform: scale(1.01);
+        }
+
+        .upgrade-row:hover:not(:disabled) .icon,
+        .upgrade-row:hover:not(:disabled) .name,
+        .upgrade-row:hover:not(:disabled) .desc,
+        .upgrade-row:hover:not(:disabled) .cost,
+        .upgrade-row:hover:not(:disabled) .owned {
+            color: var(--tab-active-fg);
         }
 
         .upgrade-row:active:not(:disabled) {
