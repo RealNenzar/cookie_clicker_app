@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Cookies!</title>
+    <link href="./vendor/fontawesome/css/all.min.css" rel="stylesheet" />
+    <style>
+        @font-face {
+            font-family: 'Zalando Sans Variable';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 200 900;
+            src: url('./fonts/zalando-sans-latin-wght-normal.woff2') format('woff2-variations');
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html,
+        body {
+            background: transparent;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Zalando Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            color: #4a3728;
+        }
+
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: linear-gradient(180deg, #faf3e8 0%, #f0e0c8 100%);
+        }
+
+        .app.frenzy-active {
+            filter: invert(1);
+        }
+
+        .header {
+            padding: 0.75rem 1rem 0.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(139, 90, 43, 0.15);
+            background: rgba(255, 252, 245, 0.7);
+        }
+
+        .cookie-total {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #6b4423;
+            line-height: 1.2;
+        }
+
+        .cookie-total .label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #a08060;
+            margin-bottom: 0.15rem;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            margin-top: 0.35rem;
+            font-size: 0.75rem;
+            color: #8b6914;
+        }
+
+        .stats-row strong {
+            color: #6b4423;
+        }
+
+        .panels {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .panel {
+            position: absolute;
+            inset: 0;
+            overflow-y: auto;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        .panel.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .panel {
+            scrollbar-width: thin;
+            scrollbar-color: #b8956a #ede0cc;
+        }
+
+        .panel::-webkit-scrollbar {
+            width: 0.4rem;
+        }
+
+        .panel::-webkit-scrollbar-track {
+            background: rgba(237, 224, 204, 0.65);
+            border-radius: 999px;
+        }
+
+        .panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #dcc4a0 0%, #a08060 100%);
+            border-radius: 999px;
+            border: 1px solid rgba(139, 90, 43, 0.18);
+        }
+
+        .panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #c4a882 0%, #8b6914 100%);
+        }
+
+        /* Play */
+        .play-area {
+            min-height: 100%;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .cookie-rain-layer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .effects-layer {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .cookie-tap-zone {
+            position: relative;
+            z-index: 1;
+            width: 8.5rem;
+            height: 8.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            pointer-events: auto;
+        }
+
+        .big-cookie {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            cursor: pointer;
+            font-size: 8.5rem;
+            line-height: 1;
+            touch-action: manipulation;
+            user-select: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .big-cookie:not(:hover):not(:active) {
+            transition: transform 0.15s ease;
+        }
+
+        .big-cookie:hover {
+            transform: scale(1.06);
+        }
+
+        .big-cookie:active {
+            transform: scale(0.94);
+        }
+
+        .big-cookie.pulse {
+            animation: cookie-tap-pulse 0.3s ease-out !important;
+        }
+
+        @keyframes cookie-tap-pulse {
+            0% { transform: scale(0.92); }
+            55% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .rain-cookie {
+            position: absolute;
+            top: -3rem;
+            pointer-events: none;
+            opacity: 0.28;
+            animation: rain-fall linear forwards;
+            will-change: transform;
+        }
+
+        .rain-cookie.tap-rain {
+            opacity: 0.4;
+        }
+
+        @keyframes rain-fall {
+            to {
+                transform: translateY(115vh) rotate(360deg);
+            }
+        }
+
+        .jump-cookie {
+            position: absolute;
+            pointer-events: none;
+            animation: jump-out 0.7s ease-out forwards;
+            will-change: transform, opacity;
+        }
+
+        @keyframes jump-out {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(0.85) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--jx)), calc(-50% + var(--jy))) scale(0.45) rotate(var(--rot));
+            }
+        }
+
+        .tap-hint {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 1.25rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #a08060;
+            z-index: 1;
+        }
+
+        .float-plus {
+            position: absolute;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #6b4423;
+            pointer-events: none;
+            animation: float-up 1.3s ease-out forwards;
+            text-shadow: 0 1px 0 #fff8f0;
+        }
+
+        @keyframes float-up {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            55% { opacity: 1; transform: translateY(-56px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-96px) scale(1.15); }
+        }
+
+        .golden-cookie {
+            display: none;
+            position: absolute;
+            width: 3.25rem;
+            height: 3.25rem;
+            border: none;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #fff59d 0%, #ffc107 50%, #ff8f00 100%);
+            box-shadow: 0 0 16px rgba(255, 193, 7, 0.8);
+            font-size: 1.75rem;
+            cursor: pointer;
+            animation: golden-wobble 1.2s ease-in-out infinite;
+            z-index: 10;
+            touch-action: manipulation;
+            transition: filter 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .golden-cookie:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 0 22px rgba(255, 193, 7, 0.95);
+        }
+
+        .golden-cookie:active {
+            filter: brightness(0.95);
+        }
+
+        .golden-cookie.visible {
+            display: block;
+        }
+
+        @keyframes golden-wobble {
+            0%, 100% { transform: rotate(-6deg) scale(1); }
+            50% { transform: rotate(6deg) scale(1.08); }
+        }
+
+        /* Shop */
+        .shop {
+            padding: 0.75rem 1rem 5rem;
+        }
+
+        .shop-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #a08060;
+            margin: 0.75rem 0 0.5rem;
+        }
+
+        .shop-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .upgrade-row {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(139, 90, 43, 0.2);
+            border-radius: 0.75rem;
+            background: rgba(255, 252, 245, 0.85);
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.12s, transform 0.12s, border-color 0.12s;
+            touch-action: manipulation;
+        }
+
+        .upgrade-row:hover:not(:disabled) {
+            background: rgba(255, 252, 245, 1);
+            border-color: rgba(139, 90, 43, 0.35);
+            transform: scale(1.01);
+        }
+
+        .upgrade-row:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .upgrade-row:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .upgrade-row .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            flex-shrink: 0;
+            color: #8b6914;
+        }
+
+        .upgrade-row .icon i {
+            font-size: 1.15rem;
+        }
+
+        .upgrade-row .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .upgrade-row .name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #4a3728;
+        }
+
+        .upgrade-row .desc {
+            font-size: 0.7rem;
+            color: #8b7355;
+            margin-top: 0.1rem;
+        }
+
+        .upgrade-row .meta {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .upgrade-row .cost {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #6b4423;
+        }
+
+        .upgrade-row .owned {
+            font-size: 0.65rem;
+            color: #a08060;
+            margin-top: 0.15rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-top: 1px solid rgba(139, 90, 43, 0.2);
+            background: rgba(255, 252, 245, 0.95);
+            padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0));
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.55rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #a08060;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: background 0.12s, color 0.12s, transform 0.12s;
+        }
+
+        .tab-btn:hover {
+            transform: scale(1.03);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(232, 212, 184, 0.45);
+            color: #6b4423;
+        }
+
+        .tab-btn.active {
+            background: #e8d4b8;
+            color: #6b4423;
+        }
+
+        .tab-btn:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <header class="header">
+            <div class="cookie-total">
+                <span class="label">Cookies</span>
+                <span id="total-display">0</span>
+            </div>
+            <div class="stats-row">
+                <span>per tap <strong id="tap-display">1</strong></span>
+                <span>per sec <strong id="cps-display">0</strong></span>
+            </div>
+        </header>
+
+        <div class="panels">
+            <section class="panel active" id="panel-play" aria-label="Play">
+                <div class="play-area" id="play-area">
+                    <div class="cookie-rain-layer" id="cookie-rain" aria-hidden="true"></div>
+                    <div class="effects-layer" id="effects-layer" aria-hidden="true"></div>
+                    <div class="play-center">
+                        <div class="cookie-tap-zone">
+                            <button type="button" class="big-cookie" id="big-cookie" aria-label="Tap cookie">🍪</button>
+                        </div>
+                    </div>
+                    <p class="tap-hint">Tap the cookie</p>
+                    <button type="button" class="golden-cookie" id="golden-cookie" aria-label="Golden cookie">⭐</button>
+                </div>
+            </section>
+
+            <section class="panel" id="panel-shop" aria-label="Shop">
+                <div class="shop" id="shop-root"></div>
+            </section>
+        </div>
+
+        <nav class="tabs" aria-label="Navigation">
+            <button type="button" class="tab-btn active" data-tab="play">Cookie</button>
+            <button type="button" class="tab-btn" data-tab="shop">Shop</button>
+        </nav>
+    </div>
+
+    <script>
+        const SAVE_KEY = 'ls_cookie_clicker_v2'
+        const BASE_TAP = 1
+        const COST_MULT = 1.15
+        const OFFLINE_CAP_MS = 4 * 60 * 60 * 1000
+        const GOLDEN_INTERVAL_MS = 150000
+        const FRENZY_MS = 10000
+        const FRENZY_MULT = 2
+        const TICK_MS = 100
+        const AUTOSAVE_MS = 15000
+
+        const PRODUCERS = [
+            { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 cookies/sec' },
+            { id: 'grandma', name: 'Grandma', icon: 'fa-solid fa-person-cane', cps: 1, baseCost: 100, desc: '+1 cookie/sec' },
+            { id: 'bakery', name: 'Bakery', icon: 'fa-solid fa-store', cps: 8, baseCost: 500, desc: '+8 cookies/sec' },
+            { id: 'factory', name: 'Factory', icon: 'fa-solid fa-industry', cps: 47, baseCost: 3000, desc: '+47 cookies/sec' },
+            { id: 'warehouse', name: 'Warehouse', icon: 'fa-solid fa-warehouse', cps: 260, baseCost: 20000, desc: '+260 cookies/sec' },
+            { id: 'shipping', name: 'Shipping Hub', icon: 'fa-solid fa-truck-fast', cps: 1400, baseCost: 120000, desc: '+1.4K cookies/sec' },
+            { id: 'chain', name: 'Cookie Chain', icon: 'fa-solid fa-link', cps: 8200, baseCost: 750000, desc: '+8.2K cookies/sec' },
+            { id: 'mega', name: 'Mega Bakery', icon: 'fa-solid fa-city', cps: 52000, baseCost: 6200000, desc: '+52K cookies/sec' },
+            { id: 'bank', name: 'Cookie Bank', icon: 'fa-solid fa-building-columns', cps: 310000, baseCost: 68000000, desc: '+310K cookies/sec' },
+            { id: 'campus', name: 'Research Campus', icon: 'fa-solid fa-graduation-cap', cps: 1200000, baseCost: 520000000, desc: '+1.2M cookies/sec' },
+            { id: 'lab', name: 'Cookie Lab', icon: 'fa-solid fa-flask', cps: 280000, baseCost: 2470000000, desc: '+280K cookies/sec' },
+            { id: 'orbital', name: 'Orbital Oven', icon: 'fa-solid fa-satellite', cps: 1350000, baseCost: 8730000000, desc: '+1.35M cookies/sec' },
+            { id: 'quantum', name: 'Quantum Mill', icon: 'fa-solid fa-atom', cps: 9200000, baseCost: 42800000000, desc: '+9.2M cookies/sec' },
+            { id: 'singularity', name: 'Singularity Baker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M cookies/sec' },
+        ]
+
+        const CLICKS = [
+            { id: 'strong', name: 'Strong Finger', icon: 'fa-solid fa-dumbbell', bonus: 1, baseCost: 50, desc: '+1 per tap' },
+            { id: 'iron', name: 'Iron Thumb', icon: 'fa-solid fa-hand-back-fist', bonus: 5, baseCost: 500, desc: '+5 per tap' },
+            { id: 'diamond', name: 'Diamond Tap', icon: 'fa-solid fa-gem', bonus: 25, baseCost: 5000, desc: '+25 per tap' },
+            { id: 'steel', name: 'Steel Tap', icon: 'fa-solid fa-hammer', bonus: 250, baseCost: 60000, desc: '+250 per tap' },
+            { id: 'golden', name: 'Golden Knuckles', icon: 'fa-solid fa-crown', bonus: 1800, baseCost: 450000, desc: '+1.8K per tap' },
+            { id: 'hydraulic', name: 'Hydraulic Punch', icon: 'fa-solid fa-robot', bonus: 12000, baseCost: 6000000, desc: '+12K per tap' },
+            { id: 'laser', name: 'Laser Finger', icon: 'fa-solid fa-wand-magic-sparkles', bonus: 42000, baseCost: 120000000, desc: '+42K per tap' },
+            { id: 'titanium', name: 'Titanium Tap', icon: 'fa-solid fa-hand', bonus: 52000, baseCost: 680000000, desc: '+52K per tap' },
+            { id: 'plasma', name: 'Plasma Punch', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K per tap' },
+            { id: 'neutron', name: 'Neutron Knuckle', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M per tap' },
+            { id: 'cosmic', name: 'Cosmic Click', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M per tap' },
+        ]
+
+        const state = {
+            cookies: 0,
+            producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
+            clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
+            lastSave: Date.now(),
+            frenzyUntil: 0,
+            goldenVisible: false,
+            nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
+        }
+
+        const $ = (id) => document.getElementById(id)
+
+        function upgradeCost(baseCost, owned) {
+            return Math.floor(baseCost * Math.pow(COST_MULT, owned))
+        }
+
+        function formatNum(n) {
+            if (n < 1000) return Math.floor(n).toString()
+            const units = ['K', 'M', 'B', 'T', 'Qa', 'Qi']
+            let u = -1
+            let v = n
+            while (v >= 1000 && u < units.length - 1) {
+                v /= 1000
+                u++
+            }
+            return (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)) + units[u]
+        }
+
+        function incomeMult() {
+            return Date.now() < state.frenzyUntil ? FRENZY_MULT : 1
+        }
+
+        function calcCps() {
+            let cps = 0
+            for (const p of PRODUCERS) {
+                cps += p.cps * state.producers[p.id]
+            }
+            return cps
+        }
+
+        function calcTap() {
+            let tap = BASE_TAP
+            for (const c of CLICKS) {
+                tap += c.bonus * state.clicks[c.id]
+            }
+            return tap
+        }
+
+        function canAfford(cost) {
+            return state.cookies >= cost
+        }
+
+        function addCookies(amount, refreshShop) {
+            state.cookies += amount * incomeMult()
+            renderHeader()
+            if (refreshShop) renderShop()
+        }
+
+        function isFrenzyActive() {
+            return Date.now() < state.frenzyUntil
+        }
+
+        function updateFrenzyVisuals() {
+            $('app').classList.toggle('frenzy-active', isFrenzyActive())
+        }
+
+        function renderHeader() {
+            $('total-display').textContent = formatNum(state.cookies)
+            $('tap-display').textContent = formatNum(calcTap() * incomeMult())
+            $('cps-display').textContent = formatNum(calcCps() * incomeMult())
+            updateFrenzyVisuals()
+        }
+
+        function buildShop() {
+            const root = $('shop-root')
+            root.innerHTML = ''
+
+            const prodTitle = document.createElement('h2')
+            prodTitle.className = 'shop-section-title'
+            prodTitle.textContent = 'Producers'
+            root.appendChild(prodTitle)
+
+            for (const p of PRODUCERS) {
+                root.appendChild(createUpgradeRow(p, 'producer'))
+            }
+
+            const clickTitle = document.createElement('h2')
+            clickTitle.className = 'shop-section-title'
+            clickTitle.textContent = 'Click boosts'
+            root.appendChild(clickTitle)
+
+            for (const c of CLICKS) {
+                root.appendChild(createUpgradeRow(c, 'click'))
+            }
+        }
+
+        function createUpgradeRow(item, kind) {
+            const owned = kind === 'producer' ? state.producers[item.id] : state.clicks[item.id]
+            const cost = upgradeCost(item.baseCost, owned)
+            const btn = document.createElement('button')
+            btn.type = 'button'
+            btn.className = 'upgrade-row'
+            btn.dataset.kind = kind
+            btn.dataset.id = item.id
+            btn.disabled = !canAfford(cost)
+
+            btn.innerHTML = `
+                <span class="icon"><i class="${item.icon}" aria-hidden="true"></i></span>
+                <span class="info">
+                    <div class="name">${item.name}</div>
+                    <div class="desc">${item.desc}</div>
+                </span>
+                <span class="meta">
+                    <div class="cost">${formatNum(cost)}</div>
+                    <div class="owned">owned: ${owned}</div>
+                </span>
+            `
+
+            btn.addEventListener('click', () => buyUpgrade(kind, item.id))
+            return btn
+        }
+
+        function renderShop() {
+            const rows = $('shop-root').querySelectorAll('.upgrade-row')
+            let i = 0
+            for (const p of PRODUCERS) {
+                updateRow(rows[i++], p, 'producer')
+            }
+            for (const c of CLICKS) {
+                updateRow(rows[i++], c, 'click')
+            }
+        }
+
+        function updateRow(btn, item, kind) {
+            const owned = kind === 'producer' ? state.producers[item.id] : state.clicks[item.id]
+            const cost = upgradeCost(item.baseCost, owned)
+            btn.disabled = !canAfford(cost)
+            btn.querySelector('.cost').textContent = formatNum(cost)
+            btn.querySelector('.owned').textContent = `owned: ${owned}`
+        }
+
+        function buyUpgrade(kind, id) {
+            const list = kind === 'producer' ? PRODUCERS : CLICKS
+            const item = list.find((x) => x.id === id)
+            if (!item) return
+
+            const owned = kind === 'producer' ? state.producers[id] : state.clicks[id]
+            const cost = upgradeCost(item.baseCost, owned)
+            if (!canAfford(cost)) return
+
+            state.cookies -= cost
+            if (kind === 'producer') {
+                state.producers[id]++
+            } else {
+                state.clicks[id]++
+            }
+
+            renderHeader()
+            renderShop()
+            save()
+            return
+        }
+
+        function spawnFloatPlus(amount, x, y) {
+            const el = document.createElement('span')
+            el.className = 'float-plus'
+            el.textContent = '+' + formatNum(amount * incomeMult())
+            el.style.left = x + 'px'
+            el.style.top = y + 'px'
+            $('effects-layer').appendChild(el)
+            setTimeout(() => el.remove(), 1300)
+        }
+
+        function jumpCookieSize(perTap) {
+            return Math.min(1.35, 0.45 + Math.log10(perTap + 1) * 0.22)
+        }
+
+        function jumpCookieCount(perTap) {
+            return Math.min(14, Math.max(3, Math.ceil(Math.sqrt(perTap) * 1.2)))
+        }
+
+        function spawnJumpCookies(x, y, perTap) {
+            const layer = $('effects-layer')
+            const count = jumpCookieCount(perTap)
+            const size = jumpCookieSize(perTap)
+            const spread = 18 + Math.log10(perTap + 1) * 12
+
+            for (let i = 0; i < count; i++) {
+                const el = document.createElement('span')
+                el.className = 'jump-cookie'
+                el.textContent = '🍪'
+                el.style.left = x + 'px'
+                el.style.top = y + 'px'
+                el.style.fontSize = size + 'rem'
+
+                const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.8
+                const dist = spread * (0.45 + Math.random() * 0.75)
+                el.style.setProperty('--jx', Math.cos(angle) * dist + 'px')
+                el.style.setProperty('--jy', Math.sin(angle) * dist + 'px')
+                el.style.setProperty('--rot', (Math.random() * 240 - 120) + 'deg')
+
+                layer.appendChild(el)
+                setTimeout(() => el.remove(), 700)
+            }
+        }
+
+        function rainCookieSize(cps) {
+            return Math.min(2.4, 0.5 + Math.log10(cps + 1) * 0.5)
+        }
+
+        function spawnRainCookie(atX, perTap) {
+            const layer = $('cookie-rain')
+            if (!layer) return
+
+            const fromTap = atX != null
+            const cps = calcCps() * incomeMult()
+            if (!fromTap && cps <= 0) return
+
+            const el = document.createElement('span')
+            el.className = 'rain-cookie' + (fromTap ? ' tap-rain' : '')
+            el.textContent = '🍪'
+            el.style.fontSize = (fromTap
+                ? Math.min(1.6, 0.5 + Math.log10((perTap || 1) + 1) * 0.32)
+                : rainCookieSize(cps)) + 'rem'
+
+            if (fromTap) {
+                const spread = 70 + Math.log10((perTap || 1) + 1) * 22
+                const left = Math.max(8, Math.min(layer.clientWidth - 8, atX + (Math.random() - 0.5) * spread))
+                el.style.left = left + 'px'
+            } else {
+                el.style.left = Math.random() * 100 + '%'
+            }
+
+            const duration = (fromTap ? 2.2 : 2.8) + Math.random() * (fromTap ? 1.6 : 2.4)
+            el.style.animationDuration = duration + 's'
+            layer.appendChild(el)
+            setTimeout(() => el.remove(), duration * 1000 + 50)
+        }
+
+        function spawnTapRainCookies(x, perTap) {
+            const count = Math.min(5, Math.max(2, 2 + Math.floor(Math.log10(perTap + 1) * 1.8)))
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => spawnRainCookie(x, perTap), i * 40)
+            }
+        }
+
+        function rainTick() {
+            const cps = calcCps() * incomeMult()
+            if (cps <= 0) return
+
+            const chance = Math.min(1, cps / 12)
+            if (Math.random() < chance) {
+                spawnRainCookie()
+            }
+        }
+
+        function pulseCookie() {
+            const cookie = $('big-cookie')
+            cookie.classList.remove('pulse')
+            void cookie.offsetWidth
+            cookie.classList.add('pulse')
+            cookie.addEventListener('animationend', () => cookie.classList.remove('pulse'), { once: true })
+        }
+
+        let tapAudioCtx = null
+
+        function ensureTapAudio() {
+            if (!tapAudioCtx) {
+                tapAudioCtx = new (window.AudioContext || window.webkitAudioContext)()
+            }
+            if (tapAudioCtx.state === 'suspended') {
+                tapAudioCtx.resume()
+            }
+            return tapAudioCtx
+        }
+
+        function playTapSound(tap) {
+            const ctx = ensureTapAudio()
+            const now = ctx.currentTime
+            const pitch = 520 + Math.min(tap, 50) * 4 + (Math.random() - 0.5) * 40
+
+            const thump = ctx.createOscillator()
+            const thumpGain = ctx.createGain()
+            thump.type = 'triangle'
+            thump.frequency.setValueAtTime(pitch, now)
+            thump.frequency.exponentialRampToValueAtTime(Math.max(120, pitch * 0.35), now + 0.07)
+            thumpGain.gain.setValueAtTime(0.0001, now)
+            thumpGain.gain.exponentialRampToValueAtTime(0.28, now + 0.006)
+            thumpGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09)
+            thump.connect(thumpGain).connect(ctx.destination)
+            thump.start(now)
+            thump.stop(now + 0.1)
+
+            const bufferSize = Math.floor(ctx.sampleRate * 0.04)
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
+            const data = buffer.getChannelData(0)
+            for (let i = 0; i < bufferSize; i++) {
+                const fade = 1 - i / bufferSize
+                data[i] = (Math.random() * 2 - 1) * fade * fade
+            }
+
+            const crunch = ctx.createBufferSource()
+            crunch.buffer = buffer
+            const crunchFilter = ctx.createBiquadFilter()
+            crunchFilter.type = 'bandpass'
+            crunchFilter.frequency.value = 1400 + Math.random() * 300
+            crunchFilter.Q.value = 1.1
+            const crunchGain = ctx.createGain()
+            crunchGain.gain.setValueAtTime(0.11, now)
+            crunchGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045)
+            crunch.connect(crunchFilter).connect(crunchGain).connect(ctx.destination)
+            crunch.start(now)
+            crunch.stop(now + 0.05)
+        }
+
+        function onTapCookie(ev) {
+            const tap = calcTap()
+            playTapSound(tap)
+            addCookies(tap, true)
+            pulseCookie()
+
+            const area = $('play-area').getBoundingClientRect()
+            const cookie = $('big-cookie')
+            const rect = cookie.getBoundingClientRect()
+            let x = rect.left + rect.width / 2 - area.left
+            let y = rect.top + rect.height / 2 - area.top
+            if (ev && (ev.clientX || ev.clientX === 0)) {
+                x = ev.clientX - area.left
+                y = ev.clientY - area.top
+            }
+
+            spawnJumpCookies(x, y, tap * incomeMult())
+            spawnTapRainCookies(x, tap * incomeMult())
+            spawnFloatPlus(tap, x - 20, y - 28)
+        }
+
+        function placeGoldenCookie() {
+            const btn = $('golden-cookie')
+            const area = $('play-area')
+            const pad = 16
+            const maxX = area.clientWidth - btn.offsetWidth - pad
+            const maxY = area.clientHeight - btn.offsetHeight - pad
+            btn.style.left = pad + Math.random() * Math.max(0, maxX) + 'px'
+            btn.style.top = pad + Math.random() * Math.max(0, maxY) + 'px'
+        }
+
+        function showGoldenCookie() {
+            if (state.goldenVisible) return
+            state.goldenVisible = true
+            placeGoldenCookie()
+            $('golden-cookie').classList.add('visible')
+        }
+
+        function hideGoldenCookie() {
+            state.goldenVisible = false
+            $('golden-cookie').classList.remove('visible')
+            state.nextGoldenAt = Date.now() + GOLDEN_INTERVAL_MS
+        }
+
+        function startFrenzy() {
+            hideGoldenCookie()
+            const now = Date.now()
+            state.frenzyUntil = Math.max(state.frenzyUntil, now) + FRENZY_MS
+            renderHeader()
+        }
+
+        function applyOfflineEarnings() {
+            const now = Date.now()
+            const elapsed = Math.min(now - state.lastSave, OFFLINE_CAP_MS)
+            if (elapsed <= 0) return
+
+            const cps = calcCps()
+            if (cps <= 0) return
+
+            const earned = (elapsed / 1000) * cps
+            if (earned < 0.01) return
+
+            state.cookies += earned
+            state.lastSave = Date.now()
+        }
+
+        function defaultState() {
+            return {
+                cookies: 0,
+                producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
+                clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
+                lastSave: Date.now(),
+                frenzyUntil: 0,
+                goldenVisible: false,
+                nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
+            }
+        }
+
+        function resetScore() {
+            try {
+                localStorage.removeItem(SAVE_KEY)
+                localStorage.removeItem('ls_cookie_clicker_v1')
+            } catch (_) { /* quota / private mode */ }
+            Object.assign(state, defaultState())
+            renderHeader()
+            renderShop()
+        }
+
+        function save() {
+            state.lastSave = Date.now()
+            const payload = {
+                cookies: state.cookies,
+                producers: { ...state.producers },
+                clicks: { ...state.clicks },
+                lastSave: state.lastSave,
+            }
+            try {
+                localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
+            } catch (_) { /* quota / private mode */ }
+        }
+
+        function load() {
+            try {
+                localStorage.removeItem('ls_cookie_clicker_v1')
+                const raw = localStorage.getItem(SAVE_KEY)
+                if (!raw) return
+                const data = JSON.parse(raw)
+                if (typeof data.cookies !== 'number') return
+
+                state.cookies = data.cookies
+                state.lastSave = typeof data.lastSave === 'number' ? data.lastSave : Date.now()
+
+                for (const p of PRODUCERS) {
+                    const n = data.producers?.[p.id]
+                    state.producers[p.id] = typeof n === 'number' && n >= 0 ? Math.floor(n) : 0
+                }
+                for (const c of CLICKS) {
+                    const n = data.clicks?.[c.id]
+                    state.clicks[c.id] = typeof n === 'number' && n >= 0 ? Math.floor(n) : 0
+                }
+
+                applyOfflineEarnings()
+            } catch (_) {
+                Object.assign(state, defaultState())
+            }
+        }
+
+        function gameTick() {
+            const cps = calcCps()
+            if (cps > 0) {
+                addCookies((cps * TICK_MS) / 1000, false)
+            }
+
+            rainTick()
+
+            const now = Date.now()
+            if (!state.goldenVisible && now >= state.nextGoldenAt) {
+                showGoldenCookie()
+            }
+
+            if (now >= state.frenzyUntil && $('app').classList.contains('frenzy-active')) {
+                renderHeader()
+            }
+        }
+
+        function initTabs() {
+            document.querySelectorAll('.tab-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab
+                    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b === btn))
+                    $('panel-play').classList.toggle('active', tab === 'play')
+                    $('panel-shop').classList.toggle('active', tab === 'shop')
+                })
+            })
+        }
+
+        function init() {
+            load()
+            buildShop()
+            renderHeader()
+            renderShop()
+
+            $('big-cookie').addEventListener('click', onTapCookie)
+            $('golden-cookie').addEventListener('click', startFrenzy)
+
+            initTabs()
+
+            setInterval(gameTick, TICK_MS)
+            setInterval(save, AUTOSAVE_MS)
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') save()
+            })
+            window.addEventListener('beforeunload', save)
+        }
+
+        init()
+    </script>
+</body>
+</html>
