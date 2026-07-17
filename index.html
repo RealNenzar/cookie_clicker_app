@@ -64,37 +64,47 @@
             --theme-btn-bg: rgba(255, 252, 245, 0.9);
             --theme-btn-fg: #8b6914;
             --theme-btn-shadow: rgba(139, 90, 43, 0.18);
+            --shop-icon-color: #8b6914;
+            --shop-name-color: #4a3728;
+            --shop-desc-color: #8b7355;
+            --shop-cost-color: #6b4423;
+            --shop-owned-color: #a08060;
         }
 
         .app.dark-mode {
-            --app-text: #ebe6df;
+            --app-text: #f6f6f6;
             --app-bg-1: #191919;
             --app-bg-2: #111111;
             --header-bg: rgba(20, 20, 20, 0.78);
             --header-border: rgba(255, 255, 255, 0.14);
-            --total-color: #f5d8ac;
-            --label-color: #b9a899;
-            --stats-color: #f0c785;
-            --stats-strong: #f4d6ab;
-            --audio-color: #d2c7ba;
-            --audio-label: #f0c785;
+            --total-color: #fff7ea;
+            --label-color: #ece7df;
+            --stats-color: #f3eee6;
+            --stats-strong: #ffffff;
+            --audio-color: #efebe4;
+            --audio-label: #fff5e4;
             --audio-accent: #f0c785;
             --ctrl-border: rgba(255, 255, 255, 0.2);
             --ctrl-bg: rgba(32, 32, 32, 0.88);
             --ctrl-bg-hover: rgba(45, 45, 45, 0.96);
-            --ctrl-fg: #f1e6d8;
-            --tap-hint: #c3b3a4;
-            --float-plus: #f6deb6;
+            --ctrl-fg: #f7f4ef;
+            --tap-hint: #e5dfd7;
+            --float-plus: #fff0d6;
             --float-shadow: #000000;
             --shop-card-bg: rgba(34, 34, 34, 0.9);
             --tabs-bg: rgba(18, 18, 18, 0.95);
-            --tab-fg: #d4c3b3;
+            --tab-fg: #ece5dc;
             --tab-hover-bg: rgba(240, 199, 133, 0.18);
             --tab-active-bg: rgba(240, 199, 133, 0.3);
-            --tab-active-fg: #f6dfbc;
+            --tab-active-fg: #fffaf1;
             --theme-btn-bg: rgba(31, 31, 31, 0.9);
-            --theme-btn-fg: #f0c785;
+            --theme-btn-fg: #fff4de;
             --theme-btn-shadow: rgba(255, 255, 255, 0.2);
+            --shop-icon-color: #f2eadf;
+            --shop-name-color: #ffffff;
+            --shop-desc-color: #ede8e0;
+            --shop-cost-color: #fff7ea;
+            --shop-owned-color: #dfd8cf;
         }
 
         .app {
@@ -500,7 +510,7 @@
             justify-content: center;
             width: 2rem;
             flex-shrink: 0;
-            color: #8b6914;
+            color: var(--shop-icon-color);
         }
 
         .upgrade-row .icon i {
@@ -515,12 +525,12 @@
         .upgrade-row .name {
             font-weight: 700;
             font-size: 0.9rem;
-            color: #4a3728;
+            color: var(--shop-name-color);
         }
 
         .upgrade-row .desc {
             font-size: 0.7rem;
-            color: #8b7355;
+            color: var(--shop-desc-color);
             margin-top: 0.1rem;
         }
 
@@ -532,12 +542,12 @@
         .upgrade-row .cost {
             font-weight: 700;
             font-size: 0.85rem;
-            color: #6b4423;
+            color: var(--shop-cost-color);
         }
 
         .upgrade-row .owned {
             font-size: 0.65rem;
-            color: #a08060;
+            color: var(--shop-owned-color);
             margin-top: 0.15rem;
         }
 
