@@ -1829,7 +1829,7 @@
         }
 
         function canAscendPrestige() {
-            return state.prestige.runShards >= nextPrestigeCost()
+            return (state.prestige.shards + state.prestige.runShards) >= nextPrestigeCost()
         }
 
         function formatPct(value) {
@@ -2035,7 +2035,17 @@
             const summary = document.createElement('section')
             summary.className = 'prestige-summary'
             summary.id = 'prestige-summary'
+            summary.innerHTML = `
+                <div id="prestige-level-info"></div>
+                <div class="prestige-grid" id="prestige-grid"></div>
+                <button type="button" class="prestige-ascend-btn" id="prestige-ascend-btn" disabled>
+                    Prestige aufsteigen (Reset)
+                </button>
+            `
             root.appendChild(summary)
+
+            const ascendBtn = $('prestige-ascend-btn')
+            ascendBtn.addEventListener('click', ascendPrestige)
 
             const upgradesTitle = document.createElement('h2')
             upgradesTitle.className = 'shop-section-title'
@@ -2146,29 +2156,26 @@
         }
 
         function renderPrestige() {
-            const summary = $('prestige-summary')
             const neededForNextShard = Math.max(0, nextShardThreshold(state.prestige.shardMilestone) - state.lifetimeCookies)
             const prestigeCost = nextPrestigeCost()
+            const totalShards = state.prestige.shards + state.prestige.runShards
 
-            summary.innerHTML = `
-                <div><strong>Prestige-Stufe:</strong> ${state.prestige.level}</div>
-                <div class="prestige-grid">
-                    <div>Splitter gesamt: <strong>${formatNum(state.prestige.shards + state.prestige.runShards)}</strong></div>
-                    <div>Ausgebbar: <strong>${formatNum(state.prestige.shards)}</strong></div>
-                    <div>Run-Splitter (gesperrt): <strong>${formatNum(state.prestige.runShards)}</strong></div>
-                    <div>Gesamt Splitter: <strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
-                    <div>Lebenszeit-Kekse: <strong>${formatNum(state.lifetimeCookies)}</strong></div>
-                    <div>Nächster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
-                    <div>Globaler Prestige-Bonus: <strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
-                    <div>Prestige-Kosten (Run-Konto): <strong>${formatNum(prestigeCost)} Splitter</strong></div>
-                </div>
-                <button type="button" class="prestige-ascend-btn" id="prestige-ascend-btn" ${canAscendPrestige() ? '' : 'disabled'}>
-                    Prestige aufsteigen (Reset) - ${formatNum(prestigeCost)} Splitter
-                </button>
+            $('prestige-level-info').innerHTML = `<div><strong>Prestige-Stufe:</strong> ${state.prestige.level}</div>`
+
+            $('prestige-grid').innerHTML = `
+                <div>Splitter gesamt: <strong>${formatNum(totalShards)}</strong></div>
+                <div>Ausgebbar: <strong>${formatNum(state.prestige.shards)}</strong></div>
+                <div>Run-Splitter: <strong>${formatNum(state.prestige.runShards)}</strong></div>
+                <div>Gesamt Splitter: <strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
+                <div>Lebenszeit-Kekse: <strong>${formatNum(state.lifetimeCookies)}</strong></div>
+                <div>Nächster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
+                <div>Globaler Prestige-Bonus: <strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
+                <div>Prestige-Kosten: <strong>${formatNum(prestigeCost)} Splitter</strong></div>
             `
 
             const ascendBtn = $('prestige-ascend-btn')
-            if (ascendBtn) ascendBtn.addEventListener('click', ascendPrestige)
+            ascendBtn.disabled = !canAscendPrestige()
+            ascendBtn.textContent = `Prestige aufsteigen (Reset) - ${formatNum(prestigeCost)} Splitter`
 
             const rows = $('prestige-root').querySelectorAll('.prestige-row')
             let i = 0
@@ -2350,7 +2357,13 @@
             if (!canAscendPrestige()) return
 
             const cost = nextPrestigeCost()
-            state.prestige.runShards -= cost
+            let remaining = cost
+            const fromRun = Math.min(state.prestige.runShards, remaining)
+            state.prestige.runShards -= fromRun
+            remaining -= fromRun
+            if (remaining > 0) {
+                state.prestige.shards -= remaining
+            }
             if (state.prestige.runShards > 0) {
                 state.prestige.shards += state.prestige.runShards
                 state.prestige.runShards = 0
