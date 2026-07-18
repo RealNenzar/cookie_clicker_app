@@ -869,6 +869,168 @@
             text-wrap: balance;
         }
 
+        .leaderboard-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 0.45rem;
+        }
+
+        .leaderboard-tab-btn {
+            flex: 1;
+            border: 1px solid var(--ctrl-border);
+            background: var(--ctrl-bg);
+            color: var(--ctrl-fg);
+            border-radius: 0.55rem;
+            padding: 0.45rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .leaderboard-tab-btn:hover {
+            background: var(--ctrl-bg-hover);
+            transform: scale(1.02);
+        }
+
+        .leaderboard-tab-btn.active {
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
+        }
+
+        .leaderboard-table {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 2rem 1fr auto;
+            gap: 0.6rem;
+            align-items: center;
+            border: 1px solid var(--ctrl-border);
+            background: var(--shop-card-bg);
+            border-radius: 0.7rem;
+            padding: 0.55rem 0.65rem;
+            font-size: 0.74rem;
+        }
+
+        .leaderboard-rank {
+            font-weight: 800;
+            color: var(--shop-icon-color);
+        }
+
+        .leaderboard-name {
+            color: var(--shop-name-color);
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .leaderboard-value {
+            color: var(--shop-cost-color);
+            font-weight: 800;
+        }
+
+        .leaderboard-empty {
+            border: 1px dashed var(--ctrl-border);
+            border-radius: 0.7rem;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--shop-desc-color);
+            text-align: center;
+        }
+
+        .nickname-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .nickname-modal[hidden] {
+            display: none;
+        }
+
+        .nickname-card {
+            width: min(26rem, 100%);
+            border: 1px solid var(--ctrl-border);
+            background: var(--tabs-bg);
+            color: var(--shop-name-color);
+            border-radius: 0.9rem;
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+            padding: 0.95rem;
+        }
+
+        .nickname-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            margin-bottom: 0.35rem;
+        }
+
+        .nickname-desc {
+            font-size: 0.74rem;
+            color: var(--shop-desc-color);
+            margin-bottom: 0.7rem;
+        }
+
+        .nickname-input {
+            width: 100%;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.55rem;
+            background: var(--ctrl-bg);
+            color: var(--shop-name-color);
+            padding: 0.5rem 0.6rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .nickname-input:focus {
+            border-color: var(--tab-active-bg);
+            box-shadow: 0 0 0 2px rgba(232, 212, 184, 0.35);
+        }
+
+        .nickname-save {
+            margin-top: 0.65rem;
+            width: 100%;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.6rem;
+            padding: 0.52rem;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--tab-active-fg);
+            background: var(--tab-active-bg);
+            cursor: pointer;
+            transition: transform 0.12s ease, filter 0.12s ease;
+        }
+
+        .nickname-save:hover {
+            transform: scale(1.02);
+            filter: brightness(1.02);
+        }
+
+        .nickname-error {
+            min-height: 1.05rem;
+            margin-top: 0.45rem;
+            font-size: 0.7rem;
+            color: #bf2f2f;
+            font-weight: 700;
+        }
+
         @media (max-width: 420px) {
             .prestige-grid {
                 grid-template-columns: 1fr;
@@ -933,6 +1095,7 @@
                 <button type="button" class="patch-toggle" aria-label="Patchnotes anzeigen">📝</button>
                 <div class="patch-tooltip" role="note">
                     <ul>
+                        <li><strong>2026-07-18:</strong> Leaderboard hinzugefügt (Lebenszeit-Kekse / Prestige), inklusive Nickname-Setup.</li>
                         <li><strong>2026-07-18:</strong> Diamant-Keks ergänzt: seltener Spawn und 3x Bonus</li>
                         <li><strong>2026-07-18:</strong> Prestige-Balancing angepasst: Splitter-Skalierung und Upgrade-Kosten</li>
                         <li><strong>2026-07-18:</strong> Prestige-System eingeführt mit Splitter-Progression und permanenten Upgrades.</li>
@@ -986,17 +1149,33 @@
             <section class="panel" id="panel-prestige" aria-label="Prestige">
                 <div class="shop" id="prestige-root"></div>
             </section>
+
+            <section class="panel" id="panel-leaderboard" aria-label="Leaderboard">
+                <div class="shop" id="leaderboard-root"></div>
+            </section>
         </div>
 
         <nav class="tabs" aria-label="Navigation">
             <button type="button" class="tab-btn active" data-tab="play">Keks</button>
             <button type="button" class="tab-btn" data-tab="shop">Laden</button>
             <button type="button" class="tab-btn" data-tab="prestige">Prestige</button>
+            <button type="button" class="tab-btn" data-tab="leaderboard">Leaderboard</button>
         </nav>
+    </div>
+
+    <div class="nickname-modal" id="nickname-modal" hidden>
+        <div class="nickname-card" role="dialog" aria-modal="true" aria-labelledby="nickname-title">
+            <h2 class="nickname-title" id="nickname-title">Nickname für Leaderboard</h2>
+            <p class="nickname-desc">Bitte wähle einen Nickname, damit dein Fortschritt im Leaderboard angezeigt wird. Dein aktueller Stand bleibt erhalten.</p>
+            <input class="nickname-input" id="nickname-input" type="text" maxlength="20" placeholder="z.B. CookieKing" />
+            <button type="button" class="nickname-save" id="nickname-save">Nickname speichern</button>
+            <p class="nickname-error" id="nickname-error"></p>
+        </div>
     </div>
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
+        const LEADERBOARD_KEY = 'ls_cookie_clicker_leaderboard_v1'
         const BASE_TAP = 1
         const COST_MULT = 1.15
         const OFFLINE_CAP_MS = 4 * 60 * 60 * 1000
@@ -1140,6 +1319,8 @@
         const state = {
             cookies: 0,
             lifetimeCookies: 0,
+            nickname: '',
+            leaderboardTab: 'lifetime',
             producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
             clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
             lastSave: Date.now(),
@@ -1162,7 +1343,66 @@
             },
         }
 
+        let leaderboardEntries = []
+
         const $ = (id) => document.getElementById(id)
+
+        function normalizeNickname(raw) {
+            return String(raw || '').trim().replace(/\s+/g, ' ').slice(0, 20)
+        }
+
+        function loadLeaderboardStore() {
+            try {
+                const raw = localStorage.getItem(LEADERBOARD_KEY)
+                if (!raw) {
+                    leaderboardEntries = []
+                    return
+                }
+                const data = JSON.parse(raw)
+                if (!Array.isArray(data)) {
+                    leaderboardEntries = []
+                    return
+                }
+                leaderboardEntries = data
+                    .filter((x) => typeof x?.nickname === 'string')
+                    .map((x) => ({
+                        nickname: normalizeNickname(x.nickname),
+                        lifetimeCookies: typeof x.lifetimeCookies === 'number' ? Math.max(0, x.lifetimeCookies) : 0,
+                        prestigeCount: typeof x.prestigeCount === 'number' ? Math.max(0, Math.floor(x.prestigeCount)) : 0,
+                        updatedAt: typeof x.updatedAt === 'number' ? x.updatedAt : Date.now(),
+                    }))
+                    .filter((x) => x.nickname.length > 0)
+            } catch (_) {
+                leaderboardEntries = []
+            }
+        }
+
+        function saveLeaderboardStore() {
+            try {
+                localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboardEntries))
+            } catch (_) { /* quota / private mode */ }
+        }
+
+        function upsertLeaderboardEntry() {
+            const nickname = normalizeNickname(state.nickname)
+            if (!nickname) return
+
+            const entry = {
+                nickname,
+                lifetimeCookies: state.lifetimeCookies,
+                prestigeCount: state.prestige.level,
+                updatedAt: Date.now(),
+            }
+
+            const idx = leaderboardEntries.findIndex((x) => x.nickname.toLowerCase() === nickname.toLowerCase())
+            if (idx >= 0) {
+                leaderboardEntries[idx] = entry
+            } else {
+                leaderboardEntries.push(entry)
+            }
+
+            saveLeaderboardStore()
+        }
 
         function prestigeUpgradeLevel(id) {
             return state.prestige.upgrades[id] || 0
@@ -1363,6 +1603,86 @@
             $('theme-toggle').setAttribute('aria-pressed', String(state.darkMode))
             $('theme-toggle').setAttribute('aria-label', state.darkMode ? 'Hellmodus' : 'Darkmode')
             icon.className = state.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'
+        }
+
+        function buildLeaderboard() {
+            const root = $('leaderboard-root')
+            root.innerHTML = '<div class="leaderboard-shell" id="leaderboard-shell"></div>'
+        }
+
+        function sortedLeaderboard(metric) {
+            const entries = [...leaderboardEntries]
+            if (metric === 'prestige') {
+                entries.sort((a, b) => (b.prestigeCount - a.prestigeCount) || (b.updatedAt - a.updatedAt))
+            } else {
+                entries.sort((a, b) => (b.lifetimeCookies - a.lifetimeCookies) || (b.updatedAt - a.updatedAt))
+            }
+            return entries
+        }
+
+        function renderLeaderboard() {
+            const shell = $('leaderboard-shell')
+            if (!shell) return
+
+            const metric = state.leaderboardTab === 'prestige' ? 'prestige' : 'lifetime'
+            const entries = sortedLeaderboard(metric)
+
+            const rows = entries.slice(0, 50).map((entry, i) => `
+                <div class="leaderboard-row">
+                    <span class="leaderboard-rank">#${i + 1}</span>
+                    <span class="leaderboard-name">${entry.nickname}</span>
+                    <span class="leaderboard-value">${metric === 'prestige' ? entry.prestigeCount : formatNum(entry.lifetimeCookies)}</span>
+                </div>
+            `).join('')
+
+            shell.innerHTML = `
+                <div class="leaderboard-tabs">
+                    <button type="button" class="leaderboard-tab-btn ${metric === 'lifetime' ? 'active' : ''}" data-lb-tab="lifetime">Lebenszeit-Kekse</button>
+                    <button type="button" class="leaderboard-tab-btn ${metric === 'prestige' ? 'active' : ''}" data-lb-tab="prestige">Prestige gedrückt</button>
+                </div>
+                <div class="leaderboard-table">
+                    ${rows || '<div class="leaderboard-empty">Noch keine Einträge vorhanden.</div>'}
+                </div>
+            `
+
+            shell.querySelectorAll('[data-lb-tab]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    state.leaderboardTab = btn.dataset.lbTab === 'prestige' ? 'prestige' : 'lifetime'
+                    renderLeaderboard()
+                })
+            })
+        }
+
+        function showNicknameModal() {
+            const modal = $('nickname-modal')
+            if (!modal) return
+            modal.hidden = false
+            const input = $('nickname-input')
+            const error = $('nickname-error')
+            error.textContent = ''
+            input.value = state.nickname || ''
+            setTimeout(() => input.focus(), 0)
+        }
+
+        function hideNicknameModal() {
+            const modal = $('nickname-modal')
+            if (!modal) return
+            modal.hidden = true
+        }
+
+        function submitNickname() {
+            const input = $('nickname-input')
+            const error = $('nickname-error')
+            const name = normalizeNickname(input.value)
+            if (!name) {
+                error.textContent = 'Bitte gib einen Nickname ein.'
+                return
+            }
+            state.nickname = name
+            hideNicknameModal()
+            upsertLeaderboardEntry()
+            renderLeaderboard()
+            save()
         }
 
         function buildShop() {
@@ -1863,6 +2183,8 @@
             return {
                 cookies: 0,
                 lifetimeCookies: 0,
+                nickname: '',
+                leaderboardTab: 'lifetime',
                 producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
                 clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
                 lastSave: Date.now(),
@@ -1902,6 +2224,7 @@
             const payload = {
                 cookies: state.cookies,
                 lifetimeCookies: state.lifetimeCookies,
+                nickname: state.nickname,
                 producers: { ...state.producers },
                 clicks: { ...state.clicks },
                 lastSave: state.lastSave,
@@ -1920,6 +2243,7 @@
             try {
                 localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
             } catch (_) { /* quota / private mode */ }
+            upsertLeaderboardEntry()
         }
 
         function load() {
@@ -1932,6 +2256,7 @@
 
                 state.cookies = data.cookies
                 state.lifetimeCookies = typeof data.lifetimeCookies === 'number' && data.lifetimeCookies >= 0 ? data.lifetimeCookies : data.cookies
+                state.nickname = normalizeNickname(data.nickname)
                 state.lastSave = typeof data.lastSave === 'number' ? data.lastSave : Date.now()
                 state.audioVolume = typeof data.audioVolume === 'number'
                     ? Math.min(1, Math.max(0, data.audioVolume))
@@ -2009,19 +2334,25 @@
                     $('panel-play').classList.toggle('active', tab === 'play')
                     $('panel-shop').classList.toggle('active', tab === 'shop')
                     $('panel-prestige').classList.toggle('active', tab === 'prestige')
+                    $('panel-leaderboard').classList.toggle('active', tab === 'leaderboard')
                     if (tab === 'shop') renderShop()
                     if (tab === 'prestige') renderPrestige()
+                    if (tab === 'leaderboard') renderLeaderboard()
                 })
             })
         }
 
         function init() {
+            loadLeaderboardStore()
             load()
+            upsertLeaderboardEntry()
             buildShop()
             buildPrestige()
+            buildLeaderboard()
             renderHeader()
             renderShop()
             renderPrestige()
+            renderLeaderboard()
             renderAudioControls()
             renderThemeToggle()
 
@@ -2048,8 +2379,19 @@
                 renderThemeToggle()
                 save()
             })
+            $('nickname-save').addEventListener('click', submitNickname)
+            $('nickname-input').addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter') {
+                    ev.preventDefault()
+                    submitNickname()
+                }
+            })
 
             initTabs()
+
+            if (!normalizeNickname(state.nickname)) {
+                showNicknameModal()
+            }
 
             setInterval(gameTick, TICK_MS)
             setInterval(save, AUTOSAVE_MS)
