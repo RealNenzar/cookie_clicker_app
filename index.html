@@ -774,9 +774,9 @@
         const AUTOSAVE_MS = 15000
         const DEFAULT_VOLUME = 0.7
         const DEFAULT_DARK_MODE = false
-        const PRESTIGE_BASE_MULT = 0.12
-        const SHARD_BASE_THRESHOLD = 30000000
-        const SHARD_GROWTH = 1.65
+        const PRESTIGE_BASE_MULT = 0.08
+        const SHARD_BASE_THRESHOLD = 8000000
+        const SHARD_GROWTH = 1.48
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -814,54 +814,54 @@
                 id: 'celestialHands',
                 name: 'Zelestiale Haende',
                 icon: 'fa-solid fa-hand-sparkles',
-                desc: '+18% Klick-Staerke pro Stufe',
+                desc: '+14% Klick-Staerke pro Stufe',
                 baseCost: 2,
-                costMult: 1.75,
-                max: 12,
+                costMult: 1.65,
+                max: 15,
             },
             {
                 id: 'nebulaEngines',
                 name: 'Nebel-Triebwerke',
                 icon: 'fa-solid fa-gears',
-                desc: '+18% Produktion pro Stufe',
+                desc: '+14% Produktion pro Stufe',
                 baseCost: 2,
-                costMult: 1.75,
-                max: 12,
+                costMult: 1.65,
+                max: 15,
             },
             {
                 id: 'goldenSignal',
                 name: 'Goldenes Signal',
                 icon: 'fa-solid fa-satellite-dish',
                 desc: 'Goldene Kekse erscheinen haeufiger',
-                baseCost: 3,
-                costMult: 1.85,
+                baseCost: 4,
+                costMult: 1.72,
                 max: 10,
             },
             {
                 id: 'timeStretch',
                 name: 'Zeitdehnung',
                 icon: 'fa-solid fa-hourglass-half',
-                desc: 'Frenzy dauert +2.5s pro Stufe',
-                baseCost: 3,
-                costMult: 1.85,
-                max: 8,
+                desc: 'Frenzy dauert +1.8s pro Stufe',
+                baseCost: 4,
+                costMult: 1.78,
+                max: 10,
             },
             {
                 id: 'starSurge',
                 name: 'Sternenschub',
                 icon: 'fa-solid fa-bolt',
                 desc: 'Frenzy-Multiplikator steigt pro Stufe',
-                baseCost: 4,
-                costMult: 1.95,
-                max: 8,
+                baseCost: 6,
+                costMult: 1.85,
+                max: 10,
             },
             {
                 id: 'frugalGalaxy',
                 name: 'Spar-Galaxie',
                 icon: 'fa-solid fa-tags',
-                desc: 'Shop-Kosten sinken um 3% pro Stufe',
-                baseCost: 4,
-                costMult: 1.95,
+                desc: 'Shop-Kosten sinken um 2% pro Stufe',
+                baseCost: 5,
+                costMult: 1.82,
                 max: 10,
             },
             {
@@ -869,8 +869,8 @@
                 name: 'Splitter-Kern',
                 icon: 'fa-solid fa-gem',
                 desc: 'Mehr Splitter je Milestone',
-                baseCost: 6,
-                costMult: 2,
+                baseCost: 7,
+                costMult: 1.9,
                 max: 10,
             },
             {
@@ -879,16 +879,16 @@
                 icon: 'fa-solid fa-cloud-arrow-down',
                 desc: 'Mehr Offline-Einkommen + laengeres Limit',
                 baseCost: 5,
-                costMult: 1.9,
-                max: 8,
+                costMult: 1.78,
+                max: 10,
             },
             {
                 id: 'starterSpark',
                 name: 'Starter-Funken',
                 icon: 'fa-solid fa-fire',
                 desc: 'Start-Kekse nach Prestige',
-                baseCost: 2,
-                costMult: 1.7,
+                baseCost: 3,
+                costMult: 1.62,
                 max: 12,
             },
         ]
@@ -929,41 +929,41 @@
         }
 
         function tapBonusMult() {
-            return 1 + prestigeUpgradeLevel('celestialHands') * 0.18
+            return 1 + prestigeUpgradeLevel('celestialHands') * 0.14
         }
 
         function producerBonusMult() {
-            return 1 + prestigeUpgradeLevel('nebulaEngines') * 0.18
+            return 1 + prestigeUpgradeLevel('nebulaEngines') * 0.14
         }
 
         function frenzyPowerMult() {
-            return FRENZY_MULT + prestigeUpgradeLevel('starSurge') * 0.35
+            return FRENZY_MULT + prestigeUpgradeLevel('starSurge') * 0.22
         }
 
         function shopCostDiscount() {
-            const discount = 0.03 * prestigeUpgradeLevel('frugalGalaxy')
-            return Math.max(0.55, 1 - discount)
+            const discount = 0.02 * prestigeUpgradeLevel('frugalGalaxy')
+            return Math.max(0.65, 1 - discount)
         }
 
         function shardRewardMult() {
-            return 1 + prestigeUpgradeLevel('splitterCore') * 0.25
+            return 1 + prestigeUpgradeLevel('splitterCore') * 0.18
         }
 
         function offlineIncomeMult() {
-            return 1 + prestigeUpgradeLevel('echoVault') * 0.2
+            return 1 + prestigeUpgradeLevel('echoVault') * 0.15
         }
 
         function offlineCapMs() {
-            return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 60 * 60 * 1000
+            return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 45 * 60 * 1000
         }
 
         function goldenIntervalMs() {
-            const reduce = 0.09 * prestigeUpgradeLevel('goldenSignal')
-            return Math.max(18000, Math.floor(GOLDEN_INTERVAL_MS * Math.max(0.25, 1 - reduce)))
+            const reduce = 0.06 * prestigeUpgradeLevel('goldenSignal')
+            return Math.max(25000, Math.floor(GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce)))
         }
 
         function frenzyDurationMs() {
-            return FRENZY_MS + prestigeUpgradeLevel('timeStretch') * 2500
+            return FRENZY_MS + prestigeUpgradeLevel('timeStretch') * 1800
         }
 
         function nextShardThreshold(milestone) {
@@ -971,7 +971,7 @@
         }
 
         function nextPrestigeCost() {
-            return Math.max(6, Math.floor(6 + Math.pow(state.prestige.level + 1, 1.35) * 3.5))
+            return Math.max(5, Math.floor(5 + Math.pow(state.prestige.level + 1, 1.5) * 2.8))
         }
 
         function canAscendPrestige() {
@@ -1297,7 +1297,7 @@
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
             hideGoldenCookie()
 
-            const starterCookies = prestigeUpgradeLevel('starterSpark') * 250
+            const starterCookies = prestigeUpgradeLevel('starterSpark') * 500
             if (starterCookies > 0) {
                 state.cookies = starterCookies
             }
