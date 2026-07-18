@@ -604,6 +604,66 @@
             margin-top: 0.15rem;
         }
 
+        .prestige-summary {
+            background: var(--shop-card-bg);
+            border: 1px solid rgba(139, 90, 43, 0.2);
+            border-radius: 0.85rem;
+            padding: 0.85rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .prestige-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-top: 0.45rem;
+            font-size: 0.72rem;
+            color: var(--shop-desc-color);
+        }
+
+        .prestige-grid strong {
+            color: var(--shop-name-color);
+        }
+
+        .prestige-ascend-btn {
+            margin-top: 0.75rem;
+            width: 100%;
+            border: 1px solid var(--ctrl-border);
+            background: linear-gradient(180deg, #f7e5c7 0%, #ecd0a5 100%);
+            color: #6b4423;
+            border-radius: 0.75rem;
+            padding: 0.65rem 0.75rem;
+            font-size: 0.82rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.12s ease, filter 0.12s ease;
+        }
+
+        .prestige-ascend-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            filter: brightness(1.02);
+        }
+
+        .prestige-ascend-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .prestige-ascend-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+        }
+
+        .prestige-row .owned {
+            text-wrap: balance;
+        }
+
+        @media (max-width: 420px) {
+            .prestige-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* Tabs */
         .tabs {
             display: flex;
@@ -660,6 +720,10 @@
                 <span>pro Klick <strong id="tap-display">1</strong></span>
                 <span>pro Sek <strong id="cps-display">0</strong></span>
             </div>
+            <div class="stats-row">
+                <span>Prestige <strong id="prestige-level-display">0</strong></span>
+                <span>Splitter <strong id="shards-display">0</strong></span>
+            </div>
             <div class="audio-controls" aria-label="Audio-Steuerung">
                 <label for="volume-slider">Ton</label>
                 <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstaerke" />
@@ -685,11 +749,16 @@
             <section class="panel" id="panel-shop" aria-label="Laden">
                 <div class="shop" id="shop-root"></div>
             </section>
+
+            <section class="panel" id="panel-prestige" aria-label="Prestige">
+                <div class="shop" id="prestige-root"></div>
+            </section>
         </div>
 
         <nav class="tabs" aria-label="Navigation">
             <button type="button" class="tab-btn active" data-tab="play">Keks</button>
             <button type="button" class="tab-btn" data-tab="shop">Laden</button>
+            <button type="button" class="tab-btn" data-tab="prestige">Prestige</button>
         </nav>
     </div>
 
@@ -705,6 +774,9 @@
         const AUTOSAVE_MS = 15000
         const DEFAULT_VOLUME = 0.7
         const DEFAULT_DARK_MODE = false
+        const PRESTIGE_BASE_MULT = 0.12
+        const SHARD_BASE_THRESHOLD = 30000000
+        const SHARD_GROWTH = 1.65
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -737,8 +809,93 @@
             { id: 'cosmic', name: 'Kosmischer Klick', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M pro Klick' },
         ]
 
+        const PRESTIGE_UPGRADES = [
+            {
+                id: 'celestialHands',
+                name: 'Zelestiale Haende',
+                icon: 'fa-solid fa-hand-sparkles',
+                desc: '+18% Klick-Staerke pro Stufe',
+                baseCost: 2,
+                costMult: 1.75,
+                max: 12,
+            },
+            {
+                id: 'nebulaEngines',
+                name: 'Nebel-Triebwerke',
+                icon: 'fa-solid fa-gears',
+                desc: '+18% Produktion pro Stufe',
+                baseCost: 2,
+                costMult: 1.75,
+                max: 12,
+            },
+            {
+                id: 'goldenSignal',
+                name: 'Goldenes Signal',
+                icon: 'fa-solid fa-satellite-dish',
+                desc: 'Goldene Kekse erscheinen haeufiger',
+                baseCost: 3,
+                costMult: 1.85,
+                max: 10,
+            },
+            {
+                id: 'timeStretch',
+                name: 'Zeitdehnung',
+                icon: 'fa-solid fa-hourglass-half',
+                desc: 'Frenzy dauert +2.5s pro Stufe',
+                baseCost: 3,
+                costMult: 1.85,
+                max: 8,
+            },
+            {
+                id: 'starSurge',
+                name: 'Sternenschub',
+                icon: 'fa-solid fa-bolt',
+                desc: 'Frenzy-Multiplikator steigt pro Stufe',
+                baseCost: 4,
+                costMult: 1.95,
+                max: 8,
+            },
+            {
+                id: 'frugalGalaxy',
+                name: 'Spar-Galaxie',
+                icon: 'fa-solid fa-tags',
+                desc: 'Shop-Kosten sinken um 3% pro Stufe',
+                baseCost: 4,
+                costMult: 1.95,
+                max: 10,
+            },
+            {
+                id: 'splitterCore',
+                name: 'Splitter-Kern',
+                icon: 'fa-solid fa-gem',
+                desc: 'Mehr Splitter je Milestone',
+                baseCost: 6,
+                costMult: 2,
+                max: 10,
+            },
+            {
+                id: 'echoVault',
+                name: 'Echo-Tresor',
+                icon: 'fa-solid fa-cloud-arrow-down',
+                desc: 'Mehr Offline-Einkommen + laengeres Limit',
+                baseCost: 5,
+                costMult: 1.9,
+                max: 8,
+            },
+            {
+                id: 'starterSpark',
+                name: 'Starter-Funken',
+                icon: 'fa-solid fa-fire',
+                desc: 'Start-Kekse nach Prestige',
+                baseCost: 2,
+                costMult: 1.7,
+                max: 12,
+            },
+        ]
+
         const state = {
             cookies: 0,
+            lifetimeCookies: 0,
             producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
             clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
             lastSave: Date.now(),
@@ -748,12 +905,86 @@
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
+            prestige: {
+                level: 0,
+                shards: 0,
+                totalShardsEarned: 0,
+                shardMilestone: 0,
+                upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
+            },
         }
 
         const $ = (id) => document.getElementById(id)
 
+        function prestigeUpgradeLevel(id) {
+            return state.prestige.upgrades[id] || 0
+        }
+
+        function prestigeUpgradeCost(item, owned) {
+            return Math.max(1, Math.floor(item.baseCost * Math.pow(item.costMult, owned)))
+        }
+
+        function prestigeLevelIncomeMult() {
+            return 1 + state.prestige.level * PRESTIGE_BASE_MULT
+        }
+
+        function tapBonusMult() {
+            return 1 + prestigeUpgradeLevel('celestialHands') * 0.18
+        }
+
+        function producerBonusMult() {
+            return 1 + prestigeUpgradeLevel('nebulaEngines') * 0.18
+        }
+
+        function frenzyPowerMult() {
+            return FRENZY_MULT + prestigeUpgradeLevel('starSurge') * 0.35
+        }
+
+        function shopCostDiscount() {
+            const discount = 0.03 * prestigeUpgradeLevel('frugalGalaxy')
+            return Math.max(0.55, 1 - discount)
+        }
+
+        function shardRewardMult() {
+            return 1 + prestigeUpgradeLevel('splitterCore') * 0.25
+        }
+
+        function offlineIncomeMult() {
+            return 1 + prestigeUpgradeLevel('echoVault') * 0.2
+        }
+
+        function offlineCapMs() {
+            return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 60 * 60 * 1000
+        }
+
+        function goldenIntervalMs() {
+            const reduce = 0.09 * prestigeUpgradeLevel('goldenSignal')
+            return Math.max(18000, Math.floor(GOLDEN_INTERVAL_MS * Math.max(0.25, 1 - reduce)))
+        }
+
+        function frenzyDurationMs() {
+            return FRENZY_MS + prestigeUpgradeLevel('timeStretch') * 2500
+        }
+
+        function nextShardThreshold(milestone) {
+            return Math.floor(SHARD_BASE_THRESHOLD * Math.pow(SHARD_GROWTH, milestone))
+        }
+
+        function nextPrestigeCost() {
+            return Math.max(6, Math.floor(6 + Math.pow(state.prestige.level + 1, 1.35) * 3.5))
+        }
+
+        function canAscendPrestige() {
+            return state.prestige.shards >= nextPrestigeCost()
+        }
+
+        function formatPct(value) {
+            return (value * 100).toFixed(value >= 1 ? 0 : 1) + '%'
+        }
+
         function upgradeCost(baseCost, owned) {
-            return Math.floor(baseCost * Math.pow(COST_MULT, owned))
+            const raw = baseCost * Math.pow(COST_MULT, owned)
+            return Math.max(1, Math.floor(raw * shopCostDiscount()))
         }
 
         function formatNum(n) {
@@ -769,7 +1000,7 @@
         }
 
         function incomeMult() {
-            return Date.now() < state.frenzyUntil ? FRENZY_MULT : 1
+            return Date.now() < state.frenzyUntil ? frenzyPowerMult() : 1
         }
 
         function calcCps() {
@@ -777,7 +1008,7 @@
             for (const p of PRODUCERS) {
                 cps += p.cps * state.producers[p.id]
             }
-            return cps
+            return cps * producerBonusMult() * prestigeLevelIncomeMult()
         }
 
         function calcTap() {
@@ -785,19 +1016,40 @@
             for (const c of CLICKS) {
                 tap += c.bonus * state.clicks[c.id]
             }
-            return tap
+            return tap * tapBonusMult() * prestigeLevelIncomeMult()
         }
 
         function canAfford(cost) {
             return state.cookies >= cost
         }
 
+        function processShardMilestones() {
+            let milestones = 0
+            while (state.lifetimeCookies >= nextShardThreshold(state.prestige.shardMilestone)) {
+                state.prestige.shardMilestone++
+                milestones++
+            }
+
+            if (milestones > 0) {
+                const shards = Math.max(1, Math.floor(milestones * shardRewardMult()))
+                state.prestige.shards += shards
+                state.prestige.totalShardsEarned += shards
+            }
+        }
+
         function addCookies(amount, refreshShop) {
-            state.cookies += amount * incomeMult()
+            const gained = amount * incomeMult()
+            state.cookies += gained
+            if (gained > 0) {
+                state.lifetimeCookies += gained
+                processShardMilestones()
+            }
             renderHeader()
             const shopPanel = $('panel-shop')
             const shouldRefreshShop = refreshShop || (shopPanel && shopPanel.classList.contains('active'))
             if (shouldRefreshShop) renderShop()
+            const prestigePanel = $('panel-prestige')
+            if (prestigePanel && prestigePanel.classList.contains('active')) renderPrestige()
         }
 
         function isFrenzyActive() {
@@ -812,6 +1064,8 @@
             $('total-display').textContent = formatNum(state.cookies)
             $('tap-display').textContent = formatNum(calcTap() * incomeMult())
             $('cps-display').textContent = formatNum(calcCps() * incomeMult())
+            $('prestige-level-display').textContent = String(state.prestige.level)
+            $('shards-display').textContent = formatNum(state.prestige.shards)
             updateFrenzyVisuals()
         }
 
@@ -863,15 +1117,52 @@
             }
         }
 
+        function buildPrestige() {
+            const root = $('prestige-root')
+            root.innerHTML = ''
+
+            const title = document.createElement('h2')
+            title.className = 'shop-section-title'
+            title.textContent = 'Kosmische Schoki Splitter'
+            root.appendChild(title)
+
+            const summary = document.createElement('section')
+            summary.className = 'prestige-summary'
+            summary.id = 'prestige-summary'
+            root.appendChild(summary)
+
+            const upgradesTitle = document.createElement('h2')
+            upgradesTitle.className = 'shop-section-title'
+            upgradesTitle.textContent = 'Prestige-Upgrades'
+            root.appendChild(upgradesTitle)
+
+            for (const upgrade of PRESTIGE_UPGRADES) {
+                root.appendChild(createUpgradeRow(upgrade, 'prestige'))
+            }
+        }
+
         function createUpgradeRow(item, kind) {
-            const owned = kind === 'producer' ? state.producers[item.id] : state.clicks[item.id]
-            const cost = upgradeCost(item.baseCost, owned)
+            let owned = 0
+            let cost = 0
+            if (kind === 'producer') {
+                owned = state.producers[item.id]
+                cost = upgradeCost(item.baseCost, owned)
+            } else if (kind === 'click') {
+                owned = state.clicks[item.id]
+                cost = upgradeCost(item.baseCost, owned)
+            } else {
+                owned = prestigeUpgradeLevel(item.id)
+                cost = prestigeUpgradeCost(item, owned)
+            }
+
             const btn = document.createElement('button')
             btn.type = 'button'
-            btn.className = 'upgrade-row'
+            btn.className = 'upgrade-row' + (kind === 'prestige' ? ' prestige-row' : '')
             btn.dataset.kind = kind
             btn.dataset.id = item.id
-            btn.disabled = !canAfford(cost)
+            btn.disabled = kind === 'prestige'
+                ? owned >= item.max || state.prestige.shards < cost
+                : !canAfford(cost)
 
             btn.innerHTML = `
                 <span class="icon"><i class="${item.icon}" aria-hidden="true"></i></span>
@@ -881,11 +1172,17 @@
                 </span>
                 <span class="meta">
                     <div class="cost">${formatNum(cost)}</div>
-                    <div class="owned">Besitz: ${owned}</div>
+                    <div class="owned">${kind === 'prestige' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`}</div>
                 </span>
             `
 
-            btn.addEventListener('click', () => buyUpgrade(kind, item.id))
+            btn.addEventListener('click', () => {
+                if (kind === 'prestige') {
+                    buyPrestigeUpgrade(item.id)
+                } else {
+                    buyUpgrade(kind, item.id)
+                }
+            })
             return btn
         }
 
@@ -900,12 +1197,55 @@
             }
         }
 
+        function renderPrestige() {
+            const summary = $('prestige-summary')
+            const neededForNextShard = Math.max(0, nextShardThreshold(state.prestige.shardMilestone) - state.lifetimeCookies)
+            const prestigeCost = nextPrestigeCost()
+
+            summary.innerHTML = `
+                <div><strong>Prestige-Stufe:</strong> ${state.prestige.level}</div>
+                <div class="prestige-grid">
+                    <div>Splitter jetzt: <strong>${formatNum(state.prestige.shards)}</strong></div>
+                    <div>Gesamt Splitter: <strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
+                    <div>Lebenszeit-Kekse: <strong>${formatNum(state.lifetimeCookies)}</strong></div>
+                    <div>Naechster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
+                    <div>Globaler Prestige-Bonus: <strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
+                    <div>Prestige-Kosten: <strong>${formatNum(prestigeCost)} Splitter</strong></div>
+                </div>
+                <button type="button" class="prestige-ascend-btn" id="prestige-ascend-btn" ${canAscendPrestige() ? '' : 'disabled'}>
+                    Prestige aufsteigen (Reset) - ${formatNum(prestigeCost)} Splitter
+                </button>
+            `
+
+            const ascendBtn = $('prestige-ascend-btn')
+            if (ascendBtn) ascendBtn.addEventListener('click', ascendPrestige)
+
+            const rows = $('prestige-root').querySelectorAll('.prestige-row')
+            let i = 0
+            for (const upg of PRESTIGE_UPGRADES) {
+                updateRow(rows[i++], upg, 'prestige')
+            }
+        }
+
         function updateRow(btn, item, kind) {
-            const owned = kind === 'producer' ? state.producers[item.id] : state.clicks[item.id]
-            const cost = upgradeCost(item.baseCost, owned)
-            btn.disabled = !canAfford(cost)
+            let owned = 0
+            let cost = 0
+            if (kind === 'producer') {
+                owned = state.producers[item.id]
+                cost = upgradeCost(item.baseCost, owned)
+                btn.disabled = !canAfford(cost)
+            } else if (kind === 'click') {
+                owned = state.clicks[item.id]
+                cost = upgradeCost(item.baseCost, owned)
+                btn.disabled = !canAfford(cost)
+            } else {
+                owned = prestigeUpgradeLevel(item.id)
+                cost = prestigeUpgradeCost(item, owned)
+                btn.disabled = owned >= item.max || state.prestige.shards < cost
+            }
+
             btn.querySelector('.cost').textContent = formatNum(cost)
-            btn.querySelector('.owned').textContent = `Besitz: ${owned}`
+            btn.querySelector('.owned').textContent = kind === 'prestige' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
         }
 
         function buyUpgrade(kind, id) {
@@ -928,6 +1268,52 @@
             renderShop()
             save()
             return
+        }
+
+        function buyPrestigeUpgrade(id) {
+            const item = PRESTIGE_UPGRADES.find((x) => x.id === id)
+            if (!item) return
+
+            const owned = prestigeUpgradeLevel(id)
+            if (owned >= item.max) return
+
+            const cost = prestigeUpgradeCost(item, owned)
+            if (state.prestige.shards < cost) return
+
+            state.prestige.shards -= cost
+            state.prestige.upgrades[id] = owned + 1
+            renderHeader()
+            renderShop()
+            renderPrestige()
+            save()
+        }
+
+        function resetRunProgress() {
+            state.cookies = 0
+            state.producers = Object.fromEntries(PRODUCERS.map((p) => [p.id, 0]))
+            state.clicks = Object.fromEntries(CLICKS.map((c) => [c.id, 0]))
+            state.frenzyUntil = 0
+            state.goldenVisible = false
+            state.nextGoldenAt = Date.now() + goldenIntervalMs()
+            hideGoldenCookie()
+
+            const starterCookies = prestigeUpgradeLevel('starterSpark') * 250
+            if (starterCookies > 0) {
+                state.cookies = starterCookies
+            }
+        }
+
+        function ascendPrestige() {
+            if (!canAscendPrestige()) return
+
+            const cost = nextPrestigeCost()
+            state.prestige.shards -= cost
+            state.prestige.level++
+            resetRunProgress()
+            renderHeader()
+            renderShop()
+            renderPrestige()
+            save()
         }
 
         function spawnFloatPlus(amount, x, y) {
@@ -1132,34 +1518,37 @@
         function hideGoldenCookie() {
             state.goldenVisible = false
             $('golden-cookie').classList.remove('visible')
-            state.nextGoldenAt = Date.now() + GOLDEN_INTERVAL_MS
+            state.nextGoldenAt = Date.now() + goldenIntervalMs()
         }
 
         function startFrenzy() {
             hideGoldenCookie()
             const now = Date.now()
-            state.frenzyUntil = Math.max(state.frenzyUntil, now) + FRENZY_MS
+            state.frenzyUntil = Math.max(state.frenzyUntil, now) + frenzyDurationMs()
             renderHeader()
         }
 
         function applyOfflineEarnings() {
             const now = Date.now()
-            const elapsed = Math.min(now - state.lastSave, OFFLINE_CAP_MS)
+            const elapsed = Math.min(now - state.lastSave, offlineCapMs())
             if (elapsed <= 0) return
 
             const cps = calcCps()
             if (cps <= 0) return
 
-            const earned = (elapsed / 1000) * cps
+            const earned = (elapsed / 1000) * cps * offlineIncomeMult()
             if (earned < 0.01) return
 
             state.cookies += earned
+            state.lifetimeCookies += earned
+            processShardMilestones()
             state.lastSave = Date.now()
         }
 
         function defaultState() {
             return {
                 cookies: 0,
+                lifetimeCookies: 0,
                 producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
                 clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
                 lastSave: Date.now(),
@@ -1169,6 +1558,13 @@
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
+                prestige: {
+                    level: 0,
+                    shards: 0,
+                    totalShardsEarned: 0,
+                    shardMilestone: 0,
+                    upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
+                },
             }
         }
 
@@ -1180,18 +1576,27 @@
             Object.assign(state, defaultState())
             renderHeader()
             renderShop()
+            renderPrestige()
         }
 
         function save() {
             state.lastSave = Date.now()
             const payload = {
                 cookies: state.cookies,
+                lifetimeCookies: state.lifetimeCookies,
                 producers: { ...state.producers },
                 clicks: { ...state.clicks },
                 lastSave: state.lastSave,
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
                 darkMode: state.darkMode,
+                prestige: {
+                    level: state.prestige.level,
+                    shards: state.prestige.shards,
+                    totalShardsEarned: state.prestige.totalShardsEarned,
+                    shardMilestone: state.prestige.shardMilestone,
+                    upgrades: { ...state.prestige.upgrades },
+                },
             }
             try {
                 localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
@@ -1207,12 +1612,29 @@
                 if (typeof data.cookies !== 'number') return
 
                 state.cookies = data.cookies
+                state.lifetimeCookies = typeof data.lifetimeCookies === 'number' && data.lifetimeCookies >= 0 ? data.lifetimeCookies : data.cookies
                 state.lastSave = typeof data.lastSave === 'number' ? data.lastSave : Date.now()
                 state.audioVolume = typeof data.audioVolume === 'number'
                     ? Math.min(1, Math.max(0, data.audioVolume))
                     : DEFAULT_VOLUME
                 state.audioMuted = data.audioMuted === true
                 state.darkMode = data.darkMode === true
+
+                state.prestige.level = typeof data.prestige?.level === 'number' ? Math.max(0, Math.floor(data.prestige.level)) : 0
+                state.prestige.shards = typeof data.prestige?.shards === 'number' ? Math.max(0, Math.floor(data.prestige.shards)) : 0
+                state.prestige.totalShardsEarned = typeof data.prestige?.totalShardsEarned === 'number'
+                    ? Math.max(0, Math.floor(data.prestige.totalShardsEarned))
+                    : state.prestige.shards
+                state.prestige.shardMilestone = typeof data.prestige?.shardMilestone === 'number'
+                    ? Math.max(0, Math.floor(data.prestige.shardMilestone))
+                    : 0
+
+                for (const upg of PRESTIGE_UPGRADES) {
+                    const n = data.prestige?.upgrades?.[upg.id]
+                    state.prestige.upgrades[upg.id] = typeof n === 'number'
+                        ? Math.max(0, Math.min(upg.max, Math.floor(n)))
+                        : 0
+                }
 
                 for (const p of PRODUCERS) {
                     const n = data.producers?.[p.id]
@@ -1223,6 +1645,8 @@
                     state.clicks[c.id] = typeof n === 'number' && n >= 0 ? Math.floor(n) : 0
                 }
 
+                processShardMilestones()
+                state.nextGoldenAt = Date.now() + goldenIntervalMs()
                 applyOfflineEarnings()
             } catch (_) {
                 Object.assign(state, defaultState())
@@ -1254,6 +1678,9 @@
                     document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b === btn))
                     $('panel-play').classList.toggle('active', tab === 'play')
                     $('panel-shop').classList.toggle('active', tab === 'shop')
+                    $('panel-prestige').classList.toggle('active', tab === 'prestige')
+                    if (tab === 'shop') renderShop()
+                    if (tab === 'prestige') renderPrestige()
                 })
             })
         }
@@ -1261,8 +1688,10 @@
         function init() {
             load()
             buildShop()
+            buildPrestige()
             renderHeader()
             renderShop()
+            renderPrestige()
             renderAudioControls()
             renderThemeToggle()
 
