@@ -171,7 +171,7 @@
 
         .theme-toggle {
             position: absolute;
-            top: 1rem;
+            top: 1.4rem;
             right: 0.9rem;
             border: 1px solid var(--ctrl-border);
             background: var(--theme-btn-bg);
@@ -194,6 +194,71 @@
 
         .theme-toggle:active {
             transform: scale(0.95);
+        }
+
+        .help-wrap {
+            position: absolute;
+            top: 1.4rem;
+            left: 0.9rem;
+            z-index: 6;
+        }
+
+        .help-toggle {
+            border: 1px solid var(--ctrl-border);
+            background: var(--theme-btn-bg);
+            color: var(--theme-btn-fg);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 800;
+            box-shadow: 0 2px 8px var(--theme-btn-shadow);
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .help-toggle:hover,
+        .help-toggle:focus-visible {
+            transform: scale(1.06);
+            background: var(--ctrl-bg-hover);
+            outline: none;
+        }
+
+        .help-tooltip {
+            position: absolute;
+            top: 2.35rem;
+            left: 0;
+            width: min(22rem, calc(100vw - 2.5rem));
+            background: var(--tabs-bg);
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.7rem;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+            padding: 0.7rem 0.75rem;
+            font-size: 0.73rem;
+            text-align: left;
+            color: var(--shop-name-color);
+            opacity: 0;
+            transform: translateY(-4px);
+            pointer-events: none;
+            transition: opacity 0.14s ease, transform 0.14s ease;
+        }
+
+        .help-tooltip ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .help-tooltip li + li {
+            margin-top: 0.35rem;
+        }
+
+        .help-wrap:hover .help-tooltip,
+        .help-wrap:focus-within .help-tooltip {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .cookie-total {
@@ -709,6 +774,15 @@
 <body>
     <div class="app" id="app">
         <header class="header">
+            <div class="help-wrap">
+                <button type="button" class="help-toggle" aria-label="Hinweise anzeigen">?</button>
+                <div class="help-tooltip" role="note">
+                    <ul>
+                        <li>Der Fortschritt wird solange gespeichert bis man seine Client-Cache in FiveM löscht.</li>
+                        <li>Der Offline-Fortschritt funktioniert nur während man Online auf dem Server ist.</li>
+                    </ul>
+                </div>
+            </div>
             <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Darkmode" aria-pressed="false">
                 <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
@@ -726,7 +800,7 @@
             </div>
             <div class="audio-controls" aria-label="Audio-Steuerung">
                 <label for="volume-slider">Ton</label>
-                <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstaerke" />
+                <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstärke" />
                 <button type="button" id="mute-toggle" aria-pressed="false">Stumm</button>
             </div>
         </header>
@@ -781,18 +855,18 @@
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
             { id: 'grandma', name: 'Oma', icon: 'fa-solid fa-person-cane', cps: 1, baseCost: 100, desc: '+1 Keks/Sek' },
-            { id: 'bakery', name: 'Baeckerei', icon: 'fa-solid fa-store', cps: 8, baseCost: 500, desc: '+8 Kekse/Sek' },
+            { id: 'bakery', name: 'Bäckerei', icon: 'fa-solid fa-store', cps: 8, baseCost: 500, desc: '+8 Kekse/Sek' },
             { id: 'factory', name: 'Fabrik', icon: 'fa-solid fa-industry', cps: 47, baseCost: 3000, desc: '+47 Kekse/Sek' },
             { id: 'warehouse', name: 'Lagerhaus', icon: 'fa-solid fa-warehouse', cps: 260, baseCost: 20000, desc: '+260 Kekse/Sek' },
             { id: 'shipping', name: 'Versandzentrum', icon: 'fa-solid fa-truck-fast', cps: 1400, baseCost: 120000, desc: '+1.4K Kekse/Sek' },
             { id: 'chain', name: 'Keks-Kette', icon: 'fa-solid fa-link', cps: 8200, baseCost: 750000, desc: '+8.2K Kekse/Sek' },
-            { id: 'mega', name: 'Mega-Baeckerei', icon: 'fa-solid fa-city', cps: 52000, baseCost: 6200000, desc: '+52K Kekse/Sek' },
+            { id: 'mega', name: 'Mega-Bäckerei', icon: 'fa-solid fa-city', cps: 52000, baseCost: 6200000, desc: '+52K Kekse/Sek' },
             { id: 'bank', name: 'Keks-Bank', icon: 'fa-solid fa-building-columns', cps: 310000, baseCost: 68000000, desc: '+310K Kekse/Sek' },
             { id: 'campus', name: 'Forschungscampus', icon: 'fa-solid fa-graduation-cap', cps: 280000, baseCost: 520000000, desc: '+280K Kekse/Sek' },
             { id: 'lab', name: 'Keks-Labor', icon: 'fa-solid fa-flask', cps: 1200000, baseCost: 2470000000, desc: '+1.2M Kekse/Sek' },
             { id: 'orbital', name: 'Orbital-Ofen', icon: 'fa-solid fa-satellite', cps: 1350000, baseCost: 8730000000, desc: '+1.35M Kekse/Sek' },
-            { id: 'quantum', name: 'Quanten-Muehle', icon: 'fa-solid fa-atom', cps: 9200000, baseCost: 42800000000, desc: '+9.2M Kekse/Sek' },
-            { id: 'singularity', name: 'Singularitaets-Baecker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M Kekse/Sek' },
+            { id: 'quantum', name: 'Quanten-Mühle', icon: 'fa-solid fa-atom', cps: 9200000, baseCost: 42800000000, desc: '+9.2M Kekse/Sek' },
+            { id: 'singularity', name: 'Singularitäts-Bäcker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M Kekse/Sek' },
         ]
 
         const CLICKS = [
@@ -800,21 +874,21 @@
             { id: 'iron', name: 'Eiserner Daumen', icon: 'fa-solid fa-hand-back-fist', bonus: 5, baseCost: 500, desc: '+5 pro Klick' },
             { id: 'diamond', name: 'Diamant-Klick', icon: 'fa-solid fa-gem', bonus: 25, baseCost: 5000, desc: '+25 pro Klick' },
             { id: 'steel', name: 'Stahl-Klick', icon: 'fa-solid fa-hammer', bonus: 250, baseCost: 60000, desc: '+250 pro Klick' },
-            { id: 'golden', name: 'Goldene Knoechel', icon: 'fa-solid fa-crown', bonus: 1800, baseCost: 450000, desc: '+1.8K pro Klick' },
+            { id: 'golden', name: 'Goldene Knöchel', icon: 'fa-solid fa-crown', bonus: 1800, baseCost: 450000, desc: '+1.8K pro Klick' },
             { id: 'hydraulic', name: 'Hydraulik-Schlag', icon: 'fa-solid fa-robot', bonus: 12000, baseCost: 6000000, desc: '+12K pro Klick' },
             { id: 'laser', name: 'Laser-Finger', icon: 'fa-solid fa-wand-magic-sparkles', bonus: 42000, baseCost: 120000000, desc: '+42K pro Klick' },
             { id: 'titanium', name: 'Titan-Klick', icon: 'fa-solid fa-hand', bonus: 52000, baseCost: 680000000, desc: '+52K pro Klick' },
             { id: 'plasma', name: 'Plasma-Schlag', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K pro Klick' },
-            { id: 'neutron', name: 'Neutron-Knoechel', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M pro Klick' },
+            { id: 'neutron', name: 'Neutron-Knöchel', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M pro Klick' },
             { id: 'cosmic', name: 'Kosmischer Klick', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M pro Klick' },
         ]
 
         const PRESTIGE_UPGRADES = [
             {
                 id: 'celestialHands',
-                name: 'Zelestiale Haende',
+                name: 'Zelestiale Hände',
                 icon: 'fa-solid fa-hand-sparkles',
-                desc: '+14% Klick-Staerke pro Stufe',
+                desc: '+14% Klick-Stärke pro Stufe',
                 baseCost: 2,
                 costMult: 1.65,
                 max: 15,
@@ -832,7 +906,7 @@
                 id: 'goldenSignal',
                 name: 'Goldenes Signal',
                 icon: 'fa-solid fa-satellite-dish',
-                desc: 'Goldene Kekse erscheinen haeufiger',
+                desc: 'Goldene Kekse erscheinen häufiger',
                 baseCost: 4,
                 costMult: 1.72,
                 max: 10,
@@ -877,7 +951,7 @@
                 id: 'echoVault',
                 name: 'Echo-Tresor',
                 icon: 'fa-solid fa-cloud-arrow-down',
-                desc: 'Mehr Offline-Einkommen + laengeres Limit',
+                desc: 'Mehr Offline-Einkommen + längeres Limit',
                 baseCost: 5,
                 costMult: 1.78,
                 max: 10,
@@ -1109,7 +1183,7 @@
 
             const clickTitle = document.createElement('h2')
             clickTitle.className = 'shop-section-title'
-            clickTitle.textContent = 'Klick-Verstaerkung'
+            clickTitle.textContent = 'Klick-Verstärkung'
             root.appendChild(clickTitle)
 
             for (const c of CLICKS) {
@@ -1208,7 +1282,7 @@
                     <div>Splitter jetzt: <strong>${formatNum(state.prestige.shards)}</strong></div>
                     <div>Gesamt Splitter: <strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
                     <div>Lebenszeit-Kekse: <strong>${formatNum(state.lifetimeCookies)}</strong></div>
-                    <div>Naechster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
+                    <div>Nächster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
                     <div>Globaler Prestige-Bonus: <strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
                     <div>Prestige-Kosten: <strong>${formatNum(prestigeCost)} Splitter</strong></div>
                 </div>
