@@ -69,6 +69,13 @@
             --shop-desc-color: #8b7355;
             --shop-cost-color: #6b4423;
             --shop-owned-color: #a08060;
+            --achievement-unlocked-bg: linear-gradient(180deg, rgba(209, 249, 219, 0.95) 0%, rgba(167, 234, 185, 0.95) 100%);
+            --achievement-unlocked-border: rgba(42, 117, 58, 0.62);
+            --achievement-unlocked-fg: #184a26;
+            --achievement-locked-pill-bg: rgba(0, 0, 0, 0.08);
+            --achievement-locked-pill-fg: #5f4d3f;
+            --achievement-unlocked-pill-bg: rgba(24, 122, 47, 0.18);
+            --achievement-unlocked-pill-fg: #155026;
         }
 
         .app.dark-mode {
@@ -105,6 +112,13 @@
             --shop-desc-color: #ede8e0;
             --shop-cost-color: #fff7ea;
             --shop-owned-color: #dfd8cf;
+            --achievement-unlocked-bg: linear-gradient(180deg, rgba(54, 127, 75, 0.95) 0%, rgba(35, 97, 54, 0.95) 100%);
+            --achievement-unlocked-border: rgba(148, 232, 171, 0.65);
+            --achievement-unlocked-fg: #effff3;
+            --achievement-locked-pill-bg: rgba(255, 255, 255, 0.14);
+            --achievement-locked-pill-fg: #eee5d9;
+            --achievement-unlocked-pill-bg: rgba(206, 255, 223, 0.22);
+            --achievement-unlocked-pill-fg: #effff3;
         }
 
         .app {
@@ -256,6 +270,13 @@
             z-index: 6;
         }
 
+        .achievements-wrap {
+            position: absolute;
+            top: 3.95rem;
+            right: 0.9rem;
+            z-index: 6;
+        }
+
         .help-toggle {
             border: 1px solid var(--ctrl-border);
             background: var(--theme-btn-bg);
@@ -370,6 +391,35 @@
         .patch-wrap:focus-within .patch-tooltip {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        .achievements-toggle {
+            border: 1px solid var(--ctrl-border);
+            background: var(--theme-btn-bg);
+            color: var(--theme-btn-fg);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            box-shadow: 0 2px 8px var(--theme-btn-shadow);
+            transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+        }
+
+        .achievements-toggle:hover,
+        .achievements-toggle:focus-visible {
+            transform: scale(1.06);
+            background: var(--ctrl-bg-hover);
+            outline: none;
+        }
+
+        .achievements-toggle.active {
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
         }
 
         .cookie-total {
@@ -815,6 +865,131 @@
             margin-top: 0.15rem;
         }
 
+        .buy-amount-controls {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .buy-amount-btn {
+            border: 1px solid var(--ctrl-border);
+            background: var(--shop-card-bg);
+            color: var(--shop-name-color);
+            border-radius: 0.55rem;
+            padding: 0.42rem 0.2rem;
+            font-size: 0.68rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .buy-amount-btn:hover {
+            transform: scale(1.03);
+            background: var(--tab-hover-bg);
+        }
+
+        .buy-amount-btn.active {
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
+            border-color: var(--ctrl-border);
+        }
+
+        .achievement-summary {
+            background: var(--shop-card-bg);
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.75rem;
+            padding: 0.62rem 0.7rem;
+            font-size: 0.7rem;
+            color: var(--shop-desc-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .achievement-summary strong {
+            color: var(--shop-name-color);
+        }
+
+        .achievements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .achievement-row {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.75rem;
+            background: var(--shop-card-bg);
+        }
+
+        .achievement-row.unlocked {
+            border-color: var(--achievement-unlocked-border);
+            background: var(--achievement-unlocked-bg);
+        }
+
+        .achievement-row .icon {
+            width: 2rem;
+            text-align: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            color: var(--shop-icon-color);
+        }
+
+        .achievement-row.unlocked .icon {
+            color: var(--achievement-unlocked-fg);
+        }
+
+        .achievement-row.unlocked .name,
+        .achievement-row.unlocked .desc,
+        .achievement-row.unlocked .reward,
+        .achievement-row.unlocked .status {
+            color: var(--achievement-unlocked-fg);
+        }
+
+        .achievement-row .name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--shop-name-color);
+        }
+
+        .achievement-row .desc {
+            font-size: 0.7rem;
+            color: var(--shop-desc-color);
+            margin-top: 0.1rem;
+        }
+
+        .achievement-row .meta {
+            margin-left: auto;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .achievement-row .reward {
+            font-size: 0.68rem;
+            color: var(--shop-cost-color);
+            font-weight: 700;
+        }
+
+        .achievement-row .status {
+            font-size: 0.65rem;
+            margin-top: 0.18rem;
+            color: var(--achievement-locked-pill-fg);
+            font-weight: 700;
+            display: inline-block;
+            padding: 0.14rem 0.42rem;
+            border-radius: 999px;
+            background: var(--achievement-locked-pill-bg);
+        }
+
+        .achievement-row.unlocked .status {
+            background: var(--achievement-unlocked-pill-bg);
+            color: var(--achievement-unlocked-pill-fg);
+        }
+
         .prestige-summary {
             background: var(--shop-card-bg);
             border: 1px solid rgba(139, 90, 43, 0.2);
@@ -851,12 +1026,11 @@
         }
 
         .prestige-ascend-btn:hover:not(:disabled) {
-            transform: translateY(-1px);
             filter: brightness(1.02);
         }
 
         .prestige-ascend-btn:active:not(:disabled) {
-            transform: translateY(1px);
+            filter: brightness(0.98);
         }
 
         .prestige-ascend-btn:disabled {
@@ -933,17 +1107,35 @@
                 <button type="button" class="patch-toggle" aria-label="Patchnotes anzeigen">📝</button>
                 <div class="patch-tooltip" role="note">
                     <ul>
-                        <li><strong>2026-07-18:</strong> Diamant-Keks ergänzt: seltener Spawn und 3x Bonus</li>
-                        <li><strong>2026-07-18:</strong> Prestige-Balancing angepasst: Splitter-Skalierung und Upgrade-Kosten</li>
-                        <li><strong>2026-07-18:</strong> Prestige-System eingeführt mit Splitter-Progression und permanenten Upgrades.</li>
-                        <li><strong>2026-07-18:</strong> Forschungscampus/Keks-Labor-Werte korrigiert (CPS-Reihenfolge gefixt).</li>
-                        <li><strong>2026-07-17:</strong> Dark Mode erweitert (Toggle, persistentes Theme, bessere Shop-Kontraste).</li>
+                        <li><strong>2026-07-18</strong>
+                            <ul>
+                                <li>Prestige-System eingeführt und balanciert (Splitter, permanente Upgrades, Kosten/Skalierung angepasst)</li>
+                                <li>Diamant-Keks ergänzt (seltener Spawn, 3x Bonus, eigener Modus-Look)</li>
+                                <li>Forschungscampus/Keks-Labor-Werte korrigiert (Progression/CPS-Reihenfolge)</li>
+                                <li>Neue Spezial-Upgrades: Krit-Chance, Krit-Multiplikator, Klick-Drohne</li>
+                                <li>Producer-Synergien hinzugefügt</li>
+                                <li>Achievement-System stark erweitert (frühe bis schwere Endgame-Ziele)</li>
+                                <li>Eigene Erfolge-Ansicht ergänzt, inkl. Pokal-Button im Header und besserem Kontrast</li>
+                                <li>Shop-Kaufmodus verbessert: x1/x10/x50/x100 mit korrekter Gesamtpreis-Anzeige</li>
+                                <li>UI-Polish: Prestige-Aufsteigen-Button beim Hover beruhigt</li>
+                            </ul>
+                        </li>
+                        <li><strong>2026-07-17</strong>
+                            <ul>
+                                <li>Dark Mode erweitert (Toggle, persistentes Theme, bessere Shop-Kontraste)</li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>
             <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Darkmode" aria-pressed="false">
                 <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
+            <div class="achievements-wrap">
+                <button type="button" class="achievements-toggle" id="achievements-toggle" aria-label="Erfolge anzeigen" aria-pressed="false">
+                    <i class="fa-solid fa-trophy" aria-hidden="true"></i>
+                </button>
+            </div>
             <div class="cookie-total">
                 <span class="label">Kekse</span>
                 <span id="total-display">0</span>
@@ -955,6 +1147,8 @@
             <div class="stats-row">
                 <span>Prestige <strong id="prestige-level-display">0</strong></span>
                 <span>Splitter <strong id="shards-display">0</strong></span>
+                <span>Krit <strong id="crit-display">4% / x2.0</strong></span>
+                <span>Erfolge <strong id="achievements-display">0/0</strong></span>
             </div>
             <div class="audio-controls" aria-label="Audio-Steuerung">
                 <label for="volume-slider">Ton</label>
@@ -986,6 +1180,10 @@
             <section class="panel" id="panel-prestige" aria-label="Prestige">
                 <div class="shop" id="prestige-root"></div>
             </section>
+
+            <section class="panel" id="panel-achievements" aria-label="Erfolge">
+                <div class="shop" id="achievements-root"></div>
+            </section>
         </div>
 
         <nav class="tabs" aria-label="Navigation">
@@ -1012,6 +1210,7 @@
         const PRESTIGE_BASE_MULT = 0.08
         const SHARD_BASE_THRESHOLD = 8000000
         const SHARD_GROWTH = 1.48
+        const BUY_AMOUNTS = [1, 10, 50, 100]
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -1030,6 +1229,13 @@
             { id: 'singularity', name: 'Singularitäts-Bäcker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M Kekse/Sek' },
         ]
 
+        const PRODUCER_SYNERGIES = [
+            { from: 'bakery', to: 'campus', bonusPerSource: 0.0045 },
+            { from: 'campus', to: 'lab', bonusPerSource: 0.003 },
+            { from: 'lab', to: 'orbital', bonusPerSource: 0.0025 },
+            { from: 'orbital', to: 'quantum', bonusPerSource: 0.002 },
+        ]
+
         const CLICKS = [
             { id: 'strong', name: 'Starker Finger', icon: 'fa-solid fa-dumbbell', bonus: 1, baseCost: 50, desc: '+1 pro Klick' },
             { id: 'iron', name: 'Eiserner Daumen', icon: 'fa-solid fa-hand-back-fist', bonus: 5, baseCost: 500, desc: '+5 pro Klick' },
@@ -1042,6 +1248,210 @@
             { id: 'plasma', name: 'Plasma-Schlag', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K pro Klick' },
             { id: 'neutron', name: 'Neutron-Knöchel', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M pro Klick' },
             { id: 'cosmic', name: 'Kosmischer Klick', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M pro Klick' },
+        ]
+
+        const SPECIAL_UPGRADES = [
+            {
+                id: 'critChance',
+                name: 'Kritischer Fokus',
+                icon: 'fa-solid fa-bullseye',
+                desc: 'Mehr Krit-Chance pro Stufe',
+                baseCost: 1600,
+                costMult: 1.85,
+                max: 20,
+            },
+            {
+                id: 'critPower',
+                name: 'Präzisions-Schlag',
+                icon: 'fa-solid fa-burst',
+                desc: 'Höherer Krit-Multiplikator pro Stufe',
+                baseCost: 3200,
+                costMult: 1.9,
+                max: 20,
+            },
+            {
+                id: 'autoDrone',
+                name: 'Klick-Drohne',
+                icon: 'fa-solid fa-robot',
+                desc: 'Automatische Klicks pro Sekunde',
+                baseCost: 12000,
+                costMult: 2,
+                max: 25,
+            },
+        ]
+
+        const ACHIEVEMENTS = [
+            {
+                id: 'firstTap',
+                name: 'Erster Biss',
+                desc: 'Erreiche 100 Lebenszeit-Kekse',
+                reward: '+2% Klick-Stärke',
+                type: 'tap',
+                value: 0.02,
+                check: () => state.lifetimeCookies >= 100,
+            },
+            {
+                id: 'crumbCollector',
+                name: 'Krümel-Sammler',
+                desc: 'Erreiche 1.000 Lebenszeit-Kekse',
+                reward: '+2% Klick-Stärke',
+                type: 'tap',
+                value: 0.02,
+                check: () => state.lifetimeCookies >= 1000,
+            },
+            {
+                id: 'bakerApprentice',
+                name: 'Backstuben-Lehrling',
+                desc: 'Erreiche 10.000 Lebenszeit-Kekse',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => state.lifetimeCookies >= 10000,
+            },
+            {
+                id: 'starterEngine',
+                name: 'Mini-Backstube',
+                desc: 'Besitze insgesamt 25 Producer',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => totalProducerOwned() >= 25,
+            },
+            {
+                id: 'clickCrafter',
+                name: 'Klick-Schmied',
+                desc: 'Kaufe insgesamt 10 Klick-Upgrades',
+                reward: '+3% Klick-Stärke',
+                type: 'tap',
+                value: 0.03,
+                check: () => Object.values(state.clicks).reduce((sum, n) => sum + n, 0) >= 10,
+            },
+            {
+                id: 'goldRush',
+                name: 'Goldrausch',
+                desc: 'Erreiche 1 Mio. Lebenszeit-Kekse',
+                reward: '+4% Produktion',
+                type: 'cps',
+                value: 0.04,
+                check: () => state.lifetimeCookies >= 1000000,
+            },
+            {
+                id: 'industrialEra',
+                name: 'Industrie-Zeitalter',
+                desc: 'Besitze insgesamt 150 Producer',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => totalProducerOwned() >= 150,
+            },
+            {
+                id: 'bankTycoon',
+                name: 'Bank-Tycoon',
+                desc: 'Besitze 10 Keks-Banken',
+                reward: '+4% Produktion',
+                type: 'cps',
+                value: 0.04,
+                check: () => state.producers.bank >= 10,
+            },
+            {
+                id: 'criticalMind',
+                name: 'Kritischer Geist',
+                desc: 'Kaufe 5 Krit-Chance-Stufen',
+                reward: '+1.5% Krit-Chance',
+                type: 'critChance',
+                value: 0.015,
+                check: () => specialUpgradeLevel('critChance') >= 5,
+            },
+            {
+                id: 'precisionCore',
+                name: 'Präzisionskern',
+                desc: 'Kaufe 8 Krit-Multiplikator-Stufen',
+                reward: '+1.5% Krit-Chance',
+                type: 'critChance',
+                value: 0.015,
+                check: () => specialUpgradeLevel('critPower') >= 8,
+            },
+            {
+                id: 'fleet',
+                name: 'Drohnenflotte',
+                desc: 'Kaufe 5 Klick-Drohnen-Stufen',
+                reward: '+5% Klick-Stärke',
+                type: 'tap',
+                value: 0.05,
+                check: () => specialUpgradeLevel('autoDrone') >= 5,
+            },
+            {
+                id: 'swarmCommander',
+                name: 'Schwarm-Kommandant',
+                desc: 'Kaufe 15 Klick-Drohnen-Stufen',
+                reward: '+6% Klick-Stärke',
+                type: 'tap',
+                value: 0.06,
+                check: () => specialUpgradeLevel('autoDrone') >= 15,
+            },
+            {
+                id: 'galacticBakery',
+                name: 'Galaktische Bäckerei',
+                desc: 'Erreiche Prestige-Stufe 3',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => state.prestige.level >= 3,
+            },
+            {
+                id: 'labDirector',
+                name: 'Labor-Direktor',
+                desc: 'Besitze 25 Keks-Labore',
+                reward: '+8% Produktion',
+                type: 'cps',
+                value: 0.08,
+                check: () => state.producers.lab >= 25,
+            },
+            {
+                id: 'quantumArchitect',
+                name: 'Quanten-Architekt',
+                desc: 'Besitze 10 Quanten-Mühlen',
+                reward: '+10% Produktion',
+                type: 'cps',
+                value: 0.1,
+                check: () => state.producers.quantum >= 10,
+            },
+            {
+                id: 'shardProspector',
+                name: 'Splitter-Prospektor',
+                desc: 'Sammle insgesamt 250 Splitter',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => state.prestige.totalShardsEarned >= 250,
+            },
+            {
+                id: 'ascensionMyth',
+                name: 'Aufstiegs-Mythos',
+                desc: 'Erreiche Prestige-Stufe 10',
+                reward: '+8% Produktion',
+                type: 'cps',
+                value: 0.08,
+                check: () => state.prestige.level >= 10,
+            },
+            {
+                id: 'cookieOverlord',
+                name: 'Keks-Overlord',
+                desc: 'Erreiche 1 Billion Lebenszeit-Kekse',
+                reward: '+10% Produktion',
+                type: 'cps',
+                value: 0.1,
+                check: () => state.lifetimeCookies >= 1000000000000,
+            },
+            {
+                id: 'cosmicGrip',
+                name: 'Kosmischer Griff',
+                desc: 'Kaufe 1 Kosmischen Klick',
+                reward: '+7% Klick-Stärke',
+                type: 'tap',
+                value: 0.07,
+                check: () => state.clicks.cosmic >= 1,
+            },
         ]
 
         const PRESTIGE_UPGRADES = [
@@ -1142,6 +1552,8 @@
             lifetimeCookies: 0,
             producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
             clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
+            specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
+            buyAmount: 1,
             lastSave: Date.now(),
             frenzyUntil: 0,
             diamondUntil: 0,
@@ -1160,6 +1572,7 @@
                 shardMilestone: 0,
                 upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
             },
+            achievements: Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, false])),
         }
 
         const $ = (id) => document.getElementById(id)
@@ -1170,6 +1583,14 @@
 
         function prestigeUpgradeCost(item, owned) {
             return Math.max(1, Math.floor(item.baseCost * Math.pow(item.costMult, owned)))
+        }
+
+        function specialUpgradeLevel(id) {
+            return state.specialUpgrades[id] || 0
+        }
+
+        function specialUpgradeCost(item, owned) {
+            return Math.max(1, Math.floor(item.baseCost * Math.pow(item.costMult, owned) * shopCostDiscount()))
         }
 
         function prestigeLevelIncomeMult() {
@@ -1231,6 +1652,74 @@
             return Math.max(5, Math.floor(5 + Math.pow(state.prestige.level + 1, 1.5) * 2.8))
         }
 
+        function totalProducerOwned() {
+            let total = 0
+            for (const p of PRODUCERS) {
+                total += state.producers[p.id]
+            }
+            return total
+        }
+
+        function achievementBonus(type) {
+            let bonus = 0
+            for (const achievement of ACHIEVEMENTS) {
+                if (achievement.type === type && state.achievements[achievement.id]) {
+                    bonus += achievement.value
+                }
+            }
+            return bonus
+        }
+
+        function unlockedAchievementsCount() {
+            let total = 0
+            for (const achievement of ACHIEVEMENTS) {
+                if (state.achievements[achievement.id]) total++
+            }
+            return total
+        }
+
+        function critChance() {
+            const base = 0.04 + specialUpgradeLevel('critChance') * 0.012
+            return Math.min(0.5, base + achievementBonus('critChance'))
+        }
+
+        function critMultiplier() {
+            return Math.min(10, 2 + specialUpgradeLevel('critPower') * 0.3)
+        }
+
+        function autoClicksPerSecond() {
+            const level = specialUpgradeLevel('autoDrone')
+            if (level <= 0) return 0
+            return level * (0.45 + (level - 1) * 0.08)
+        }
+
+        function producerSynergyMult(targetId) {
+            let mult = 1
+            for (const synergy of PRODUCER_SYNERGIES) {
+                if (synergy.to === targetId) {
+                    mult += state.producers[synergy.from] * synergy.bonusPerSource
+                }
+            }
+            return mult
+        }
+
+        function producerSynergyText(targetId) {
+            const affects = PRODUCER_SYNERGIES
+                .filter((synergy) => synergy.to === targetId)
+                .map((synergy) => {
+                    const from = PRODUCERS.find((p) => p.id === synergy.from)
+                    if (!from) return ''
+                    const bonus = state.producers[synergy.from] * synergy.bonusPerSource
+                    return `${from.name}: +${formatPct(bonus)}`
+                })
+                .filter(Boolean)
+
+            if (affects.length === 0) {
+                return ''
+            }
+            return ` | Synergie (${affects.join(', ')})`
+        }
+
         function canAscendPrestige() {
             return state.prestige.runShards >= nextPrestigeCost()
         }
@@ -1270,9 +1759,9 @@
         function calcCps() {
             let cps = 0
             for (const p of PRODUCERS) {
-                cps += p.cps * state.producers[p.id]
+                cps += p.cps * state.producers[p.id] * producerSynergyMult(p.id)
             }
-            return cps * producerBonusMult() * prestigeLevelIncomeMult()
+            return cps * producerBonusMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('cps'))
         }
 
         function calcTap() {
@@ -1280,7 +1769,7 @@
             for (const c of CLICKS) {
                 tap += c.bonus * state.clicks[c.id]
             }
-            return tap * tapBonusMult() * prestigeLevelIncomeMult()
+            return tap * tapBonusMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('tap'))
         }
 
         function canAfford(cost) {
@@ -1307,6 +1796,7 @@
             if (gained > 0) {
                 state.lifetimeCookies += gained
                 processShardMilestones()
+                evaluateAchievements()
             }
             renderHeader()
             const shopPanel = $('panel-shop')
@@ -1337,6 +1827,18 @@
             $('cps-display').textContent = formatNum(calcCps() * incomeMult())
             $('prestige-level-display').textContent = String(state.prestige.level)
             $('shards-display').textContent = formatNum(state.prestige.shards + state.prestige.runShards)
+            const critNode = $('crit-display')
+            if (critNode) {
+                critNode.textContent = `${Math.round(critChance() * 100)}% / x${critMultiplier().toFixed(1)}`
+            }
+            const achievementsNode = $('achievements-display')
+            if (achievementsNode) {
+                achievementsNode.textContent = `${unlockedAchievementsCount()}/${ACHIEVEMENTS.length}`
+            }
+            const achievementsToggle = $('achievements-toggle')
+            if (achievementsToggle) {
+                achievementsToggle.setAttribute('title', `Erfolge: ${unlockedAchievementsCount()}/${ACHIEVEMENTS.length}`)
+            }
             updateFrenzyVisuals()
         }
 
@@ -1369,6 +1871,19 @@
             const root = $('shop-root')
             root.innerHTML = ''
 
+            const buyControls = document.createElement('div')
+            buyControls.className = 'buy-amount-controls'
+            buyControls.id = 'buy-amount-controls'
+            for (const amount of BUY_AMOUNTS) {
+                const btn = document.createElement('button')
+                btn.type = 'button'
+                btn.className = 'buy-amount-btn' + (state.buyAmount === amount ? ' active' : '')
+                btn.dataset.amount = String(amount)
+                btn.textContent = `x${amount}`
+                buyControls.appendChild(btn)
+            }
+            root.appendChild(buyControls)
+
             const prodTitle = document.createElement('h2')
             prodTitle.className = 'shop-section-title'
             prodTitle.textContent = 'Produktion'
@@ -1385,6 +1900,15 @@
 
             for (const c of CLICKS) {
                 root.appendChild(createUpgradeRow(c, 'click'))
+            }
+
+            const specialTitle = document.createElement('h2')
+            specialTitle.className = 'shop-section-title'
+            specialTitle.textContent = 'Spezial-Upgrades'
+            root.appendChild(specialTitle)
+
+            for (const s of SPECIAL_UPGRADES) {
+                root.appendChild(createUpgradeRow(s, 'special'))
             }
         }
 
@@ -1412,15 +1936,42 @@
             }
         }
 
+        function buildAchievements() {
+            const root = $('achievements-root')
+            root.innerHTML = ''
+
+            const title = document.createElement('h2')
+            title.className = 'shop-section-title'
+            title.textContent = 'Erfolge'
+            root.appendChild(title)
+
+            const summary = document.createElement('div')
+            summary.className = 'achievement-summary'
+            summary.id = 'achievements-summary'
+            root.appendChild(summary)
+
+            const list = document.createElement('div')
+            list.className = 'achievements-list'
+            list.id = 'achievements-list'
+            root.appendChild(list)
+        }
+
         function createUpgradeRow(item, kind) {
             let owned = 0
             let cost = 0
+            let buyCount = 1
             if (kind === 'producer') {
                 owned = state.producers[item.id]
-                cost = upgradeCost(item.baseCost, owned)
+                buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
             } else if (kind === 'click') {
                 owned = state.clicks[item.id]
-                cost = upgradeCost(item.baseCost, owned)
+                buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
+            } else if (kind === 'special') {
+                owned = specialUpgradeLevel(item.id)
+                buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
             } else {
                 owned = prestigeUpgradeLevel(item.id)
                 cost = prestigeUpgradeCost(item, owned)
@@ -1433,17 +1984,19 @@
             btn.dataset.id = item.id
             btn.disabled = kind === 'prestige'
                 ? state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
-                : !canAfford(cost)
+                : kind === 'special'
+                    ? buyCount < 1 || !canAfford(cost)
+                    : !canAfford(cost)
 
             btn.innerHTML = `
                 <span class="icon"><i class="${item.icon}" aria-hidden="true"></i></span>
                 <span class="info">
                     <div class="name">${item.name}</div>
-                    <div class="desc">${item.desc}</div>
+                    <div class="desc">${kind === 'producer' ? item.desc + producerSynergyText(item.id) : item.desc}</div>
                 </span>
                 <span class="meta">
                     <div class="cost">${formatNum(cost)}</div>
-                    <div class="owned">${kind === 'prestige' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`}</div>
+                    <div class="owned">${kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`}</div>
                 </span>
             `
 
@@ -1459,12 +2012,25 @@
 
         function renderShop() {
             const rows = $('shop-root').querySelectorAll('.upgrade-row')
+            renderShopMeta()
             let i = 0
             for (const p of PRODUCERS) {
                 updateRow(rows[i++], p, 'producer')
             }
             for (const c of CLICKS) {
                 updateRow(rows[i++], c, 'click')
+            }
+            for (const s of SPECIAL_UPGRADES) {
+                updateRow(rows[i++], s, 'special')
+            }
+        }
+
+        function renderShopMeta() {
+            const controls = $('buy-amount-controls')
+            if (controls) {
+                controls.querySelectorAll('.buy-amount-btn').forEach((btn) => {
+                    btn.classList.toggle('active', btn.dataset.amount === String(state.buyAmount))
+                })
             }
         }
 
@@ -1500,17 +2066,55 @@
             }
         }
 
+        function renderAchievements() {
+            const summary = $('achievements-summary')
+            const list = $('achievements-list')
+            if (!summary || !list) return
+
+            summary.innerHTML = `
+                <div><strong>Freigeschaltet:</strong> ${unlockedAchievementsCount()} / ${ACHIEVEMENTS.length}</div>
+                <div>Klick-Bonus: <strong>${formatPct(achievementBonus('tap'))}</strong> | Produktions-Bonus: <strong>${formatPct(achievementBonus('cps'))}</strong></div>
+            `
+
+            list.innerHTML = ''
+            for (const achievement of ACHIEVEMENTS) {
+                const unlocked = state.achievements[achievement.id] === true
+                const row = document.createElement('article')
+                row.className = 'achievement-row' + (unlocked ? ' unlocked' : '')
+                row.innerHTML = `
+                    <span class="icon">${unlocked ? '🏆' : '🔒'}</span>
+                    <span class="info">
+                        <div class="name">${achievement.name}</div>
+                        <div class="desc">${achievement.desc}</div>
+                    </span>
+                    <span class="meta">
+                        <div class="reward">${achievement.reward}</div>
+                        <div class="status">${unlocked ? 'Freigeschaltet' : 'Gesperrt'}</div>
+                    </span>
+                `
+                list.appendChild(row)
+            }
+        }
+
         function updateRow(btn, item, kind) {
             let owned = 0
             let cost = 0
             if (kind === 'producer') {
                 owned = state.producers[item.id]
-                cost = upgradeCost(item.baseCost, owned)
+                const buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
                 btn.disabled = !canAfford(cost)
+                btn.querySelector('.desc').textContent = item.desc + producerSynergyText(item.id)
             } else if (kind === 'click') {
                 owned = state.clicks[item.id]
-                cost = upgradeCost(item.baseCost, owned)
+                const buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
                 btn.disabled = !canAfford(cost)
+            } else if (kind === 'special') {
+                owned = specialUpgradeLevel(item.id)
+                const buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
+                btn.disabled = buyCount < 1 || !canAfford(cost)
             } else {
                 owned = prestigeUpgradeLevel(item.id)
                 cost = prestigeUpgradeCost(item, owned)
@@ -1518,25 +2122,75 @@
             }
 
             btn.querySelector('.cost').textContent = formatNum(cost)
-            btn.querySelector('.owned').textContent = kind === 'prestige' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
+            btn.querySelector('.owned').textContent = kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
+        }
+
+        function resolveBuyCount(kind, item, ownedStart) {
+            const selected = Number(state.buyAmount)
+            if (kind === 'special') {
+                return Math.max(0, Math.min(selected, item.max - ownedStart))
+            }
+            return Math.max(1, selected)
+        }
+
+        function totalUpgradeCost(kind, item, ownedStart, count) {
+            let total = 0
+            let owned = ownedStart
+            for (let i = 0; i < count; i++) {
+                total += kind === 'special'
+                    ? specialUpgradeCost(item, owned)
+                    : upgradeCost(item.baseCost, owned)
+                owned++
+            }
+            return total
         }
 
         function buyUpgrade(kind, id) {
-            const list = kind === 'producer' ? PRODUCERS : CLICKS
+            const list = kind === 'producer' ? PRODUCERS : kind === 'click' ? CLICKS : SPECIAL_UPGRADES
             const item = list.find((x) => x.id === id)
             if (!item) return
 
-            const owned = kind === 'producer' ? state.producers[id] : state.clicks[id]
-            const cost = upgradeCost(item.baseCost, owned)
-            if (!canAfford(cost)) return
+            const owned = kind === 'producer'
+                ? state.producers[id]
+                : kind === 'click'
+                    ? state.clicks[id]
+                    : specialUpgradeLevel(id)
 
-            state.cookies -= cost
-            if (kind === 'producer') {
-                state.producers[id]++
-            } else {
-                state.clicks[id]++
+            const purchaseCount = resolveBuyCount(kind, item, owned)
+            if (purchaseCount <= 0) {
+                return
             }
 
+            const totalCost = totalUpgradeCost(kind, item, owned, purchaseCount)
+            if (!canAfford(totalCost)) {
+                return
+            }
+
+            let bought = 0
+            let currentOwned = owned
+            while (bought < purchaseCount) {
+                const cost = kind === 'special'
+                    ? specialUpgradeCost(item, currentOwned)
+                    : upgradeCost(item.baseCost, currentOwned)
+
+                if (kind === 'producer') {
+                    state.producers[id]++
+                } else if (kind === 'click') {
+                    state.clicks[id]++
+                } else {
+                    state.specialUpgrades[id] = currentOwned + 1
+                }
+
+                state.cookies -= cost
+                currentOwned++
+                bought++
+            }
+
+            if (bought <= 0) {
+                return
+            }
+
+            evaluateAchievements()
             renderHeader()
             renderShop()
             save()
@@ -1592,10 +2246,34 @@
             }
             state.prestige.level++
             resetRunProgress()
+            evaluateAchievements()
             renderHeader()
             renderShop()
             renderPrestige()
             save()
+        }
+
+        function evaluateAchievements() {
+            let changed = false
+            for (const achievement of ACHIEVEMENTS) {
+                if (state.achievements[achievement.id]) continue
+                if (achievement.check()) {
+                    state.achievements[achievement.id] = true
+                    changed = true
+                }
+            }
+
+            if (changed) {
+                renderHeader()
+                const shopPanel = $('panel-shop')
+                if (shopPanel && shopPanel.classList.contains('active')) {
+                    renderShop()
+                }
+                const achievementsPanel = $('panel-achievements')
+                if (achievementsPanel && achievementsPanel.classList.contains('active')) {
+                    renderAchievements()
+                }
+            }
         }
 
         function spawnFloatPlus(amount, x, y) {
@@ -1760,7 +2438,8 @@
         }
 
         function onTapCookie(ev) {
-            const tap = calcTap()
+            const baseTap = calcTap()
+            const tap = Math.random() < critChance() ? baseTap * critMultiplier() : baseTap
             playTapSound(tap)
             addCookies(tap, true)
             pulseCookie()
@@ -1865,6 +2544,8 @@
                 lifetimeCookies: 0,
                 producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
                 clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
+                specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
+                buyAmount: 1,
                 lastSave: Date.now(),
                 frenzyUntil: 0,
                 diamondUntil: 0,
@@ -1883,6 +2564,7 @@
                     shardMilestone: 0,
                     upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
                 },
+                achievements: Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, false])),
             }
         }
 
@@ -1904,6 +2586,9 @@
                 lifetimeCookies: state.lifetimeCookies,
                 producers: { ...state.producers },
                 clicks: { ...state.clicks },
+                specialUpgrades: { ...state.specialUpgrades },
+                buyAmount: state.buyAmount,
+                achievements: { ...state.achievements },
                 lastSave: state.lastSave,
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
@@ -1933,6 +2618,9 @@
                 state.cookies = data.cookies
                 state.lifetimeCookies = typeof data.lifetimeCookies === 'number' && data.lifetimeCookies >= 0 ? data.lifetimeCookies : data.cookies
                 state.lastSave = typeof data.lastSave === 'number' ? data.lastSave : Date.now()
+                const loadedBuyAmount = data.buyAmount
+                const normalizedBuyAmount = loadedBuyAmount === 'max' ? 100 : loadedBuyAmount
+                state.buyAmount = BUY_AMOUNTS.includes(normalizedBuyAmount) ? normalizedBuyAmount : 1
                 state.audioVolume = typeof data.audioVolume === 'number'
                     ? Math.min(1, Math.max(0, data.audioVolume))
                     : DEFAULT_VOLUME
@@ -1971,8 +2659,18 @@
                     const n = data.clicks?.[c.id]
                     state.clicks[c.id] = typeof n === 'number' && n >= 0 ? Math.floor(n) : 0
                 }
+                for (const s of SPECIAL_UPGRADES) {
+                    const n = data.specialUpgrades?.[s.id]
+                    state.specialUpgrades[s.id] = typeof n === 'number'
+                        ? Math.max(0, Math.min(s.max, Math.floor(n)))
+                        : 0
+                }
+                for (const achievement of ACHIEVEMENTS) {
+                    state.achievements[achievement.id] = data.achievements?.[achievement.id] === true
+                }
 
                 processShardMilestones()
+                evaluateAchievements()
                 state.nextGoldenAt = Date.now() + goldenIntervalMs()
                 state.nextDiamondAt = Date.now() + diamondIntervalMs()
                 applyOfflineEarnings()
@@ -1985,6 +2683,11 @@
             const cps = calcCps()
             if (cps > 0) {
                 addCookies((cps * TICK_MS) / 1000, false)
+            }
+
+            const autoCps = autoClicksPerSecond()
+            if (autoCps > 0) {
+                addCookies((calcTap() * autoCps * TICK_MS) / 1000, false)
             }
 
             rainTick()
@@ -2002,16 +2705,50 @@
         }
 
         function initTabs() {
+            const activateTab = (tab) => {
+                document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab))
+                $('panel-play').classList.toggle('active', tab === 'play')
+                $('panel-shop').classList.toggle('active', tab === 'shop')
+                $('panel-prestige').classList.toggle('active', tab === 'prestige')
+                $('panel-achievements').classList.toggle('active', tab === 'achievements')
+
+                const achievementsToggle = $('achievements-toggle')
+                if (achievementsToggle) {
+                    const active = tab === 'achievements'
+                    achievementsToggle.classList.toggle('active', active)
+                    achievementsToggle.setAttribute('aria-pressed', String(active))
+                }
+
+                if (tab === 'shop') renderShop()
+                if (tab === 'prestige') renderPrestige()
+                if (tab === 'achievements') renderAchievements()
+            }
+
             document.querySelectorAll('.tab-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
-                    const tab = btn.dataset.tab
-                    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b === btn))
-                    $('panel-play').classList.toggle('active', tab === 'play')
-                    $('panel-shop').classList.toggle('active', tab === 'shop')
-                    $('panel-prestige').classList.toggle('active', tab === 'prestige')
-                    if (tab === 'shop') renderShop()
-                    if (tab === 'prestige') renderPrestige()
+                    activateTab(btn.dataset.tab)
                 })
+            })
+
+            const achievementsToggle = $('achievements-toggle')
+            if (achievementsToggle) {
+                achievementsToggle.addEventListener('click', () => {
+                    const currentlyOpen = $('panel-achievements').classList.contains('active')
+                    activateTab(currentlyOpen ? 'play' : 'achievements')
+                })
+            }
+        }
+
+        function initShopControls() {
+            const controls = $('buy-amount-controls')
+            if (!controls) return
+            controls.addEventListener('click', (ev) => {
+                const target = ev.target.closest('.buy-amount-btn')
+                if (!target) return
+                const value = target.dataset.amount
+                state.buyAmount = Number(value)
+                renderShopMeta()
+                renderShop()
             })
         }
 
@@ -2019,11 +2756,14 @@
             load()
             buildShop()
             buildPrestige()
+            buildAchievements()
             renderHeader()
             renderShop()
             renderPrestige()
+            renderAchievements()
             renderAudioControls()
             renderThemeToggle()
+            initShopControls()
 
             $('big-cookie').addEventListener('mousedown', onCookieMouseDown)
             $('big-cookie').addEventListener('keydown', (ev) => {
