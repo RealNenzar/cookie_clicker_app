@@ -1145,10 +1145,8 @@
                 <span>pro Sek <strong id="cps-display">0</strong></span>
             </div>
             <div class="stats-row">
-                <span>Prestige <strong id="prestige-level-display">0</strong></span>
                 <span>Splitter <strong id="shards-display">0</strong></span>
                 <span>Krit <strong id="crit-display">4% / x2.0</strong></span>
-                <span>Erfolge <strong id="achievements-display">0/0</strong></span>
             </div>
             <div class="audio-controls" aria-label="Audio-Steuerung">
                 <label for="volume-slider">Ton</label>
@@ -1825,8 +1823,11 @@
             $('total-display').textContent = formatNum(state.cookies)
             $('tap-display').textContent = formatNum(calcTap() * incomeMult())
             $('cps-display').textContent = formatNum(calcCps() * incomeMult())
-            $('prestige-level-display').textContent = String(state.prestige.level)
             $('shards-display').textContent = formatNum(state.prestige.shards + state.prestige.runShards)
+            const prestigeNode = $('prestige-level-display')
+            if (prestigeNode) {
+                prestigeNode.textContent = String(state.prestige.level)
+            }
             const critNode = $('crit-display')
             if (critNode) {
                 critNode.textContent = `${Math.round(critChance() * 100)}% / x${critMultiplier().toFixed(1)}`
@@ -2463,20 +2464,28 @@
             const btn = $('golden-cookie')
             const area = $('play-area')
             const pad = 16
-            const maxX = area.clientWidth - btn.offsetWidth - pad
-            const maxY = area.clientHeight - btn.offsetHeight - pad
-            btn.style.left = pad + Math.random() * Math.max(0, maxX) + 'px'
-            btn.style.top = pad + Math.random() * Math.max(0, maxY) + 'px'
+            const width = Math.max(btn.offsetWidth, parseFloat(getComputedStyle(btn).width) || 52)
+            const height = Math.max(btn.offsetHeight, parseFloat(getComputedStyle(btn).height) || 52)
+            const minX = pad
+            const minY = pad
+            const maxX = Math.max(minX, area.clientWidth - width - pad)
+            const maxY = Math.max(minY, area.clientHeight - height - pad)
+            btn.style.left = (minX + Math.random() * (maxX - minX)) + 'px'
+            btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
         }
 
         function placeDiamondCookie() {
             const btn = $('diamond-cookie')
             const area = $('play-area')
             const pad = 20
-            const maxX = area.clientWidth - btn.offsetWidth - pad
-            const maxY = area.clientHeight - btn.offsetHeight - pad
-            btn.style.left = pad + Math.random() * Math.max(0, maxX) + 'px'
-            btn.style.top = pad + Math.random() * Math.max(0, maxY) + 'px'
+            const width = Math.max(btn.offsetWidth, parseFloat(getComputedStyle(btn).width) || 49)
+            const height = Math.max(btn.offsetHeight, parseFloat(getComputedStyle(btn).height) || 49)
+            const minX = pad
+            const minY = pad
+            const maxX = Math.max(minX, area.clientWidth - width - pad)
+            const maxY = Math.max(minY, area.clientHeight - height - pad)
+            btn.style.left = (minX + Math.random() * (maxX - minX)) + 'px'
+            btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
         }
 
         function showGoldenCookie() {
