@@ -161,6 +161,52 @@
             box-shadow: 0 0 26px rgba(255, 193, 7, 1);
         }
 
+        .app.diamond-active {
+            background: radial-gradient(circle at 68% 18%, #dff8ff 0%, #79dbff 38%, #1b76b9 100%);
+        }
+
+        .app.diamond-active .header {
+            background: rgba(232, 248, 255, 0.88);
+            border-bottom-color: rgba(24, 88, 134, 0.36);
+        }
+
+        .app.diamond-active .cookie-total,
+        .app.diamond-active .stats-row strong,
+        .app.diamond-active .audio-controls button,
+        .app.diamond-active .tab-btn.active {
+            color: #0c4f7e;
+        }
+
+        .app.diamond-active .cookie-total .label,
+        .app.diamond-active .stats-row,
+        .app.diamond-active .audio-controls,
+        .app.diamond-active .tab-btn {
+            color: #19679d;
+        }
+
+        .app.diamond-active .tabs {
+            background: rgba(227, 246, 255, 0.95);
+            border-top-color: rgba(24, 88, 134, 0.35);
+        }
+
+        .app.diamond-active .tab-btn.active {
+            background: linear-gradient(180deg, #9ce7ff 0%, #66d4ff 100%);
+        }
+
+        .app.diamond-active .upgrade-row,
+        .app.diamond-active .audio-controls button {
+            background: rgba(233, 247, 255, 0.94);
+            border-color: rgba(24, 88, 134, 0.28);
+        }
+
+        .app.diamond-active .big-cookie {
+            filter: drop-shadow(0 0 14px rgba(74, 210, 255, 0.85));
+        }
+
+        .app.diamond-active .diamond-cookie {
+            box-shadow: 0 0 26px rgba(67, 214, 255, 0.95);
+        }
+
         .header {
             padding: 0.75rem 1rem 0.5rem;
             text-align: center;
@@ -199,6 +245,13 @@
         .help-wrap {
             position: absolute;
             top: 1.4rem;
+            left: 0.9rem;
+            z-index: 6;
+        }
+
+        .patch-wrap {
+            position: absolute;
+            top: 3.95rem;
             left: 0.9rem;
             z-index: 6;
         }
@@ -257,6 +310,64 @@
 
         .help-wrap:hover .help-tooltip,
         .help-wrap:focus-within .help-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .patch-toggle {
+            border: 1px solid var(--ctrl-border);
+            background: var(--theme-btn-bg);
+            color: var(--theme-btn-fg);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            box-shadow: 0 2px 8px var(--theme-btn-shadow);
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .patch-toggle:hover,
+        .patch-toggle:focus-visible {
+            transform: scale(1.06);
+            background: var(--ctrl-bg-hover);
+            outline: none;
+        }
+
+        .patch-tooltip {
+            position: absolute;
+            top: 2.35rem;
+            left: 0;
+            width: min(24rem, calc(100vw - 2.5rem));
+            background: var(--tabs-bg);
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.7rem;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+            padding: 0.7rem 0.75rem;
+            font-size: 0.72rem;
+            text-align: left;
+            color: var(--shop-name-color);
+            opacity: 0;
+            transform: translateY(-4px);
+            pointer-events: none;
+            transition: opacity 0.14s ease, transform 0.14s ease;
+        }
+
+        .patch-tooltip ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .patch-tooltip li + li {
+            margin-top: 0.35rem;
+        }
+
+        .patch-wrap:hover .patch-tooltip,
+        .patch-wrap:focus-within .patch-tooltip {
             opacity: 1;
             transform: translateY(0);
         }
@@ -559,9 +670,44 @@
             display: block;
         }
 
+        .diamond-cookie {
+            display: none;
+            position: absolute;
+            width: 3.05rem;
+            height: 3.05rem;
+            border: none;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 24%, #f0feff 0%, #86e8ff 44%, #139fe0 100%);
+            box-shadow: 0 0 16px rgba(67, 214, 255, 0.8);
+            font-size: 1.55rem;
+            cursor: pointer;
+            animation: diamond-wobble 1s ease-in-out infinite;
+            z-index: 11;
+            touch-action: manipulation;
+            transition: filter 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .diamond-cookie:hover {
+            filter: brightness(1.08);
+            box-shadow: 0 0 22px rgba(67, 214, 255, 0.95);
+        }
+
+        .diamond-cookie:active {
+            filter: brightness(0.95);
+        }
+
+        .diamond-cookie.visible {
+            display: block;
+        }
+
         @keyframes golden-wobble {
             0%, 100% { transform: rotate(-6deg) scale(1); }
             50% { transform: rotate(6deg) scale(1.08); }
+        }
+
+        @keyframes diamond-wobble {
+            0%, 100% { transform: rotate(-8deg) scale(1); }
+            50% { transform: rotate(8deg) scale(1.12); }
         }
 
         /* Shop */
@@ -783,6 +929,21 @@
                     </ul>
                 </div>
             </div>
+            <div class="patch-wrap">
+                <button type="button" class="patch-toggle" aria-label="Patchnotes anzeigen">📝</button>
+                <div class="patch-tooltip" role="note">
+                    <ul>
+                        <li><strong>2026-07-18:</strong> Hilfe-Tooltip ergänzt und deutsche Labels überarbeitet.</li>
+                        <li><strong>2026-07-18:</strong> Prestige-Balancing angepasst: Splitter-Skalierung und Upgrade-Kosten</li>
+                        <li><strong>2026-07-18:</strong> Prestige-System eingeführt mit Splitter-Progression und permanenten Upgrades.</li>
+                        <li><strong>2026-07-18:</strong> Forschungscampus/Keks-Labor-Werte korrigiert (CPS-Reihenfolge gefixt).</li>
+                        <li><strong>2026-07-17:</strong> UI-Feinschliff: Audio-Controls, Theme-Abstände, Safe-Area und Hover-Theming verbessert.</li>
+                        <li><strong>2026-07-17:</strong> Dark Mode erweitert (Toggle, persistentes Theme, bessere Shop-Kontraste).</li>
+                        <li><strong>2026-07-17:</strong> Frenzy-Modus visuell aufgewertet mit goldener Farbwelt.</li>
+                        <li><strong>2026-07-17:</strong> Standalone Cookie-Clicker-App initial erstellt.</li>
+                    </ul>
+                </div>
+            </div>
             <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Darkmode" aria-pressed="false">
                 <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
@@ -817,6 +978,7 @@
                     </div>
                     <p class="tap-hint">Klicke den Keks</p>
                     <button type="button" class="golden-cookie" id="golden-cookie" aria-label="Goldener Keks">⭐</button>
+                    <button type="button" class="diamond-cookie" id="diamond-cookie" aria-label="Diamant-Keks">💎</button>
                 </div>
             </section>
 
@@ -842,8 +1004,10 @@
         const COST_MULT = 1.15
         const OFFLINE_CAP_MS = 4 * 60 * 60 * 1000
         const GOLDEN_INTERVAL_MS = 150000
+        const DIAMOND_INTERVAL_MS = 420000
         const FRENZY_MS = 10000
         const FRENZY_MULT = 2
+        const DIAMOND_MULT = 3
         const TICK_MS = 100
         const AUTOSAVE_MS = 15000
         const DEFAULT_VOLUME = 0.7
@@ -974,8 +1138,11 @@
             clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
             lastSave: Date.now(),
             frenzyUntil: 0,
+            diamondUntil: 0,
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
+            diamondVisible: false,
+            nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
@@ -1074,7 +1241,14 @@
         }
 
         function incomeMult() {
-            return Date.now() < state.frenzyUntil ? frenzyPowerMult() : 1
+            const now = Date.now()
+            if (now < state.diamondUntil) {
+                return frenzyPowerMult() * DIAMOND_MULT
+            }
+            if (now < state.frenzyUntil) {
+                return frenzyPowerMult()
+            }
+            return 1
         }
 
         function calcCps() {
@@ -1130,8 +1304,15 @@
             return Date.now() < state.frenzyUntil
         }
 
+        function isDiamondActive() {
+            return Date.now() < state.diamondUntil
+        }
+
         function updateFrenzyVisuals() {
-            $('app').classList.toggle('frenzy-active', isFrenzyActive())
+            const app = $('app')
+            const diamondActive = isDiamondActive()
+            app.classList.toggle('diamond-active', diamondActive)
+            app.classList.toggle('frenzy-active', !diamondActive && isFrenzyActive())
         }
 
         function renderHeader() {
@@ -1367,9 +1548,13 @@
             state.producers = Object.fromEntries(PRODUCERS.map((p) => [p.id, 0]))
             state.clicks = Object.fromEntries(CLICKS.map((c) => [c.id, 0]))
             state.frenzyUntil = 0
+            state.diamondUntil = 0
             state.goldenVisible = false
+            state.diamondVisible = false
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
+            state.nextDiamondAt = Date.now() + DIAMOND_INTERVAL_MS
             hideGoldenCookie()
+            hideDiamondCookie()
 
             const starterCookies = prestigeUpgradeLevel('starterSpark') * 500
             if (starterCookies > 0) {
@@ -1582,11 +1767,28 @@
             btn.style.top = pad + Math.random() * Math.max(0, maxY) + 'px'
         }
 
+        function placeDiamondCookie() {
+            const btn = $('diamond-cookie')
+            const area = $('play-area')
+            const pad = 20
+            const maxX = area.clientWidth - btn.offsetWidth - pad
+            const maxY = area.clientHeight - btn.offsetHeight - pad
+            btn.style.left = pad + Math.random() * Math.max(0, maxX) + 'px'
+            btn.style.top = pad + Math.random() * Math.max(0, maxY) + 'px'
+        }
+
         function showGoldenCookie() {
-            if (state.goldenVisible) return
+            if (state.goldenVisible || state.diamondVisible) return
             state.goldenVisible = true
             placeGoldenCookie()
             $('golden-cookie').classList.add('visible')
+        }
+
+        function showDiamondCookie() {
+            if (state.diamondVisible || state.goldenVisible) return
+            state.diamondVisible = true
+            placeDiamondCookie()
+            $('diamond-cookie').classList.add('visible')
         }
 
         function hideGoldenCookie() {
@@ -1595,10 +1797,25 @@
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
         }
 
+        function hideDiamondCookie() {
+            state.diamondVisible = false
+            $('diamond-cookie').classList.remove('visible')
+            state.nextDiamondAt = Date.now() + DIAMOND_INTERVAL_MS
+        }
+
         function startFrenzy() {
             hideGoldenCookie()
             const now = Date.now()
             state.frenzyUntil = Math.max(state.frenzyUntil, now) + frenzyDurationMs()
+            renderHeader()
+        }
+
+        function startDiamondRush() {
+            hideDiamondCookie()
+            hideGoldenCookie()
+            const now = Date.now()
+            const duration = Math.floor(frenzyDurationMs() * 1.25)
+            state.diamondUntil = Math.max(state.diamondUntil, now) + duration
             renderHeader()
         }
 
@@ -1627,8 +1844,11 @@
                 clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
                 lastSave: Date.now(),
                 frenzyUntil: 0,
+                diamondUntil: 0,
                 goldenVisible: false,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
+                diamondVisible: false,
+                nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
@@ -1721,6 +1941,7 @@
 
                 processShardMilestones()
                 state.nextGoldenAt = Date.now() + goldenIntervalMs()
+                state.nextDiamondAt = Date.now() + DIAMOND_INTERVAL_MS
                 applyOfflineEarnings()
             } catch (_) {
                 Object.assign(state, defaultState())
@@ -1736,11 +1957,13 @@
             rainTick()
 
             const now = Date.now()
-            if (!state.goldenVisible && now >= state.nextGoldenAt) {
+            if (!state.goldenVisible && !state.diamondVisible && now >= state.nextDiamondAt) {
+                showDiamondCookie()
+            } else if (!state.goldenVisible && !state.diamondVisible && now >= state.nextGoldenAt) {
                 showGoldenCookie()
             }
 
-            if (now >= state.frenzyUntil && $('app').classList.contains('frenzy-active')) {
+            if (now >= state.frenzyUntil && now >= state.diamondUntil && ($('app').classList.contains('frenzy-active') || $('app').classList.contains('diamond-active'))) {
                 renderHeader()
             }
         }
@@ -1776,6 +1999,7 @@
                 }
             })
             $('golden-cookie').addEventListener('click', startFrenzy)
+            $('diamond-cookie').addEventListener('click', startDiamondRush)
             $('volume-slider').addEventListener('input', (ev) => {
                 state.audioVolume = Math.min(1, Math.max(0, Number(ev.target.value) / 100))
                 renderAudioControls()
