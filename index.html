@@ -1148,13 +1148,14 @@
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
-            nextDiamondAt: Date.now() + diamondIntervalMs(),
+            nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
             prestige: {
                 level: 0,
                 shards: 0,
+                runShards: 0,
                 totalShardsEarned: 0,
                 shardMilestone: 0,
                 upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
@@ -1231,7 +1232,7 @@
         }
 
         function canAscendPrestige() {
-            return state.prestige.shards >= nextPrestigeCost()
+            return state.prestige.runShards >= nextPrestigeCost()
         }
 
         function formatPct(value) {
@@ -1295,7 +1296,7 @@
 
             if (milestones > 0) {
                 const shards = Math.max(1, Math.floor(milestones * shardRewardMult()))
-                state.prestige.shards += shards
+                state.prestige.runShards += shards
                 state.prestige.totalShardsEarned += shards
             }
         }
@@ -1335,7 +1336,7 @@
             $('tap-display').textContent = formatNum(calcTap() * incomeMult())
             $('cps-display').textContent = formatNum(calcCps() * incomeMult())
             $('prestige-level-display').textContent = String(state.prestige.level)
-            $('shards-display').textContent = formatNum(state.prestige.shards)
+            $('shards-display').textContent = formatNum(state.prestige.shards + state.prestige.runShards)
             updateFrenzyVisuals()
         }
 
@@ -1431,7 +1432,7 @@
             btn.dataset.kind = kind
             btn.dataset.id = item.id
             btn.disabled = kind === 'prestige'
-                ? owned >= item.max || state.prestige.shards < cost
+                ? state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
                 : !canAfford(cost)
 
             btn.innerHTML = `
@@ -1475,12 +1476,14 @@
             summary.innerHTML = `
                 <div><strong>Prestige-Stufe:</strong> ${state.prestige.level}</div>
                 <div class="prestige-grid">
-                    <div>Splitter jetzt: <strong>${formatNum(state.prestige.shards)}</strong></div>
+                    <div>Splitter gesamt: <strong>${formatNum(state.prestige.shards + state.prestige.runShards)}</strong></div>
+                    <div>Ausgebbar: <strong>${formatNum(state.prestige.shards)}</strong></div>
+                    <div>Run-Splitter (gesperrt): <strong>${formatNum(state.prestige.runShards)}</strong></div>
                     <div>Gesamt Splitter: <strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
                     <div>Lebenszeit-Kekse: <strong>${formatNum(state.lifetimeCookies)}</strong></div>
                     <div>Nächster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
                     <div>Globaler Prestige-Bonus: <strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
-                    <div>Prestige-Kosten: <strong>${formatNum(prestigeCost)} Splitter</strong></div>
+                    <div>Prestige-Kosten (Run-Konto): <strong>${formatNum(prestigeCost)} Splitter</strong></div>
                 </div>
                 <button type="button" class="prestige-ascend-btn" id="prestige-ascend-btn" ${canAscendPrestige() ? '' : 'disabled'}>
                     Prestige aufsteigen (Reset) - ${formatNum(prestigeCost)} Splitter
@@ -1511,7 +1514,7 @@
             } else {
                 owned = prestigeUpgradeLevel(item.id)
                 cost = prestigeUpgradeCost(item, owned)
-                btn.disabled = owned >= item.max || state.prestige.shards < cost
+                btn.disabled = state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
             }
 
             btn.querySelector('.cost').textContent = formatNum(cost)
@@ -1543,6 +1546,7 @@
         function buyPrestigeUpgrade(id) {
             const item = PRESTIGE_UPGRADES.find((x) => x.id === id)
             if (!item) return
+            if (state.prestige.level < 1) return
 
             const owned = prestigeUpgradeLevel(id)
             if (owned >= item.max) return
@@ -1581,7 +1585,11 @@
             if (!canAscendPrestige()) return
 
             const cost = nextPrestigeCost()
-            state.prestige.shards -= cost
+            state.prestige.runShards -= cost
+            if (state.prestige.runShards > 0) {
+                state.prestige.shards += state.prestige.runShards
+                state.prestige.runShards = 0
+            }
             state.prestige.level++
             resetRunProgress()
             renderHeader()
@@ -1870,6 +1878,7 @@
                 prestige: {
                     level: 0,
                     shards: 0,
+                    runShards: 0,
                     totalShardsEarned: 0,
                     shardMilestone: 0,
                     upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
@@ -1902,6 +1911,7 @@
                 prestige: {
                     level: state.prestige.level,
                     shards: state.prestige.shards,
+                    runShards: state.prestige.runShards,
                     totalShardsEarned: state.prestige.totalShardsEarned,
                     shardMilestone: state.prestige.shardMilestone,
                     upgrades: { ...state.prestige.upgrades },
@@ -1930,10 +1940,18 @@
                 state.darkMode = data.darkMode === true
 
                 state.prestige.level = typeof data.prestige?.level === 'number' ? Math.max(0, Math.floor(data.prestige.level)) : 0
-                state.prestige.shards = typeof data.prestige?.shards === 'number' ? Math.max(0, Math.floor(data.prestige.shards)) : 0
+                const loadedShards = typeof data.prestige?.shards === 'number' ? Math.max(0, Math.floor(data.prestige.shards)) : 0
+                const hasRunShards = typeof data.prestige?.runShards === 'number'
+                if (hasRunShards) {
+                    state.prestige.shards = state.prestige.level > 0 ? loadedShards : 0
+                    state.prestige.runShards = Math.max(0, Math.floor(data.prestige.runShards))
+                } else {
+                    state.prestige.shards = state.prestige.level > 0 ? loadedShards : 0
+                    state.prestige.runShards = state.prestige.level > 0 ? 0 : loadedShards
+                }
                 state.prestige.totalShardsEarned = typeof data.prestige?.totalShardsEarned === 'number'
                     ? Math.max(0, Math.floor(data.prestige.totalShardsEarned))
-                    : state.prestige.shards
+                    : (state.prestige.shards + state.prestige.runShards)
                 state.prestige.shardMilestone = typeof data.prestige?.shardMilestone === 'number'
                     ? Math.max(0, Math.floor(data.prestige.shardMilestone))
                     : 0
