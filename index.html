@@ -933,14 +933,11 @@
                 <button type="button" class="patch-toggle" aria-label="Patchnotes anzeigen">📝</button>
                 <div class="patch-tooltip" role="note">
                     <ul>
-                        <li><strong>2026-07-18:</strong> Hilfe-Tooltip ergänzt und deutsche Labels überarbeitet.</li>
+                        <li><strong>2026-07-18:</strong> Diamant-Keks ergänzt: seltener Spawn und 3x Bonus</li>
                         <li><strong>2026-07-18:</strong> Prestige-Balancing angepasst: Splitter-Skalierung und Upgrade-Kosten</li>
                         <li><strong>2026-07-18:</strong> Prestige-System eingeführt mit Splitter-Progression und permanenten Upgrades.</li>
                         <li><strong>2026-07-18:</strong> Forschungscampus/Keks-Labor-Werte korrigiert (CPS-Reihenfolge gefixt).</li>
-                        <li><strong>2026-07-17:</strong> UI-Feinschliff: Audio-Controls, Theme-Abstände, Safe-Area und Hover-Theming verbessert.</li>
                         <li><strong>2026-07-17:</strong> Dark Mode erweitert (Toggle, persistentes Theme, bessere Shop-Kontraste).</li>
-                        <li><strong>2026-07-17:</strong> Frenzy-Modus visuell aufgewertet mit goldener Farbwelt.</li>
-                        <li><strong>2026-07-17:</strong> Standalone Cookie-Clicker-App initial erstellt.</li>
                     </ul>
                 </div>
             </div>
@@ -1129,6 +1126,15 @@
                 costMult: 1.62,
                 max: 12,
             },
+            {
+                id: 'diamondLure',
+                name: 'Diamant-Lockruf',
+                icon: 'fa-solid fa-gem',
+                desc: 'Diamant-Keks häufiger + längerer Diamant-Modus',
+                baseCost: 8,
+                costMult: 1.9,
+                max: 8,
+            },
         ]
 
         const state = {
@@ -1142,7 +1148,7 @@
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
-            nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
+            nextDiamondAt: Date.now() + diamondIntervalMs(),
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
@@ -1205,6 +1211,15 @@
 
         function frenzyDurationMs() {
             return FRENZY_MS + prestigeUpgradeLevel('timeStretch') * 1800
+        }
+
+        function diamondIntervalMs() {
+            const reduce = 0.08 * prestigeUpgradeLevel('diamondLure')
+            return Math.max(120000, Math.floor(DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce)))
+        }
+
+        function diamondDurationMult() {
+            return 1 + prestigeUpgradeLevel('diamondLure') * 0.1
         }
 
         function nextShardThreshold(milestone) {
@@ -1552,7 +1567,7 @@
             state.goldenVisible = false
             state.diamondVisible = false
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
-            state.nextDiamondAt = Date.now() + DIAMOND_INTERVAL_MS
+            state.nextDiamondAt = Date.now() + diamondIntervalMs()
             hideGoldenCookie()
             hideDiamondCookie()
 
@@ -1800,7 +1815,7 @@
         function hideDiamondCookie() {
             state.diamondVisible = false
             $('diamond-cookie').classList.remove('visible')
-            state.nextDiamondAt = Date.now() + DIAMOND_INTERVAL_MS
+            state.nextDiamondAt = Date.now() + diamondIntervalMs()
         }
 
         function startFrenzy() {
@@ -1814,7 +1829,7 @@
             hideDiamondCookie()
             hideGoldenCookie()
             const now = Date.now()
-            const duration = Math.floor(frenzyDurationMs() * 1.25)
+            const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
             state.diamondUntil = Math.max(state.diamondUntil, now) + duration
             renderHeader()
         }
@@ -1848,7 +1863,7 @@
                 goldenVisible: false,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 diamondVisible: false,
-                nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
+                nextDiamondAt: Date.now() + diamondIntervalMs(),
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
@@ -1941,7 +1956,7 @@
 
                 processShardMilestones()
                 state.nextGoldenAt = Date.now() + goldenIntervalMs()
-                state.nextDiamondAt = Date.now() + DIAMOND_INTERVAL_MS
+                state.nextDiamondAt = Date.now() + diamondIntervalMs()
                 applyOfflineEarnings()
             } catch (_) {
                 Object.assign(state, defaultState())
