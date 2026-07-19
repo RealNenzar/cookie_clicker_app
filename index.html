@@ -3620,19 +3620,13 @@
                 return
             }
 
-            try {
-                await navigator.clipboard.writeText(value)
+            input.focus()
+            input.select()
+            const copied = document.execCommand('copy')
+            if (copied) {
                 setSettingsHint('Export-Code wurde kopiert.')
-                return
-            } catch (_) {
-                input.focus()
-                input.select()
-                const copied = document.execCommand('copy')
-                if (copied) {
-                    setSettingsHint('Export-Code wurde kopiert.')
-                } else {
-                    setSettingsHint('Konnte nicht kopiert werden.', true)
-                }
+            } else {
+                setSettingsHint('Kopieren fehlgeschlagen. Bitte mit Strg+C kopieren.', true)
             }
         }
 
