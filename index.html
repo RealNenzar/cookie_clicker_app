@@ -635,6 +635,82 @@
             will-change: transform;
         }
 
+        .app.milk-active .rain-cookie {
+            opacity: 0.36;
+            filter: sepia(0.55) saturate(0.7) brightness(1.08);
+        }
+
+        .milk-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.16s ease;
+        }
+
+        .app.milk-active .milk-layer,
+        .milk-layer.visible {
+            opacity: 1;
+        }
+
+        .milk-fill {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 22%;
+            background: linear-gradient(180deg, rgba(255, 248, 237, 0.62) 0%, rgba(244, 221, 188, 0.7) 55%, rgba(135, 89, 51, 0.92) 100%);
+            box-shadow: inset 0 16px 24px rgba(255, 255, 255, 0.12);
+            border-top: 1px solid rgba(255, 255, 255, 0.18);
+            transition: height 0.12s linear, filter 0.12s linear, background 0.12s linear;
+        }
+
+        .milk-fill::before {
+            content: '';
+            position: absolute;
+            inset: auto 0 100% 0;
+            height: 1rem;
+            background: radial-gradient(circle at 18% 55%, rgba(255, 255, 255, 0.9) 0 24%, rgba(255, 255, 255, 0) 34%), radial-gradient(circle at 40% 45%, rgba(255, 255, 255, 0.84) 0 20%, rgba(255, 255, 255, 0) 32%), radial-gradient(circle at 64% 60%, rgba(255, 255, 255, 0.86) 0 22%, rgba(255, 255, 255, 0) 33%), radial-gradient(circle at 86% 46%, rgba(255, 255, 255, 0.8) 0 18%, rgba(255, 255, 255, 0) 29%);
+            opacity: 0.85;
+        }
+
+        .milk-cookie {
+            display: none;
+            position: absolute;
+            width: 3.15rem;
+            height: 3.15rem;
+            border: none;
+            border-radius: 0.9rem;
+            background: linear-gradient(180deg, rgba(255, 253, 247, 0.98) 0%, rgba(227, 213, 190, 0.95) 100%);
+            box-shadow: 0 0 16px rgba(255, 255, 255, 0.45), 0 0 8px rgba(155, 111, 75, 0.35);
+            font-size: 1.55rem;
+            cursor: pointer;
+            animation: milk-wobble 1.15s ease-in-out infinite;
+            z-index: 12;
+            touch-action: manipulation;
+            transition: filter 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .milk-cookie:hover {
+            filter: brightness(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.65), 0 0 10px rgba(155, 111, 75, 0.45);
+        }
+
+        .milk-cookie:active {
+            filter: brightness(0.96);
+        }
+
+        .milk-cookie.visible {
+            display: block;
+        }
+
+        @keyframes milk-wobble {
+            0%, 100% { transform: rotate(-4deg) scale(1); }
+            50% { transform: rotate(4deg) scale(1.08); }
+        }
+
         .rain-cookie.tap-rain {
             opacity: 0.4;
         }
@@ -858,6 +934,10 @@
 
         .diamond-cookie.visible {
             display: block;
+        }
+
+        .app.milk-active .play-area {
+            background: radial-gradient(circle at 45% 20%, rgba(255, 251, 244, 0.92) 0%, rgba(244, 224, 198, 0.86) 36%, rgba(128, 84, 48, 0.62) 100%);
         }
 
         @keyframes golden-wobble {
@@ -1226,6 +1306,14 @@
                 <button type="button" class="patch-toggle" aria-label="Patchnotes anzeigen">📝</button>
                 <div class="patch-tooltip" role="note">
                     <ul>
+                        <li><strong>2026-07-19</strong>
+                            <ul>
+                                <li>Prestige um neue Upgrades erweitert und mehrere neue Erfolge ergänzt</li>
+                                <li>Milchtüten-Event hinzugefügt: Cookies fallen während des Effekts in Milch, Füllstand und Farbe steigen sichtbar mit</li>
+                                <li>Shop-Kaufmodus um Max erweitert und die Kaufleiste im Laden beim Scrollen fixiert</li>
+                                <li>Prestige-Reset bereinigt jetzt auch Spezial-Upgrades und weitere Run-Werte sauber</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-18</strong>
                             <ul>
                                 <li>Prestige-System eingeführt und balanciert (Splitter, permanente Upgrades, Kosten/Skalierung angepasst)</li>
@@ -1278,6 +1366,9 @@
             <section class="panel active" id="panel-play" aria-label="Spielen">
                 <div class="play-area" id="play-area">
                     <div class="cookie-rain-layer" id="cookie-rain" aria-hidden="true"></div>
+                    <div class="milk-layer" id="milk-layer" aria-hidden="true">
+                        <div class="milk-fill" id="milk-fill"></div>
+                    </div>
                     <div class="effects-layer" id="effects-layer" aria-hidden="true"></div>
                     <div class="play-center">
                         <div class="cookie-tap-zone">
@@ -1287,6 +1378,7 @@
                     <p class="tap-hint">Klicke den Keks</p>
                     <button type="button" class="golden-cookie" id="golden-cookie" aria-label="Goldener Keks">⭐</button>
                     <button type="button" class="diamond-cookie" id="diamond-cookie" aria-label="Diamant-Keks">💎</button>
+                    <button type="button" class="milk-cookie" id="milk-cookie" aria-label="Milchtüte">🥛</button>
                 </div>
             </section>
 
@@ -1328,6 +1420,8 @@
         const SHARD_BASE_THRESHOLD = 8000000
         const SHARD_GROWTH = 1.48
         const BUY_AMOUNTS = [1, 10, 50, 100, 'max']
+        const MILK_BASE_INTERVAL_MS = 240000
+        const MILK_DURATION_BASE_MS = 14000
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -1569,6 +1663,105 @@
                 value: 0.07,
                 check: () => state.clicks.cosmic >= 1,
             },
+            {
+                id: 'orbitStarter',
+                name: 'Orbit-Einsteiger',
+                desc: 'Kaufe 3 Stufen Keks-Orbit',
+                reward: '+4% globale Einkünfte',
+                type: 'cps',
+                value: 0.04,
+                check: () => prestigeUpgradeLevel('cosmicOrbit') >= 3,
+            },
+            {
+                id: 'orbitArchitect',
+                name: 'Orbit-Architekt',
+                desc: 'Kaufe 8 Stufen Keks-Orbit',
+                reward: '+6% globale Einkünfte',
+                type: 'cps',
+                value: 0.06,
+                check: () => prestigeUpgradeLevel('cosmicOrbit') >= 8,
+            },
+            {
+                id: 'milkTrail',
+                name: 'Milchspur',
+                desc: 'Aktiviere die Milchtüte 3-mal',
+                reward: '+4% Klick-Stärke',
+                type: 'tap',
+                value: 0.04,
+                check: () => state.milkEventsTriggered >= 3,
+            },
+            {
+                id: 'milkFlood',
+                name: 'Milchflut',
+                desc: 'Lasse 1.000 Kekse in Milch fallen',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => state.milkCookiesFallen >= 1000,
+            },
+            {
+                id: 'archiveKeeper',
+                name: 'Archiv-Hüter',
+                desc: 'Kaufe 5 Stufen Splitter-Archiv',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => prestigeUpgradeLevel('splitterArchiv') >= 5,
+            },
+            {
+                id: 'impulseRunner',
+                name: 'Impuls-Reiter',
+                desc: 'Kaufe 5 Stufen Sternen-Impuls',
+                reward: '+5% globale Einkünfte',
+                type: 'cps',
+                value: 0.05,
+                check: () => prestigeUpgradeLevel('stellarImpulse') >= 5,
+            },
+            {
+                id: 'supplyEngineer',
+                name: 'Lieferketten-Ingenieur',
+                desc: 'Kaufe 5 Stufen Quanten-Lieferkette',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => prestigeUpgradeLevel('quantumSupplyChain') >= 5,
+            },
+            {
+                id: 'focusMaster',
+                name: 'Fokus-Meister',
+                desc: 'Kaufe 5 Stufen Hyperfokus',
+                reward: '+4% Klick-Stärke',
+                type: 'tap',
+                value: 0.04,
+                check: () => prestigeUpgradeLevel('hyperFocus') >= 5,
+            },
+            {
+                id: 'magnetField',
+                name: 'Magnetfeld',
+                desc: 'Kaufe 5 Stufen Prestige-Magnet',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => prestigeUpgradeLevel('prestigeMagnet') >= 5,
+            },
+            {
+                id: 'abyssWalker',
+                name: 'Abgrund-Wandler',
+                desc: 'Sammle 500 Splitter über Milestones',
+                reward: '+7% Produktion',
+                type: 'cps',
+                value: 0.07,
+                check: () => state.prestige.totalShardsEarned >= 500,
+            },
+            {
+                id: 'zeroPoint',
+                name: 'Nullpunkt',
+                desc: 'Erreiche Prestige-Stufe 15',
+                reward: '+8% globale Einkünfte',
+                type: 'cps',
+                value: 0.08,
+                check: () => state.prestige.level >= 15,
+            },
         ]
 
         const PRESTIGE_UPGRADES = [
@@ -1662,6 +1855,96 @@
                 costMult: 1.9,
                 max: 8,
             },
+            {
+                id: 'cosmicOrbit',
+                name: 'Keks-Orbit',
+                icon: 'fa-solid fa-earth-europe',
+                desc: '+3% globale Einkünfte pro Stufe',
+                baseCost: 6,
+                costMult: 1.72,
+                max: 12,
+            },
+            {
+                id: 'milkResonance',
+                name: 'Milch-Resonanz',
+                icon: 'fa-solid fa-mug-hot',
+                desc: 'Milch-Event steigt schneller und bringt mehr Bonus',
+                baseCost: 4,
+                costMult: 1.7,
+                max: 10,
+            },
+            {
+                id: 'cosmicTragheit',
+                name: 'Kosmische Trägheit',
+                icon: 'fa-solid fa-cubes-stacked',
+                desc: 'Producer skalieren besser mit deiner Gesamtgröße',
+                baseCost: 5,
+                costMult: 1.76,
+                max: 12,
+            },
+            {
+                id: 'splitterArchiv',
+                name: 'Splitter-Archiv',
+                icon: 'fa-solid fa-archive',
+                desc: 'Ein Teil der Prestige-Kosten kommt als permanente Splitter zurück',
+                baseCost: 7,
+                costMult: 1.84,
+                max: 10,
+            },
+            {
+                id: 'stellarImpulse',
+                name: 'Sternen-Impuls',
+                icon: 'fa-solid fa-sun',
+                desc: 'Nach Prestige gibt es kurz einen starken globalen Bonus',
+                baseCost: 6,
+                costMult: 1.78,
+                max: 10,
+            },
+            {
+                id: 'quantumSupplyChain',
+                name: 'Quanten-Lieferkette',
+                icon: 'fa-solid fa-route',
+                desc: 'Shop-Upgrades werden zusätzlich günstiger',
+                baseCost: 5,
+                costMult: 1.8,
+                max: 10,
+            },
+            {
+                id: 'hyperFocus',
+                name: 'Hyperfokus',
+                icon: 'fa-solid fa-crosshairs',
+                desc: 'Mehr Krits und schnellere Klick-Drohnen',
+                baseCost: 4,
+                costMult: 1.7,
+                max: 10,
+            },
+            {
+                id: 'prestigeMagnet',
+                name: 'Prestige-Magnet',
+                icon: 'fa-solid fa-satellite',
+                desc: 'Spezial-Events erscheinen häufiger',
+                baseCost: 6,
+                costMult: 1.83,
+                max: 10,
+            },
+            {
+                id: 'abyssStorage',
+                name: 'Abgrundspeicher',
+                icon: 'fa-solid fa-vault',
+                desc: 'Mehr Splitter aus Milestones und Offline-Reserven',
+                baseCost: 5,
+                costMult: 1.79,
+                max: 10,
+            },
+            {
+                id: 'nullPointResonator',
+                name: 'Nullpunkt-Resonator',
+                icon: 'fa-solid fa-wave-square',
+                desc: 'Prestige-Level verstärkt den globalen Bonus noch stärker',
+                baseCost: 8,
+                costMult: 1.88,
+                max: 10,
+            },
         ]
 
         const state = {
@@ -1674,6 +1957,13 @@
             lastSave: Date.now(),
             frenzyUntil: 0,
             diamondUntil: 0,
+            milkUntil: 0,
+            nextMilkAt: Date.now() + MILK_BASE_INTERVAL_MS,
+            milkVisible: false,
+            milkLevel: 0,
+            milkCookiesFallen: 0,
+            milkEventsTriggered: 0,
+            randomEventsTriggered: 0,
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
@@ -1687,6 +1977,7 @@
                 runShards: 0,
                 totalShardsEarned: 0,
                 shardMilestone: 0,
+                impulseUntil: 0,
                 upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
             },
             achievements: Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, false])),
@@ -1710,8 +2001,48 @@
             return Math.max(1, Math.floor(item.baseCost * Math.pow(item.costMult, owned) * shopCostDiscount()))
         }
 
+        function cosmicOrbitMult() {
+            return 1 + prestigeUpgradeLevel('cosmicOrbit') * 0.03
+        }
+
+        function cosmicTragheitMult() {
+            const base = 0.015 + Math.min(0.05, totalProducerOwned() / 3000)
+            return 1 + prestigeUpgradeLevel('cosmicTragheit') * base
+        }
+
+        function quantumSupplyChainDiscount() {
+            return Math.max(0.78, 1 - prestigeUpgradeLevel('quantumSupplyChain') * 0.015)
+        }
+
+        function prestigeImpulseMult() {
+            return Date.now() < state.prestige.impulseUntil
+                ? 1 + prestigeUpgradeLevel('stellarImpulse') * 0.08
+                : 1
+        }
+
+        function prestigeMagnetMult() {
+            return Math.max(0.58, 1 - prestigeUpgradeLevel('prestigeMagnet') * 0.04)
+        }
+
+        function milkResonanceRiseStep() {
+            return 0.04 + prestigeUpgradeLevel('milkResonance') * 0.005
+        }
+
+        function milkEventBonusMult() {
+            if (!isMilkActive()) return 1
+            return 1.18 + state.milkLevel * 0.34 + prestigeUpgradeLevel('milkResonance') * 0.05
+        }
+
+        function splitterArchivBonus(cost) {
+            return Math.floor(cost * prestigeUpgradeLevel('splitterArchiv') * 0.2)
+        }
+
+        function nullPointBonusPerLevel() {
+            return prestigeUpgradeLevel('nullPointResonator') * 0.004 * state.prestige.level
+        }
+
         function prestigeLevelIncomeMult() {
-            return 1 + state.prestige.level * PRESTIGE_BASE_MULT
+            return 1 + state.prestige.level * (PRESTIGE_BASE_MULT + nullPointBonusPerLevel())
         }
 
         function tapBonusMult() {
@@ -1728,24 +2059,28 @@
 
         function shopCostDiscount() {
             const discount = 0.02 * prestigeUpgradeLevel('frugalGalaxy')
-            return Math.max(0.65, 1 - discount)
+            return Math.max(0.65, 1 - discount) * quantumSupplyChainDiscount()
         }
 
         function shardRewardMult() {
-            return 1 + prestigeUpgradeLevel('splitterCore') * 0.18
+            return (1 + prestigeUpgradeLevel('splitterCore') * 0.18) * (1 + prestigeUpgradeLevel('abyssStorage') * 0.06)
         }
 
         function offlineIncomeMult() {
-            return 1 + prestigeUpgradeLevel('echoVault') * 0.15
+            return (1 + prestigeUpgradeLevel('echoVault') * 0.15) * (1 + prestigeUpgradeLevel('abyssStorage') * 0.08)
         }
 
         function offlineCapMs() {
-            return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 45 * 60 * 1000
+            return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 45 * 60 * 1000 + prestigeUpgradeLevel('abyssStorage') * 20 * 60 * 1000
         }
 
         function goldenIntervalMs() {
             const reduce = 0.06 * prestigeUpgradeLevel('goldenSignal')
-            return Math.max(25000, Math.floor(GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce)))
+            return Math.max(25000, Math.floor(GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce) * prestigeMagnetMult()))
+        }
+
+        function milkIntervalMs() {
+            return Math.max(70000, Math.floor(MILK_BASE_INTERVAL_MS * prestigeMagnetMult()))
         }
 
         function frenzyDurationMs() {
@@ -1754,7 +2089,7 @@
 
         function diamondIntervalMs() {
             const reduce = 0.08 * prestigeUpgradeLevel('diamondLure')
-            return Math.max(120000, Math.floor(DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce)))
+            return Math.max(120000, Math.floor(DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce) * prestigeMagnetMult()))
         }
 
         function diamondDurationMult() {
@@ -1796,18 +2131,18 @@
         }
 
         function critChance() {
-            const base = 0.04 + specialUpgradeLevel('critChance') * 0.012
-            return Math.min(0.5, base + achievementBonus('critChance'))
+            const base = 0.04 + specialUpgradeLevel('critChance') * 0.012 + prestigeUpgradeLevel('hyperFocus') * 0.008
+            return Math.min(0.65, base + achievementBonus('critChance'))
         }
 
         function critMultiplier() {
-            return Math.min(10, 2 + specialUpgradeLevel('critPower') * 0.3)
+            return Math.min(12, 2 + specialUpgradeLevel('critPower') * 0.3 + prestigeUpgradeLevel('hyperFocus') * 0.08)
         }
 
         function autoClicksPerSecond() {
             const level = specialUpgradeLevel('autoDrone')
             if (level <= 0) return 0
-            return level * (0.45 + (level - 1) * 0.08)
+            return level * (0.45 + (level - 1) * 0.08) * (1 + prestigeUpgradeLevel('hyperFocus') * 0.04)
         }
 
         function producerSynergyMult(targetId) {
@@ -1864,13 +2199,13 @@
 
         function incomeMult() {
             const now = Date.now()
+            let mult = 1
             if (now < state.diamondUntil) {
-                return frenzyPowerMult() * DIAMOND_MULT
+                mult = frenzyPowerMult() * DIAMOND_MULT
+            } else if (now < state.frenzyUntil) {
+                mult = frenzyPowerMult()
             }
-            if (now < state.frenzyUntil) {
-                return frenzyPowerMult()
-            }
-            return 1
+            return mult * milkEventBonusMult() * prestigeImpulseMult()
         }
 
         function calcCps() {
@@ -1878,7 +2213,7 @@
             for (const p of PRODUCERS) {
                 cps += p.cps * state.producers[p.id] * producerSynergyMult(p.id)
             }
-            return cps * producerBonusMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('cps'))
+            return cps * producerBonusMult() * cosmicOrbitMult() * cosmicTragheitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('cps'))
         }
 
         function calcTap() {
@@ -1886,7 +2221,7 @@
             for (const c of CLICKS) {
                 tap += c.bonus * state.clicks[c.id]
             }
-            return tap * tapBonusMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('tap'))
+            return tap * tapBonusMult() * cosmicOrbitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('tap'))
         }
 
         function canAfford(cost) {
@@ -1931,11 +2266,35 @@
             return Date.now() < state.diamondUntil
         }
 
+        function isMilkActive() {
+            return Date.now() < state.milkUntil
+        }
+
+        function renderMilkVisual() {
+            const layer = $('milk-layer')
+            const fill = $('milk-fill')
+            if (!layer || !fill) return
+
+            const active = state.milkVisible || isMilkActive()
+            const level = Math.max(0, Math.min(1, state.milkLevel))
+            const blend = (from, to) => Math.round(from + (to - from) * level)
+            const top = `rgb(${blend(255, 240)}, ${blend(248, 214)}, ${blend(237, 184)})`
+            const mid = `rgb(${blend(244, 150)}, ${blend(221, 108)}, ${blend(188, 76)})`
+            const bottom = `rgb(${blend(135, 106)}, ${blend(89, 68)}, ${blend(51, 36)})`
+
+            layer.classList.toggle('visible', active)
+            fill.style.height = `${22 + level * 48}%`
+            fill.style.background = `linear-gradient(180deg, ${top} 0%, ${mid} 55%, ${bottom} 100%)`
+            fill.style.filter = `saturate(${1 + level * 0.2}) brightness(${1 - level * 0.12})`
+        }
+
         function updateFrenzyVisuals() {
             const app = $('app')
             const diamondActive = isDiamondActive()
             app.classList.toggle('diamond-active', diamondActive)
             app.classList.toggle('frenzy-active', !diamondActive && isFrenzyActive())
+            app.classList.toggle('milk-active', state.milkVisible || isMilkActive())
+            renderMilkVisual()
         }
 
         function renderHeader() {
@@ -2376,12 +2735,17 @@
             state.specialUpgrades = Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0]))
             state.frenzyUntil = 0
             state.diamondUntil = 0
+            state.milkUntil = 0
+            state.milkVisible = false
+            state.milkLevel = 0
             state.goldenVisible = false
             state.diamondVisible = false
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
             state.nextDiamondAt = Date.now() + diamondIntervalMs()
+            state.nextMilkAt = Date.now() + milkIntervalMs()
             hideGoldenCookie()
             hideDiamondCookie()
+            hideMilkCookie()
 
             const starterCookies = prestigeUpgradeLevel('starterSpark') * 500
             if (starterCookies > 0) {
@@ -2404,7 +2768,14 @@
                 state.prestige.shards += state.prestige.runShards
                 state.prestige.runShards = 0
             }
+            const archivedShards = splitterArchivBonus(cost)
+            if (archivedShards > 0) {
+                state.prestige.shards += archivedShards
+            }
             state.prestige.level++
+            state.prestige.impulseUntil = prestigeUpgradeLevel('stellarImpulse') > 0
+                ? Date.now() + (120000 + prestigeUpgradeLevel('stellarImpulse') * 30000)
+                : 0
             resetRunProgress()
             evaluateAchievements()
             renderHeader()
@@ -2493,6 +2864,9 @@
 
             const el = document.createElement('span')
             el.className = 'rain-cookie' + (fromTap ? ' tap-rain' : '')
+            if (isMilkActive()) {
+                el.classList.add('milk-rain')
+            }
             el.textContent = '🍪'
             el.style.fontSize = (fromTap
                 ? Math.min(1.6, 0.5 + Math.log10((perTap || 1) + 1) * 0.32)
@@ -2509,6 +2883,11 @@
             const duration = (fromTap ? 2.2 : 2.8) + Math.random() * (fromTap ? 1.6 : 2.4)
             el.style.animationDuration = duration + 's'
             layer.appendChild(el)
+            if (isMilkActive()) {
+                state.milkCookiesFallen++
+                state.milkLevel = Math.min(1, state.milkLevel + milkResonanceRiseStep())
+                renderMilkVisual()
+            }
             setTimeout(() => el.remove(), duration * 1000 + 50)
         }
 
@@ -2722,6 +3101,20 @@
             btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
         }
 
+        function placeMilkCookie() {
+            const btn = $('milk-cookie')
+            const area = $('play-area')
+            const pad = 18
+            const width = Math.max(btn.offsetWidth, parseFloat(getComputedStyle(btn).width) || 50)
+            const height = Math.max(btn.offsetHeight, parseFloat(getComputedStyle(btn).height) || 50)
+            const minX = pad
+            const minY = pad
+            const maxX = Math.max(minX, area.clientWidth - width - pad)
+            const maxY = Math.max(minY, area.clientHeight - height - pad)
+            btn.style.left = (minX + Math.random() * (maxX - minX)) + 'px'
+            btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
+        }
+
         function showGoldenCookie() {
             if (state.goldenVisible || state.diamondVisible) return
             state.goldenVisible = true
@@ -2736,6 +3129,14 @@
             $('diamond-cookie').classList.add('visible')
         }
 
+        function showMilkCookie() {
+            if (state.milkVisible || isMilkActive()) return
+            state.milkVisible = true
+            placeMilkCookie()
+            $('milk-cookie').classList.add('visible')
+            renderMilkVisual()
+        }
+
         function hideGoldenCookie() {
             state.goldenVisible = false
             $('golden-cookie').classList.remove('visible')
@@ -2748,10 +3149,29 @@
             state.nextDiamondAt = Date.now() + diamondIntervalMs()
         }
 
+        function hideMilkCookie() {
+            state.milkVisible = false
+            $('milk-cookie').classList.remove('visible')
+            state.nextMilkAt = Date.now() + milkIntervalMs()
+            renderMilkVisual()
+        }
+
+        function startMilkEvent() {
+            hideMilkCookie()
+            const now = Date.now()
+            const duration = MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900
+            state.milkUntil = Math.max(state.milkUntil, now) + duration
+            state.milkLevel = Math.max(0.14, state.milkLevel)
+            state.milkEventsTriggered++
+            state.randomEventsTriggered++
+            renderHeader()
+        }
+
         function startFrenzy() {
             hideGoldenCookie()
             const now = Date.now()
             state.frenzyUntil = Math.max(state.frenzyUntil, now) + frenzyDurationMs()
+            state.randomEventsTriggered++
             renderHeader()
         }
 
@@ -2761,6 +3181,7 @@
             const now = Date.now()
             const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
             state.diamondUntil = Math.max(state.diamondUntil, now) + duration
+            state.randomEventsTriggered++
             renderHeader()
         }
 
@@ -2792,6 +3213,13 @@
                 lastSave: Date.now(),
                 frenzyUntil: 0,
                 diamondUntil: 0,
+                milkUntil: 0,
+                nextMilkAt: Date.now() + MILK_BASE_INTERVAL_MS,
+                milkVisible: false,
+                milkLevel: 0,
+                milkCookiesFallen: 0,
+                milkEventsTriggered: 0,
+                randomEventsTriggered: 0,
                 goldenVisible: false,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 diamondVisible: false,
@@ -2805,6 +3233,7 @@
                     runShards: 0,
                     totalShardsEarned: 0,
                     shardMilestone: 0,
+                    impulseUntil: 0,
                     upgrades: Object.fromEntries(PRESTIGE_UPGRADES.map((u) => [u.id, 0])),
                 },
                 achievements: Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, false])),
@@ -2836,6 +3265,9 @@
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
                 darkMode: state.darkMode,
+                milkCookiesFallen: state.milkCookiesFallen,
+                milkEventsTriggered: state.milkEventsTriggered,
+                randomEventsTriggered: state.randomEventsTriggered,
                 prestige: {
                     level: state.prestige.level,
                     shards: state.prestige.shards,
@@ -2866,6 +3298,12 @@
                     : DEFAULT_VOLUME
                 state.audioMuted = data.audioMuted === true
                 state.darkMode = data.darkMode === true
+                state.milkCookiesFallen = typeof data.milkCookiesFallen === 'number' ? Math.max(0, Math.floor(data.milkCookiesFallen)) : 0
+                state.milkEventsTriggered = typeof data.milkEventsTriggered === 'number' ? Math.max(0, Math.floor(data.milkEventsTriggered)) : 0
+                state.randomEventsTriggered = typeof data.randomEventsTriggered === 'number' ? Math.max(0, Math.floor(data.randomEventsTriggered)) : 0
+                state.milkUntil = 0
+                state.milkVisible = false
+                state.milkLevel = 0
                 state.buyAmount = data.buyAmount === 'max' || BUY_AMOUNTS.includes(data.buyAmount)
                     ? data.buyAmount
                     : 1
@@ -2916,6 +3354,7 @@
                 evaluateAchievements()
                 state.nextGoldenAt = Date.now() + goldenIntervalMs()
                 state.nextDiamondAt = Date.now() + diamondIntervalMs()
+                state.nextMilkAt = Date.now() + milkIntervalMs()
                 applyOfflineEarnings()
             } catch (_) {
                 Object.assign(state, defaultState())
@@ -2937,10 +3376,18 @@
             rainTick()
 
             const now = Date.now()
+            if (state.milkUntil > 0 && now >= state.milkUntil) {
+                state.milkUntil = 0
+                state.milkLevel = 0
+                renderMilkVisual()
+                renderHeader()
+            }
             if (!state.goldenVisible && !state.diamondVisible && now >= state.nextDiamondAt) {
                 showDiamondCookie()
             } else if (!state.goldenVisible && !state.diamondVisible && now >= state.nextGoldenAt) {
                 showGoldenCookie()
+            } else if (!state.goldenVisible && !state.diamondVisible && !state.milkVisible && now >= state.nextMilkAt) {
+                showMilkCookie()
             }
 
             if (now >= state.frenzyUntil && now >= state.diamondUntil && ($('app').classList.contains('frenzy-active') || $('app').classList.contains('diamond-active'))) {
@@ -3017,6 +3464,7 @@
             })
             $('golden-cookie').addEventListener('click', startFrenzy)
             $('diamond-cookie').addEventListener('click', startDiamondRush)
+            $('milk-cookie').addEventListener('click', startMilkEvent)
             $('volume-slider').addEventListener('input', (ev) => {
                 state.audioVolume = Math.min(1, Math.max(0, Number(ev.target.value) / 100))
                 renderAudioControls()
