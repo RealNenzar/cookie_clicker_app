@@ -1644,6 +1644,10 @@
                                 <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
                                 <span>Codes erzeugen und speichern</span>
                             </button>
+                            <button type="button" class="settings-action-btn" id="settings-bonus-token-test-btn">
+                                <i class="fa-solid fa-vial-circle-check" aria-hidden="true"></i>
+                                <span>Token/Repo testen</span>
+                            </button>
                             <label for="settings-bonus-generated-output">Neu erzeugte Codes</label>
                             <textarea id="settings-bonus-generated-output" readonly placeholder="Neue Codes erscheinen hier"></textarea>
                         </div>
@@ -4116,6 +4120,71 @@
             return nextCodes
         }
 
+        async function fetchRepoPermissions(token) {
+            const url = `https://api.github.com/repos/${BONUS_GITHUB_OWNER}/${BONUS_GITHUB_REPO}`
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/vnd.github+json',
+                    Authorization: `Bearer ${token}`,
+                    'X-GitHub-Api-Version': '2022-11-28',
+                },
+            })
+            if (!response.ok) {
+                throw new Error(`Repo-Metadaten konnten nicht geladen werden (${response.status}).`)
+            }
+            return response.json()
+        }
+
+        async function runBonusTokenSelfTest() {
+            if (!githubConfigured()) {
+                setBonusAdminHint('Repo-Konfiguration fehlt. BONUS_GITHUB_OWNER/REPO setzen.', true)
+                return
+            }
+
+            const token = repoWriteTokenFromUiOrConfig()
+            if (!token) {
+                setBonusAdminHint('Kein Token vorhanden. Test nicht moeglich.', true)
+                return
+            }
+
+            setBonusAdminHint('Teste Zugriff auf Datei und GitHub API...')
+            const checks = []
+            let hasError = false
+
+            try {
+                await fetchBonusCodeFile()
+                checks.push('Public Datei: OK')
+            } catch (err) {
+                const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
+                checks.push(`Public Datei: FEHLER (${message})`)
+                hasError = true
+            }
+
+            try {
+                await getRepoFileFromGitHub(token)
+                checks.push('API Read (contents): OK')
+            } catch (err) {
+                const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
+                checks.push(`API Read (contents): FEHLER (${message})`)
+                hasError = true
+            }
+
+            try {
+                const repoMeta = await fetchRepoPermissions(token)
+                const canPush = repoMeta?.permissions?.push === true
+                checks.push(`API Write-Recht (push): ${canPush ? 'OK' : 'FEHLT'}`)
+                if (!canPush) {
+                    hasError = true
+                }
+            } catch (err) {
+                const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
+                checks.push(`API Write-Recht (push): FEHLER (${message})`)
+                hasError = true
+            }
+
+            setBonusAdminHint(checks.join(' | '), hasError)
+        }
+
         async function redeemBonusCode() {
             const input = $('settings-bonus-code-input')
             const code = String(input.value || '').trim().toUpperCase()
@@ -4144,6 +4213,16 @@
             setBonusRedeemHint('Code wird global geprueft und verbraucht...')
             const entry = await consumeBonusCodeFromRepo(token, code)
             if (!entry) {
+                try {
+                    const publicData = await fetchBonusCodeFile()
+                    const inPublicFile = publicData.items.some((item) => String(item.code || '').toUpperCase() === code)
+                    if (inPublicFile) {
+                        setBonusRedeemHint('Code ist in der oeffentlichen Datei vorhanden, aber per GitHub API nicht gefunden. Token/Repo/Branch-Berechtigung pruefen.', true)
+                        return
+                    }
+                } catch (_) {
+                    // Ignore fallback check failures and keep generic message.
+                }
                 setBonusRedeemHint('Code nicht gefunden oder bereits global verbraucht.', true)
                 return
             }
@@ -4410,6 +4489,15 @@
                     await generateAndStoreBonusCodes()
                 } catch (err) {
                     const message = err instanceof Error ? err.message : 'Code-Generierung fehlgeschlagen.'
+                    setBonusAdminHint(message, true)
+                }
+            })
+
+            $('settings-bonus-token-test-btn').addEventListener('click', async () => {
+                try {
+                    await runBonusTokenSelfTest()
+                } catch (err) {
+                    const message = err instanceof Error ? err.message : 'Token-Test fehlgeschlagen.'
                     setBonusAdminHint(message, true)
                 }
             })
