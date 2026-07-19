@@ -859,6 +859,28 @@
             transform: scale(0.98);
         }
 
+        .settings-audio-controls {
+            margin-top: 0.4rem;
+            border: 1px solid var(--ctrl-border);
+            background: var(--ctrl-bg);
+            border-radius: 0.5rem;
+            padding: 0.42rem 0.5rem;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .settings-audio-controls label {
+            margin-right: 0.1rem;
+        }
+
+        .settings-audio-controls input[type='range'] {
+            width: 6rem;
+        }
+
+        .settings-audio-controls + .settings-action-btn {
+            margin-top: 0.4rem;
+        }
+
         .panels {
             flex: 1;
             overflow: hidden;
@@ -1741,6 +1763,11 @@
                         <i class="fa-solid fa-moon" id="settings-theme-icon" aria-hidden="true"></i>
                         <span id="settings-theme-label">Nachtmodus aktivieren</span>
                     </button>
+                    <div class="audio-controls settings-audio-controls" aria-label="Audio-Steuerung">
+                        <label for="volume-slider">Ton</label>
+                        <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstärke" />
+                        <button type="button" id="mute-toggle" aria-pressed="false">Stumm</button>
+                    </div>
                     <button type="button" class="settings-action-btn" id="settings-export-btn">
                         <i class="fa-solid fa-file-export" aria-hidden="true"></i>
                         <span>Savegame exportieren</span>
@@ -1876,13 +1903,12 @@
                 <span>pro Sek <strong id="cps-display">0</strong></span>
             </div>
             <div class="stats-row">
+                <span>deine Klickrate <strong id="self-clickrate-display">0/s</strong></span>
+                <span>Drohnenrate <strong id="drone-clickrate-display">0/s</strong></span>
+            </div>
+            <div class="stats-row">
                 <span>Splitter <strong id="shards-display">0</strong></span>
                 <span>Krit <strong id="crit-display">4% / x2.0</strong></span>
-            </div>
-            <div class="audio-controls" aria-label="Audio-Steuerung">
-                <label for="volume-slider">Ton</label>
-                <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstärke" />
-                <button type="button" id="mute-toggle" aria-pressed="false">Stumm</button>
             </div>
         </header>
 
@@ -1930,7 +1956,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.19.5'
+        const APP_VERSION = '2026.07.19.6'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -1943,6 +1969,7 @@
         const DIAMOND_MULT = 3
         const TICK_MS = 100
         const AUTOSAVE_MS = 15000
+        const CLICK_RATE_WINDOW_MS = 1000
         const DEFAULT_VOLUME = 0.7
         const DEFAULT_DARK_MODE = false
         const PRESTIGE_BASE_MULT = 0.08
@@ -2852,6 +2879,28 @@
             return tap * tapBonusMult() * cosmicOrbitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('tap'))
         }
 
+        const recentManualTapAt = []
+
+        function pruneManualTapRate(now = Date.now()) {
+            let removed = false
+            while (recentManualTapAt.length > 0 && (now - recentManualTapAt[0]) > CLICK_RATE_WINDOW_MS) {
+                recentManualTapAt.shift()
+                removed = true
+            }
+            return removed
+        }
+
+        function trackManualTap() {
+            const now = Date.now()
+            recentManualTapAt.push(now)
+            pruneManualTapRate(now)
+        }
+
+        function manualClicksPerSecond() {
+            pruneManualTapRate()
+            return recentManualTapAt.length / (CLICK_RATE_WINDOW_MS / 1000)
+        }
+
         function canAfford(cost) {
             return state.cookies >= cost
         }
@@ -2929,6 +2978,8 @@
             $('total-display').textContent = formatNum(state.cookies)
             $('tap-display').textContent = formatStatNum(calcTap() * incomeMult())
             $('cps-display').textContent = formatStatNum(calcCps() * incomeMult())
+            $('self-clickrate-display').textContent = `${formatStatNum(manualClicksPerSecond())}/s`
+            $('drone-clickrate-display').textContent = `${formatStatNum(autoClicksPerSecond())}/s`
             $('shards-display').textContent = formatNum(state.prestige.shards + state.prestige.runShards)
             const prestigeNode = $('prestige-level-display')
             if (prestigeNode) {
@@ -3679,6 +3730,7 @@
         }
 
         function onTapCookie(ev) {
+            trackManualTap()
             const baseTap = calcTap()
             const didCrit = Math.random() < critChance()
             const tap = didCrit ? baseTap * critMultiplier() : baseTap
@@ -4861,6 +4913,8 @@
         }
 
         function gameTick() {
+            const now = Date.now()
+            const didDecayManualRate = pruneManualTapRate(now)
             const cps = calcCps()
             if (cps > 0) {
                 addCookies((cps * TICK_MS) / 1000, false)
@@ -4873,12 +4927,14 @@
             }
 
             rainTick()
-
-            const now = Date.now()
             if (state.milkUntil > 0 && now >= state.milkUntil) {
                 state.milkUntil = 0
                 state.milkLevel = 0
                 renderMilkVisual()
+                renderHeader()
+            }
+
+            if (didDecayManualRate && cps <= 0) {
                 renderHeader()
             }
             if (!state.diamondVisible && now >= state.nextDiamondAt) {
