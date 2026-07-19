@@ -4014,8 +4014,12 @@
                 state.cookies += value
                 state.lifetimeCookies += value
             } else if (type === 'shards') {
-                const shards = Math.floor(value)
-                state.prestige.shards += shards
+                const shards = Math.max(1, Math.floor(value))
+                if (state.prestige.level > 0) {
+                    state.prestige.shards += shards
+                } else {
+                    state.prestige.runShards += shards
+                }
                 state.prestige.totalShardsEarned += shards
             } else if (type === 'allMult') {
                 if (durationSec <= 0) throw new Error('Dauer fehlt fuer Multiplikator-Bonus.')
