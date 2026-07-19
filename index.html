@@ -1594,6 +1594,10 @@
                         <i class="fa-solid fa-key" aria-hidden="true"></i>
                         <span>Bonus-Code generieren</span>
                     </button>
+                    <button type="button" class="settings-action-btn" id="settings-refresh-btn">
+                        <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+                        <span>App Aktualisieren</span>
+                    </button>
                     <button type="button" class="settings-action-btn danger" id="settings-reset-btn">
                         <i class="fa-solid fa-trash" aria-hidden="true"></i>
                         <span>Alles zurücksetzen</span>
@@ -1631,7 +1635,7 @@
                                     <label for="settings-bonus-value">Wert</label>
                                     <input id="settings-bonus-value" type="number" min="1" step="1" value="2" />
                                 </div>
-                                <div>
+                                <div id="settings-bonus-duration-wrap">
                                     <label for="settings-bonus-duration">Dauer (Sekunden)</label>
                                     <input id="settings-bonus-duration" type="number" min="0" step="1" value="600" />
                                 </div>
@@ -1643,10 +1647,6 @@
                             <button type="button" class="settings-action-btn" id="settings-bonus-generate-btn">
                                 <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
                                 <span>Codes erzeugen und speichern</span>
-                            </button>
-                            <button type="button" class="settings-action-btn" id="settings-bonus-token-test-btn">
-                                <i class="fa-solid fa-vial-circle-check" aria-hidden="true"></i>
-                                <span>Token/Repo testen</span>
                             </button>
                             <label for="settings-bonus-generated-output">Neu erzeugte Codes</label>
                             <textarea id="settings-bonus-generated-output" readonly placeholder="Neue Codes erscheinen hier"></textarea>
@@ -3978,6 +3978,23 @@
             return ascii.replace(/[^A-Z0-9-]/g, '')
         }
 
+        function waitMs(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms))
+        }
+
+        function bonusTypeNeedsDuration(type) {
+            return type === 'allMult' || type === 'eventRate'
+        }
+
+        function updateBonusDurationVisibility() {
+            const typeSelect = $('settings-bonus-type')
+            const durationWrap = $('settings-bonus-duration-wrap')
+            if (!typeSelect || !durationWrap) return
+
+            const showDuration = bonusTypeNeedsDuration(String(typeSelect.value || ''))
+            durationWrap.style.display = showDuration ? '' : 'none'
+        }
+
         function generateBonusCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
             const group = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
@@ -4029,12 +4046,15 @@
         }
 
         async function getRepoFileFromGitHub(token) {
-            const url = `https://api.github.com/repos/${BONUS_GITHUB_OWNER}/${BONUS_GITHUB_REPO}/contents/${BONUS_CODES_FILE_PATH}?ref=${encodeURIComponent(BONUS_GITHUB_BRANCH)}`
+            const url = `https://api.github.com/repos/${BONUS_GITHUB_OWNER}/${BONUS_GITHUB_REPO}/contents/${BONUS_CODES_FILE_PATH}?ref=${encodeURIComponent(BONUS_GITHUB_BRANCH)}&t=${Date.now()}`
             const response = await fetch(url, {
+                cache: 'no-store',
                 headers: {
                     Accept: 'application/vnd.github+json',
                     Authorization: `Bearer ${token}`,
                     'X-GitHub-Api-Version': '2022-11-28',
+                    'Cache-Control': 'no-cache',
+                    Pragma: 'no-cache',
                 },
             })
             if (!response.ok) {
@@ -4075,7 +4095,8 @@
                 throw new Error('Code fehlt.')
             }
 
-            for (let attempt = 0; attempt < 2; attempt += 1) {
+            const maxAttempts = 8
+            for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
                 const file = await getRepoFileFromGitHub(token)
                 const decoded = base64DecodeUtf8(String(file.content || '').replace(/\n/g, ''))
                 const json = JSON.parse(decoded)
@@ -4084,6 +4105,10 @@
                 const index = normalizedList.findIndex((itemCode) => itemCode === normalizedCode)
 
                 if (index < 0) {
+                    if (attempt < maxAttempts - 1) {
+                        await waitMs(900)
+                        continue
+                    }
                     return {
                         entry: null,
                         debug: {
@@ -4113,7 +4138,8 @@
                 } catch (err) {
                     const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
                     const isConflict = message.includes('Konflikt')
-                    if (isConflict && attempt < 1) {
+                    if (isConflict && attempt < maxAttempts - 1) {
+                        await waitMs(400)
                         continue
                     }
                     throw err
@@ -4142,71 +4168,6 @@
             const nextContent = base64EncodeUtf8(JSON.stringify(json, null, 2))
             await writeRepoFileToGitHub(token, nextContent, file.sha, commitMessage)
             return nextCodes
-        }
-
-        async function fetchRepoPermissions(token) {
-            const url = `https://api.github.com/repos/${BONUS_GITHUB_OWNER}/${BONUS_GITHUB_REPO}`
-            const response = await fetch(url, {
-                headers: {
-                    Accept: 'application/vnd.github+json',
-                    Authorization: `Bearer ${token}`,
-                    'X-GitHub-Api-Version': '2022-11-28',
-                },
-            })
-            if (!response.ok) {
-                throw new Error(`Repo-Metadaten konnten nicht geladen werden (${response.status}).`)
-            }
-            return response.json()
-        }
-
-        async function runBonusTokenSelfTest() {
-            if (!githubConfigured()) {
-                setBonusAdminHint('Repo-Konfiguration fehlt. BONUS_GITHUB_OWNER/REPO setzen.', true)
-                return
-            }
-
-            const token = repoWriteTokenFromUiOrConfig()
-            if (!token) {
-                setBonusAdminHint('Kein Token vorhanden. Test nicht moeglich.', true)
-                return
-            }
-
-            setBonusAdminHint('Teste Zugriff auf Datei und GitHub API...')
-            const checks = []
-            let hasError = false
-
-            try {
-                await fetchBonusCodeFile()
-                checks.push('Public Datei: OK')
-            } catch (err) {
-                const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
-                checks.push(`Public Datei: FEHLER (${message})`)
-                hasError = true
-            }
-
-            try {
-                await getRepoFileFromGitHub(token)
-                checks.push('API Read (contents): OK')
-            } catch (err) {
-                const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
-                checks.push(`API Read (contents): FEHLER (${message})`)
-                hasError = true
-            }
-
-            try {
-                const repoMeta = await fetchRepoPermissions(token)
-                const canPush = repoMeta?.permissions?.push === true
-                checks.push(`API Write-Recht (push): ${canPush ? 'OK' : 'FEHLT'}`)
-                if (!canPush) {
-                    hasError = true
-                }
-            } catch (err) {
-                const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
-                checks.push(`API Write-Recht (push): FEHLER (${message})`)
-                hasError = true
-            }
-
-            setBonusAdminHint(checks.join(' | '), hasError)
         }
 
         async function redeemBonusCode() {
@@ -4298,14 +4259,17 @@
 
             const type = String($('settings-bonus-type').value)
             const value = Number($('settings-bonus-value').value)
-            const durationSec = Math.max(0, Math.floor(Number($('settings-bonus-duration').value)))
+            const needsDuration = bonusTypeNeedsDuration(type)
+            const durationSec = needsDuration
+                ? Math.max(0, Math.floor(Number($('settings-bonus-duration').value)))
+                : 0
             const count = Math.max(1, Math.min(100, Math.floor(Number($('settings-bonus-count').value))))
 
             if (!Number.isFinite(value) || value <= 0) {
                 setBonusAdminHint('Bonuswert ist ungueltig.', true)
                 return
             }
-            if (!Number.isFinite(durationSec) || durationSec < 0) {
+            if (needsDuration && (!Number.isFinite(durationSec) || durationSec <= 0)) {
                 setBonusAdminHint('Dauer ist ungueltig.', true)
                 return
             }
@@ -4501,6 +4465,15 @@
 
             $('settings-bonus-admin-open-btn').addEventListener('click', () => {
                 showBonusAdminPanel()
+                updateBonusDurationVisibility()
+            })
+
+            $('settings-refresh-btn').addEventListener('click', () => {
+                location.reload()
+            })
+
+            $('settings-bonus-type').addEventListener('change', () => {
+                updateBonusDurationVisibility()
             })
 
             $('settings-bonus-admin-unlock-btn').addEventListener('click', () => {
@@ -4525,15 +4498,6 @@
                 }
             })
 
-            $('settings-bonus-token-test-btn').addEventListener('click', async () => {
-                try {
-                    await runBonusTokenSelfTest()
-                } catch (err) {
-                    const message = err instanceof Error ? err.message : 'Token-Test fehlgeschlagen.'
-                    setBonusAdminHint(message, true)
-                }
-            })
-
             $('settings-reset-btn').addEventListener('click', () => {
                 startResetConfirmation()
             })
@@ -4553,6 +4517,8 @@
             $('settings-apply-import-btn').addEventListener('click', () => {
                 importFromTransferText()
             })
+
+            updateBonusDurationVisibility()
         }
 
         function gameTick() {
