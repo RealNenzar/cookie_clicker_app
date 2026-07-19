@@ -1424,6 +1424,7 @@
         const MILK_BASE_INTERVAL_MS = 1500000
         const MILK_DURATION_BASE_MS = 14000
         const EVENT_OVERLAP_CHANCE = 0.001
+        const EVENT_VISIBLE_MS = 10000
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -3125,6 +3126,9 @@
             state.goldenVisible = true
             placeGoldenCookie()
             $('golden-cookie').classList.add('visible')
+            setTimeout(() => {
+                if (state.goldenVisible) hideGoldenCookie()
+            }, EVENT_VISIBLE_MS)
         }
 
         function showDiamondCookie() {
@@ -3133,6 +3137,9 @@
             state.diamondVisible = true
             placeDiamondCookie()
             $('diamond-cookie').classList.add('visible')
+            setTimeout(() => {
+                if (state.diamondVisible) hideDiamondCookie()
+            }, EVENT_VISIBLE_MS)
         }
 
         function showMilkCookie() {
@@ -3141,6 +3148,9 @@
             placeMilkCookie()
             $('milk-cookie').classList.add('visible')
             renderMilkVisual()
+            setTimeout(() => {
+                if (state.milkVisible) hideMilkCookie()
+            }, EVENT_VISIBLE_MS)
         }
 
         function hideGoldenCookie() {
