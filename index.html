@@ -410,12 +410,79 @@
             color: #b22727;
         }
 
+        .settings-bonus {
+            margin-top: 0.55rem;
+            display: none;
+            gap: 0.4rem;
+        }
+
+        .settings-bonus.visible {
+            display: grid;
+        }
+
+        .settings-bonus label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--audio-label);
+        }
+
+        .settings-bonus input,
+        .settings-bonus select,
+        .settings-bonus textarea {
+            width: 100%;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.5rem;
+            background: var(--ctrl-bg);
+            color: var(--shop-name-color);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+            font-size: 0.68rem;
+            line-height: 1.35;
+            padding: 0.45rem;
+            user-select: text;
+        }
+
+        .settings-bonus textarea {
+            min-height: 5rem;
+            resize: vertical;
+        }
+
+        .settings-bonus-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+        }
+
+        .settings-bonus-hint {
+            min-height: 1.1rem;
+            font-size: 0.66rem;
+            color: var(--shop-desc-color);
+        }
+
+        .settings-bonus-hint.error {
+            color: #b22727;
+        }
+
+        .settings-bonus-admin-controls {
+            display: none;
+            gap: 0.4rem;
+        }
+
+        .settings-bonus-admin-controls.visible {
+            display: grid;
+        }
+
         @media (max-width: 430px) {
             .settings-transfer-actions {
                 grid-template-columns: 1fr;
             }
 
             .settings-reset-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-bonus-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1519,10 +1586,69 @@
                         <i class="fa-solid fa-file-import" aria-hidden="true"></i>
                         <span>Savegame importieren</span>
                     </button>
+                    <button type="button" class="settings-action-btn" id="settings-bonus-redeem-open-btn">
+                        <i class="fa-solid fa-gift" aria-hidden="true"></i>
+                        <span>Bonus-Code einloesen</span>
+                    </button>
+                    <button type="button" class="settings-action-btn" id="settings-bonus-admin-open-btn">
+                        <i class="fa-solid fa-key" aria-hidden="true"></i>
+                        <span>Bonus-Code generieren</span>
+                    </button>
                     <button type="button" class="settings-action-btn danger" id="settings-reset-btn">
                         <i class="fa-solid fa-trash" aria-hidden="true"></i>
                         <span>Alles zurücksetzen</span>
                     </button>
+                    <div class="settings-bonus" id="settings-bonus-redeem-panel">
+                        <label for="settings-bonus-code-input">Bonus-Code</label>
+                        <input id="settings-bonus-code-input" type="text" placeholder="Code eingeben" autocomplete="off" />
+                        <button type="button" class="settings-action-btn" id="settings-bonus-redeem-btn">
+                            <i class="fa-solid fa-check" aria-hidden="true"></i>
+                            <span>Code anwenden</span>
+                        </button>
+                        <p class="settings-bonus-hint" id="settings-bonus-redeem-hint"></p>
+                    </div>
+                    <div class="settings-bonus" id="settings-bonus-admin-panel">
+                        <label for="settings-bonus-admin-password">Admin Passwort</label>
+                        <input id="settings-bonus-admin-password" type="password" placeholder="Passwort eingeben" autocomplete="off" />
+                        <button type="button" class="settings-action-btn" id="settings-bonus-admin-unlock-btn">
+                            <i class="fa-solid fa-lock-open" aria-hidden="true"></i>
+                            <span>Freischalten</span>
+                        </button>
+                        <div class="settings-bonus-admin-controls" id="settings-bonus-admin-controls">
+                            <label for="settings-bonus-admin-token">GitHub Token (repo Inhalte schreiben)</label>
+                            <input id="settings-bonus-admin-token" type="password" placeholder="ghp_..." autocomplete="off" />
+                            <div class="settings-bonus-grid">
+                                <div>
+                                    <label for="settings-bonus-type">Typ</label>
+                                    <select id="settings-bonus-type">
+                                        <option value="allMult">Globaler Bonus-Multiplikator</option>
+                                        <option value="cookies">Cookies direkt</option>
+                                        <option value="eventRate">Spezial-Cookie-Rate</option>
+                                        <option value="shards">Splitter direkt</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="settings-bonus-value">Wert</label>
+                                    <input id="settings-bonus-value" type="number" min="1" step="1" value="2" />
+                                </div>
+                                <div>
+                                    <label for="settings-bonus-duration">Dauer (Sekunden)</label>
+                                    <input id="settings-bonus-duration" type="number" min="0" step="1" value="600" />
+                                </div>
+                                <div>
+                                    <label for="settings-bonus-count">Anzahl</label>
+                                    <input id="settings-bonus-count" type="number" min="1" step="1" value="1" />
+                                </div>
+                            </div>
+                            <button type="button" class="settings-action-btn" id="settings-bonus-generate-btn">
+                                <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+                                <span>Codes erzeugen und speichern</span>
+                            </button>
+                            <label for="settings-bonus-generated-output">Neu erzeugte Codes</label>
+                            <textarea id="settings-bonus-generated-output" readonly placeholder="Neue Codes erscheinen hier"></textarea>
+                        </div>
+                        <p class="settings-bonus-hint" id="settings-bonus-admin-hint"></p>
+                    </div>
                     <div class="settings-reset-confirm" id="settings-reset-confirm">
                         <p class="settings-reset-confirm-text" id="settings-reset-confirm-text"></p>
                         <div class="settings-reset-actions">
@@ -1642,6 +1768,17 @@
         const EVENT_VISIBLE_MS = 10000
         const SHARE_SAVE_PREFIX = 'CCS1'
         const SHARE_SAVE_SALT = 'cc.export.2026.07.v1'
+        const BONUS_CODES_STORAGE_KEY = 'cc_bonus_codes_used_v1'
+        const BONUS_CODES_FILE_PATH = 'bonus-codes.json'
+        const BONUS_CODES_FILE_VERSION = 1
+        const BONUS_CODES_FILE_OBF_SALT = 'cc.bonus.codes.v1'
+        const BONUS_GITHUB_OWNER = 'RealNenzar'
+        const BONUS_GITHUB_REPO = 'cookie_clicker_app'
+        const BONUS_GITHUB_BRANCH = 'main'
+        const BONUS_ADMIN_OBF_KEY = 73
+        const BONUS_ADMIN_OBF_PASSWORD = [10, 59, 60, 36, 43, 31, 40, 60, 37, 61, 100, 123, 121, 123, 127, 104]
+        const BONUS_GITHUB_TOKEN_OBF_KEY = 0
+        const BONUS_GITHUB_TOKEN_OBF = []
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -2191,6 +2328,10 @@
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
+            bonusAllUntil: 0,
+            bonusAllMult: 1,
+            bonusEventRateUntil: 0,
+            bonusEventRateMult: 1,
             prestige: {
                 level: 0,
                 shards: 0,
@@ -2203,6 +2344,7 @@
             achievements: Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, false])),
         }
         let resetConfirmStep = 0
+        let bonusAdminUnlocked = false
 
         const $ = (id) => document.getElementById(id)
 
@@ -2243,6 +2385,14 @@
 
         function prestigeMagnetMult() {
             return Math.max(0.58, 1 - prestigeUpgradeLevel('prestigeMagnet') * 0.04)
+        }
+
+        function bonusAllMult() {
+            return Date.now() < state.bonusAllUntil ? Math.max(1, state.bonusAllMult) : 1
+        }
+
+        function bonusEventRateMult() {
+            return Date.now() < state.bonusEventRateUntil ? Math.max(1, state.bonusEventRateMult) : 1
         }
 
         function milkResonanceRiseStep() {
@@ -2297,12 +2447,14 @@
 
         function goldenIntervalMs() {
             const reduce = 0.06 * prestigeUpgradeLevel('goldenSignal')
-            return Math.max(25000, Math.floor(GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce) * prestigeMagnetMult()))
+            const base = GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce) * prestigeMagnetMult()
+            return Math.max(10000, Math.floor(base / bonusEventRateMult()))
         }
 
         function milkIntervalMs() {
             const resonanceFade = Math.max(0.82, 1 - prestigeUpgradeLevel('milkResonance') * 0.01)
-            return Math.max(600000, Math.floor(MILK_BASE_INTERVAL_MS * prestigeMagnetMult() * resonanceFade))
+            const base = MILK_BASE_INTERVAL_MS * prestigeMagnetMult() * resonanceFade
+            return Math.max(240000, Math.floor(base / bonusEventRateMult()))
         }
 
         function frenzyDurationMs() {
@@ -2311,7 +2463,8 @@
 
         function diamondIntervalMs() {
             const reduce = 0.08 * prestigeUpgradeLevel('diamondLure')
-            return Math.max(120000, Math.floor(DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce) * prestigeMagnetMult()))
+            const base = DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce) * prestigeMagnetMult()
+            return Math.max(45000, Math.floor(base / bonusEventRateMult()))
         }
 
         function diamondDurationMult() {
@@ -2428,7 +2581,7 @@
             if (now < state.diamondUntil) {
                 mult *= DIAMOND_MULT * frenzyPowerMult()
             }
-            return mult * milkEventBonusMult() * prestigeImpulseMult()
+            return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult()
         }
 
         function calcCps() {
@@ -3465,6 +3618,10 @@
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
+                bonusAllUntil: 0,
+                bonusAllMult: 1,
+                bonusEventRateUntil: 0,
+                bonusEventRateMult: 1,
                 prestige: {
                     level: 0,
                     shards: 0,
@@ -3510,6 +3667,10 @@
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
                 darkMode: state.darkMode,
+                bonusAllUntil: state.bonusAllUntil,
+                bonusAllMult: state.bonusAllMult,
+                bonusEventRateUntil: state.bonusEventRateUntil,
+                bonusEventRateMult: state.bonusEventRateMult,
                 milkCookiesFallen: state.milkCookiesFallen,
                 milkEventsTriggered: state.milkEventsTriggered,
                 randomEventsTriggered: state.randomEventsTriggered,
@@ -3587,6 +3748,10 @@
                 : DEFAULT_VOLUME
             state.audioMuted = data.audioMuted === true
             state.darkMode = data.darkMode === true
+            state.bonusAllUntil = typeof data.bonusAllUntil === 'number' ? Math.max(0, Math.floor(data.bonusAllUntil)) : 0
+            state.bonusAllMult = typeof data.bonusAllMult === 'number' ? Math.max(1, data.bonusAllMult) : 1
+            state.bonusEventRateUntil = typeof data.bonusEventRateUntil === 'number' ? Math.max(0, Math.floor(data.bonusEventRateUntil)) : 0
+            state.bonusEventRateMult = typeof data.bonusEventRateMult === 'number' ? Math.max(1, data.bonusEventRateMult) : 1
             state.milkCookiesFallen = typeof data.milkCookiesFallen === 'number' ? Math.max(0, Math.floor(data.milkCookiesFallen)) : 0
             state.milkEventsTriggered = typeof data.milkEventsTriggered === 'number' ? Math.max(0, Math.floor(data.milkEventsTriggered)) : 0
             state.randomEventsTriggered = typeof data.randomEventsTriggered === 'number' ? Math.max(0, Math.floor(data.randomEventsTriggered)) : 0
@@ -3671,6 +3836,348 @@
             hint.classList.toggle('error', isError)
         }
 
+        function setBonusRedeemHint(message, isError = false) {
+            const hint = $('settings-bonus-redeem-hint')
+            hint.textContent = message
+            hint.classList.toggle('error', isError)
+        }
+
+        function setBonusAdminHint(message, isError = false) {
+            const hint = $('settings-bonus-admin-hint')
+            hint.textContent = message
+            hint.classList.toggle('error', isError)
+        }
+
+        function hideAllSettingsSubPanels() {
+            resetConfirmStep = 0
+            $('settings-transfer').classList.remove('visible')
+            $('settings-reset-confirm').classList.remove('visible')
+            $('settings-bonus-redeem-panel').classList.remove('visible')
+            $('settings-bonus-admin-panel').classList.remove('visible')
+        }
+
+        function showBonusRedeemPanel() {
+            hideAllSettingsSubPanels()
+            setSettingsHint('')
+            setResetHint('')
+            setBonusAdminHint('')
+            setBonusRedeemHint('')
+            $('settings-bonus-redeem-panel').classList.add('visible')
+            $('settings-bonus-code-input').focus()
+        }
+
+        function showBonusAdminPanel() {
+            hideAllSettingsSubPanels()
+            setSettingsHint('')
+            setResetHint('')
+            setBonusRedeemHint('')
+            setBonusAdminHint('Admin-Passwort eingeben, um den Generator einzublenden.')
+            $('settings-bonus-admin-panel').classList.add('visible')
+            if (!bonusAdminUnlocked) {
+                $('settings-bonus-admin-controls').classList.remove('visible')
+            }
+            $('settings-bonus-admin-password').focus()
+        }
+
+        function obfuscatedPasswordPlaintext() {
+            return BONUS_ADMIN_OBF_PASSWORD.map((n) => String.fromCharCode(n ^ BONUS_ADMIN_OBF_KEY)).join('')
+        }
+
+        function isAdminPasswordValid(input) {
+            return String(input || '') === obfuscatedPasswordPlaintext()
+        }
+
+        function builtInGitHubToken() {
+            if (!Array.isArray(BONUS_GITHUB_TOKEN_OBF) || BONUS_GITHUB_TOKEN_OBF.length === 0) {
+                return ''
+            }
+            return BONUS_GITHUB_TOKEN_OBF.map((n) => String.fromCharCode(n ^ BONUS_GITHUB_TOKEN_OBF_KEY)).join('')
+        }
+
+        function repoWriteTokenFromUiOrConfig() {
+            const uiToken = String($('settings-bonus-admin-token')?.value || '').trim()
+            if (uiToken) return uiToken
+            return builtInGitHubToken().trim()
+        }
+
+        function encodeBonusCodes(items) {
+            const payload = JSON.stringify(items)
+            return base64EncodeUtf8(`${payload}.${fnv1a32(`${payload}.${BONUS_CODES_FILE_OBF_SALT}`)}`)
+        }
+
+        function decodeBonusCodes(encoded) {
+            if (!encoded) return []
+            const raw = base64DecodeUtf8(String(encoded))
+            const dot = raw.lastIndexOf('.')
+            if (dot <= 0) {
+                throw new Error('Code-Datei ist ungueltig.')
+            }
+            const payload = raw.slice(0, dot)
+            const signature = raw.slice(dot + 1)
+            const expected = fnv1a32(`${payload}.${BONUS_CODES_FILE_OBF_SALT}`)
+            if (signature !== expected) {
+                throw new Error('Code-Datei Signatur fehlerhaft.')
+            }
+            const parsed = JSON.parse(payload)
+            return Array.isArray(parsed) ? parsed : []
+        }
+
+        async function fetchBonusCodeFile() {
+            const url = `${BONUS_CODES_FILE_PATH}?t=${Date.now()}`
+            const response = await fetch(url, { cache: 'no-store' })
+            if (!response.ok) {
+                throw new Error('Bonus-Code-Datei konnte nicht geladen werden.')
+            }
+            const json = await response.json()
+            if (!json || typeof json !== 'object') {
+                throw new Error('Bonus-Code-Datei ist ungueltig.')
+            }
+            const items = decodeBonusCodes(json.codesEnc || '')
+            return {
+                meta: json,
+                items,
+            }
+        }
+
+        function getUsedBonusCodes() {
+            try {
+                const raw = localStorage.getItem(BONUS_CODES_STORAGE_KEY)
+                const parsed = raw ? JSON.parse(raw) : []
+                return Array.isArray(parsed) ? parsed : []
+            } catch (_) {
+                return []
+            }
+        }
+
+        function markBonusCodeUsed(code) {
+            const list = getUsedBonusCodes()
+            if (!list.includes(code)) {
+                list.push(code)
+            }
+            try {
+                localStorage.setItem(BONUS_CODES_STORAGE_KEY, JSON.stringify(list))
+            } catch (_) { /* ignore */ }
+        }
+
+        function generateBonusCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+            const group = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+            return `CC-${group()}-${group()}-${group()}`
+        }
+
+        function applyBonusFromCodeEntry(entry) {
+            const now = Date.now()
+            const type = entry.type
+            const value = Number(entry.value)
+            const durationSec = Math.max(0, Math.floor(Number(entry.durationSec || 0)))
+            if (!Number.isFinite(value) || value <= 0) {
+                throw new Error('Bonuswert ist ungueltig.')
+            }
+
+            if (type === 'cookies') {
+                state.cookies += value
+                state.lifetimeCookies += value
+            } else if (type === 'shards') {
+                const shards = Math.floor(value)
+                state.prestige.shards += shards
+                state.prestige.totalShardsEarned += shards
+            } else if (type === 'allMult') {
+                if (durationSec <= 0) throw new Error('Dauer fehlt fuer Multiplikator-Bonus.')
+                state.bonusAllMult = Math.max(state.bonusAllMult, value)
+                state.bonusAllUntil = Math.max(state.bonusAllUntil, now + durationSec * 1000)
+            } else if (type === 'eventRate') {
+                if (durationSec <= 0) throw new Error('Dauer fehlt fuer Eventrate-Bonus.')
+                state.bonusEventRateMult = Math.max(state.bonusEventRateMult, value)
+                state.bonusEventRateUntil = Math.max(state.bonusEventRateUntil, now + durationSec * 1000)
+                state.nextGoldenAt = Math.min(state.nextGoldenAt, now + goldenIntervalMs())
+                state.nextDiamondAt = Math.min(state.nextDiamondAt, now + diamondIntervalMs())
+                state.nextMilkAt = Math.min(state.nextMilkAt, now + milkIntervalMs())
+            } else {
+                throw new Error('Unbekannter Bonus-Typ.')
+            }
+
+            processShardMilestones()
+            evaluateAchievements()
+            renderHeader()
+            renderShop()
+            renderPrestige()
+            renderAchievements()
+            save()
+        }
+
+        function githubConfigured() {
+            return BONUS_GITHUB_OWNER && BONUS_GITHUB_REPO
+        }
+
+        async function getRepoFileFromGitHub(token) {
+            const url = `https://api.github.com/repos/${BONUS_GITHUB_OWNER}/${BONUS_GITHUB_REPO}/contents/${BONUS_CODES_FILE_PATH}?ref=${encodeURIComponent(BONUS_GITHUB_BRANCH)}`
+            const response = await fetch(url, {
+                headers: {
+                    Accept: 'application/vnd.github+json',
+                    Authorization: `Bearer ${token}`,
+                    'X-GitHub-Api-Version': '2022-11-28',
+                },
+            })
+            if (!response.ok) {
+                throw new Error('GitHub Datei konnte nicht geladen werden. Token/Repo pruefen.')
+            }
+            return response.json()
+        }
+
+        async function writeRepoFileToGitHub(token, contentBase64, previousSha, message) {
+            const url = `https://api.github.com/repos/${BONUS_GITHUB_OWNER}/${BONUS_GITHUB_REPO}/contents/${BONUS_CODES_FILE_PATH}`
+            const body = {
+                message,
+                content: contentBase64,
+                branch: BONUS_GITHUB_BRANCH,
+                sha: previousSha,
+            }
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/vnd.github+json',
+                    Authorization: `Bearer ${token}`,
+                    'X-GitHub-Api-Version': '2022-11-28',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            })
+            if (!response.ok) {
+                throw new Error('GitHub Update fehlgeschlagen.')
+            }
+        }
+
+        async function updateCodesInRepoWithToken(token, mutate, commitMessage) {
+            if (!githubConfigured()) {
+                throw new Error('GitHub Repo ist nicht konfiguriert.')
+            }
+            if (!token) {
+                throw new Error('GitHub Token fehlt.')
+            }
+
+            const file = await getRepoFileFromGitHub(token)
+            const decoded = base64DecodeUtf8(String(file.content || '').replace(/\n/g, ''))
+            const json = JSON.parse(decoded)
+            const currentCodes = decodeBonusCodes(json.codesEnc || '')
+            const nextCodes = mutate(currentCodes)
+            json.version = BONUS_CODES_FILE_VERSION
+            json.updatedAt = new Date().toISOString()
+            json.codesEnc = encodeBonusCodes(nextCodes)
+            const nextContent = base64EncodeUtf8(JSON.stringify(json, null, 2))
+            await writeRepoFileToGitHub(token, nextContent, file.sha, commitMessage)
+            return nextCodes
+        }
+
+        async function redeemBonusCode() {
+            const input = $('settings-bonus-code-input')
+            const code = String(input.value || '').trim().toUpperCase()
+            if (!code) {
+                setBonusRedeemHint('Bitte einen Code eingeben.', true)
+                return
+            }
+
+            const used = getUsedBonusCodes()
+            if (used.includes(code)) {
+                setBonusRedeemHint('Dieser Code wurde auf diesem Client bereits genutzt.', true)
+                return
+            }
+
+            setBonusRedeemHint('Code wird geprueft...')
+            const data = await fetchBonusCodeFile()
+            const entry = data.items.find((item) => String(item.code || '').toUpperCase() === code)
+            if (!entry) {
+                setBonusRedeemHint('Code nicht gefunden oder bereits entfernt.', true)
+                return
+            }
+
+            applyBonusFromCodeEntry(entry)
+            markBonusCodeUsed(code)
+            input.value = ''
+
+            if (githubConfigured()) {
+                const token = repoWriteTokenFromUiOrConfig()
+                if (token) {
+                    await updateCodesInRepoWithToken(
+                        token,
+                        (existing) => existing.filter((item) => String(item.code || '').toUpperCase() !== code),
+                        `bonus: consume ${code}`
+                    )
+                    setBonusRedeemHint('Bonus aktiv. Code wurde aus Git entfernt.')
+                } else {
+                    setBonusRedeemHint('Bonus aktiv. Kein Repo-Token gesetzt, daher nur lokal als genutzt markiert.')
+                }
+            } else {
+                setBonusRedeemHint('Bonus aktiv. Repo-Konfiguration fehlt, daher nur lokal als genutzt markiert.')
+            }
+        }
+
+        async function unlockBonusAdmin() {
+            const value = $('settings-bonus-admin-password').value
+            if (!isAdminPasswordValid(value)) {
+                bonusAdminUnlocked = false
+                $('settings-bonus-admin-controls').classList.remove('visible')
+                setBonusAdminHint('Passwort ist falsch.', true)
+                return
+            }
+
+            bonusAdminUnlocked = true
+            $('settings-bonus-admin-controls').classList.add('visible')
+            $('settings-bonus-admin-password').value = ''
+            setBonusAdminHint('Freigeschaltet. Generator ist jetzt sichtbar.')
+        }
+
+        async function generateAndStoreBonusCodes() {
+            if (!bonusAdminUnlocked) {
+                setBonusAdminHint('Bitte zuerst freischalten.', true)
+                return
+            }
+
+            const token = repoWriteTokenFromUiOrConfig()
+            if (!githubConfigured()) {
+                setBonusAdminHint('Repo-Konfiguration fehlt. BONUS_GITHUB_OWNER/REPO setzen.', true)
+                return
+            }
+            if (!token) {
+                setBonusAdminHint('GitHub Token fehlt.', true)
+                return
+            }
+
+            const type = String($('settings-bonus-type').value)
+            const value = Number($('settings-bonus-value').value)
+            const durationSec = Math.max(0, Math.floor(Number($('settings-bonus-duration').value)))
+            const count = Math.max(1, Math.min(100, Math.floor(Number($('settings-bonus-count').value))))
+
+            if (!Number.isFinite(value) || value <= 0) {
+                setBonusAdminHint('Bonuswert ist ungueltig.', true)
+                return
+            }
+            if (!Number.isFinite(durationSec) || durationSec < 0) {
+                setBonusAdminHint('Dauer ist ungueltig.', true)
+                return
+            }
+
+            setBonusAdminHint('Codes werden erzeugt und in Git gespeichert...')
+            const created = []
+            for (let i = 0; i < count; i += 1) {
+                created.push({
+                    code: generateBonusCode(),
+                    type,
+                    value,
+                    durationSec,
+                    createdAt: Date.now(),
+                })
+            }
+
+            await updateCodesInRepoWithToken(
+                token,
+                (existing) => [...existing, ...created],
+                `bonus: add ${created.length} code(s)`
+            )
+
+            $('settings-bonus-generated-output').value = created.map((x) => x.code).join('\n')
+            setBonusAdminHint(`${created.length} Code(s) gespeichert. Commit wurde erstellt.`)
+        }
+
         function setSettingsOpen(open) {
             $('settings-wrap').classList.toggle('open', open)
             $('settings-toggle').setAttribute('aria-expanded', String(open))
@@ -3678,10 +4185,10 @@
         }
 
         function showTransferArea(mode) {
+            hideAllSettingsSubPanels()
             const transfer = $('settings-transfer')
             const copyBtn = $('settings-copy-btn')
             const applyImportBtn = $('settings-apply-import-btn')
-            hideResetConfirmation(false)
             transfer.classList.add('visible')
 
             if (mode === 'export') {
@@ -3720,7 +4227,7 @@
         }
 
         function startResetConfirmation() {
-            $('settings-transfer').classList.remove('visible')
+            hideAllSettingsSubPanels()
             setSettingsHint('')
             setResetHint('')
             resetConfirmStep = 1
@@ -3832,6 +4339,36 @@
                 $('settings-transfer-text').value = ''
                 setSettingsHint('Import-Code einfügen und anwenden.')
                 $('settings-transfer-text').focus()
+            })
+
+            $('settings-bonus-redeem-open-btn').addEventListener('click', () => {
+                showBonusRedeemPanel()
+            })
+
+            $('settings-bonus-admin-open-btn').addEventListener('click', () => {
+                showBonusAdminPanel()
+            })
+
+            $('settings-bonus-admin-unlock-btn').addEventListener('click', () => {
+                unlockBonusAdmin()
+            })
+
+            $('settings-bonus-redeem-btn').addEventListener('click', async () => {
+                try {
+                    await redeemBonusCode()
+                } catch (err) {
+                    const message = err instanceof Error ? err.message : 'Code konnte nicht eingelöst werden.'
+                    setBonusRedeemHint(message, true)
+                }
+            })
+
+            $('settings-bonus-generate-btn').addEventListener('click', async () => {
+                try {
+                    await generateAndStoreBonusCodes()
+                } catch (err) {
+                    const message = err instanceof Error ? err.message : 'Code-Generierung fehlgeschlagen.'
+                    setBonusAdminHint(message, true)
+                }
             })
 
             $('settings-reset-btn').addEventListener('click', () => {
