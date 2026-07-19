@@ -1312,6 +1312,7 @@
                                 <li>Milchtüten-Event hinzugefügt: Cookies fallen während des Effekts in Milch, Füllstand und Farbe steigen sichtbar mit</li>
                                 <li>Shop-Kaufmodus um Max erweitert und die Kaufleiste im Laden beim Scrollen fixiert</li>
                                 <li>Prestige-Reset bereinigt jetzt auch Spezial-Upgrades und weitere Run-Werte sauber</li>
+                                <li>Max-Kaufmodus repariert: nicht kaufbare Upgrades bleiben jetzt korrekt deaktiviert</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-18</strong>
@@ -1420,8 +1421,9 @@
         const SHARD_BASE_THRESHOLD = 8000000
         const SHARD_GROWTH = 1.48
         const BUY_AMOUNTS = [1, 10, 50, 100, 'max']
-        const MILK_BASE_INTERVAL_MS = 240000
+        const MILK_BASE_INTERVAL_MS = 1500000
         const MILK_DURATION_BASE_MS = 14000
+        const EVENT_OVERLAP_CHANCE = 0.001
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -2030,7 +2032,7 @@
 
         function milkEventBonusMult() {
             if (!isMilkActive()) return 1
-            return 1.18 + state.milkLevel * 0.34 + prestigeUpgradeLevel('milkResonance') * 0.05
+            return 1 + (DIAMOND_MULT - 1) * 4 + state.milkLevel * 0.65 + prestigeUpgradeLevel('milkResonance') * 0.1
         }
 
         function splitterArchivBonus(cost) {
@@ -2080,7 +2082,8 @@
         }
 
         function milkIntervalMs() {
-            return Math.max(70000, Math.floor(MILK_BASE_INTERVAL_MS * prestigeMagnetMult()))
+            const resonanceFade = Math.max(0.82, 1 - prestigeUpgradeLevel('milkResonance') * 0.01)
+            return Math.max(600000, Math.floor(MILK_BASE_INTERVAL_MS * prestigeMagnetMult() * resonanceFade))
         }
 
         function frenzyDurationMs() {
@@ -2200,10 +2203,11 @@
         function incomeMult() {
             const now = Date.now()
             let mult = 1
+            if (now < state.frenzyUntil) {
+                mult *= frenzyPowerMult()
+            }
             if (now < state.diamondUntil) {
-                mult = frenzyPowerMult() * DIAMOND_MULT
-            } else if (now < state.frenzyUntil) {
-                mult = frenzyPowerMult()
+                mult *= DIAMOND_MULT * frenzyPowerMult()
             }
             return mult * milkEventBonusMult() * prestigeImpulseMult()
         }
@@ -2589,13 +2593,13 @@
                 owned = state.producers[item.id]
                 const buyCount = resolveBuyCount(kind, item, owned)
                 cost = totalUpgradeCost(kind, item, owned, buyCount)
-                btn.disabled = !canAfford(cost)
+                btn.disabled = buyCount < 1 || !canAfford(cost)
                 btn.querySelector('.desc').textContent = item.desc + producerSynergyText(item.id)
             } else if (kind === 'click') {
                 owned = state.clicks[item.id]
                 const buyCount = resolveBuyCount(kind, item, owned)
                 cost = totalUpgradeCost(kind, item, owned, buyCount)
-                btn.disabled = !canAfford(cost)
+                btn.disabled = buyCount < 1 || !canAfford(cost)
             } else if (kind === 'special') {
                 owned = specialUpgradeLevel(item.id)
                 const buyCount = resolveBuyCount(kind, item, owned)
@@ -3116,14 +3120,16 @@
         }
 
         function showGoldenCookie() {
-            if (state.goldenVisible || state.diamondVisible) return
+            if (state.goldenVisible) return
+            if (state.diamondVisible && Math.random() > EVENT_OVERLAP_CHANCE) return
             state.goldenVisible = true
             placeGoldenCookie()
             $('golden-cookie').classList.add('visible')
         }
 
         function showDiamondCookie() {
-            if (state.diamondVisible || state.goldenVisible) return
+            if (state.diamondVisible) return
+            if (state.goldenVisible && Math.random() > EVENT_OVERLAP_CHANCE) return
             state.diamondVisible = true
             placeDiamondCookie()
             $('diamond-cookie').classList.add('visible')
@@ -3168,7 +3174,6 @@
         }
 
         function startFrenzy() {
-            hideGoldenCookie()
             const now = Date.now()
             state.frenzyUntil = Math.max(state.frenzyUntil, now) + frenzyDurationMs()
             state.randomEventsTriggered++
@@ -3176,8 +3181,6 @@
         }
 
         function startDiamondRush() {
-            hideDiamondCookie()
-            hideGoldenCookie()
             const now = Date.now()
             const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
             state.diamondUntil = Math.max(state.diamondUntil, now) + duration
@@ -3382,11 +3385,13 @@
                 renderMilkVisual()
                 renderHeader()
             }
-            if (!state.goldenVisible && !state.diamondVisible && now >= state.nextDiamondAt) {
+            if (!state.diamondVisible && now >= state.nextDiamondAt) {
                 showDiamondCookie()
-            } else if (!state.goldenVisible && !state.diamondVisible && now >= state.nextGoldenAt) {
+            }
+            if (!state.goldenVisible && now >= state.nextGoldenAt) {
                 showGoldenCookie()
-            } else if (!state.goldenVisible && !state.diamondVisible && !state.milkVisible && now >= state.nextMilkAt) {
+            }
+            if (!state.milkVisible && now >= state.nextMilkAt) {
                 showMilkCookie()
             }
 
