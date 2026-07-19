@@ -3969,6 +3969,15 @@
             } catch (_) { /* ignore */ }
         }
 
+        function normalizeBonusCode(value) {
+            const raw = String(value || '').toUpperCase()
+            const ascii = raw
+                .replace(/[\u2010-\u2015\u2212]/g, '-')
+                .replace(/[\u200B-\u200D\uFEFF]/g, '')
+                .replace(/\s+/g, '')
+            return ascii.replace(/[^A-Z0-9-]/g, '')
+        }
+
         function generateBonusCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
             const group = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
@@ -4061,7 +4070,7 @@
         }
 
         async function consumeBonusCodeFromRepo(token, code) {
-            const normalizedCode = String(code || '').trim().toUpperCase()
+            const normalizedCode = normalizeBonusCode(code)
             if (!normalizedCode) {
                 throw new Error('Code fehlt.')
             }
@@ -4071,10 +4080,18 @@
                 const decoded = base64DecodeUtf8(String(file.content || '').replace(/\n/g, ''))
                 const json = JSON.parse(decoded)
                 const currentCodes = decodeBonusCodes(json.codesEnc || '')
-                const index = currentCodes.findIndex((item) => String(item.code || '').toUpperCase() === normalizedCode)
+                const normalizedList = currentCodes.map((item) => normalizeBonusCode(item.code || ''))
+                const index = normalizedList.findIndex((itemCode) => itemCode === normalizedCode)
 
                 if (index < 0) {
-                    return null
+                    return {
+                        entry: null,
+                        debug: {
+                            code: normalizedCode,
+                            loadedCount: currentCodes.length,
+                            sample: normalizedList.slice(0, 3),
+                        },
+                    }
                 }
 
                 const [entry] = currentCodes.splice(index, 1)
@@ -4085,7 +4102,14 @@
 
                 try {
                     await writeRepoFileToGitHub(token, nextContent, file.sha, `bonus: consume ${normalizedCode}`)
-                    return entry
+                    return {
+                        entry,
+                        debug: {
+                            code: normalizedCode,
+                            loadedCount: normalizedList.length,
+                            consumedIndex: index,
+                        },
+                    }
                 } catch (err) {
                     const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
                     const isConflict = message.includes('Konflikt')
@@ -4187,7 +4211,7 @@
 
         async function redeemBonusCode() {
             const input = $('settings-bonus-code-input')
-            const code = String(input.value || '').trim().toUpperCase()
+            const code = normalizeBonusCode(input.value)
             if (!code) {
                 setBonusRedeemHint('Bitte einen Code eingeben.', true)
                 return
@@ -4211,23 +4235,31 @@
             }
 
             setBonusRedeemHint('Code wird global geprueft und verbraucht...')
-            const entry = await consumeBonusCodeFromRepo(token, code)
-            if (!entry) {
+            const consumeResult = await consumeBonusCodeFromRepo(token, code)
+            if (!consumeResult || !consumeResult.entry) {
                 try {
                     const publicData = await fetchBonusCodeFile()
-                    const inPublicFile = publicData.items.some((item) => String(item.code || '').toUpperCase() === code)
+                    const inPublicFile = publicData.items.some((item) => normalizeBonusCode(item.code || '') === code)
                     if (inPublicFile) {
-                        setBonusRedeemHint('Code ist in der oeffentlichen Datei vorhanden, aber per GitHub API nicht gefunden. Token/Repo/Branch-Berechtigung pruefen.', true)
+                        setBonusRedeemHint(
+                            `Code ist oeffentlich vorhanden, aber API-Match fehlte (suche=${consumeResult?.debug?.code || code}, geladen=${consumeResult?.debug?.loadedCount ?? '-'}). Token/Repo/Branch pruefen.`,
+                            true
+                        )
                         return
                     }
                 } catch (_) {
                     // Ignore fallback check failures and keep generic message.
                 }
-                setBonusRedeemHint('Code nicht gefunden oder bereits global verbraucht.', true)
+                const loadedCount = consumeResult?.debug?.loadedCount
+                const sample = Array.isArray(consumeResult?.debug?.sample) ? consumeResult.debug.sample.filter(Boolean).join(', ') : ''
+                const details = loadedCount !== undefined
+                    ? ` (suche=${code}, geladen=${loadedCount}${sample ? `, sample=${sample}` : ''})`
+                    : ''
+                setBonusRedeemHint(`Code nicht gefunden oder bereits global verbraucht.${details}`, true)
                 return
             }
 
-            applyBonusFromCodeEntry(entry)
+            applyBonusFromCodeEntry(consumeResult.entry)
             markBonusCodeUsed(code)
             input.value = ''
             setBonusRedeemHint('Bonus aktiv. Code wurde global 1x verbraucht und aus der Datei geloescht.')
