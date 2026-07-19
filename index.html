@@ -265,6 +265,53 @@
             transform: scale(0.95);
         }
 
+        .settings-update-badge {
+            position: absolute;
+            top: -0.2rem;
+            right: -0.15rem;
+            min-width: 0.9rem;
+            height: 0.9rem;
+            padding: 0 0.18rem;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ff7a59 0%, #ea2b2b 100%);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            font-size: 0.53rem;
+            font-weight: 800;
+            line-height: 0.85rem;
+            text-align: center;
+            box-shadow: 0 0 0 0 rgba(234, 43, 43, 0.55);
+            animation: update-badge-pulse 1.7s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .settings-action-update-badge {
+            margin-left: auto;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ff7a59 0%, #ea2b2b 100%);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            font-size: 0.57rem;
+            font-weight: 800;
+            line-height: 1;
+            padding: 0.15rem 0.32rem;
+            letter-spacing: 0.02em;
+            box-shadow: 0 0 0 0 rgba(234, 43, 43, 0.48);
+            animation: update-badge-pulse 1.7s ease-in-out infinite;
+        }
+
+        @keyframes update-badge-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(234, 43, 43, 0.48);
+            }
+            70% {
+                box-shadow: 0 0 0 0.42rem rgba(234, 43, 43, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(234, 43, 43, 0);
+            }
+        }
+
         .settings-panel {
             position: absolute;
             top: 2.35rem;
@@ -1661,6 +1708,7 @@
             <div class="settings-wrap" id="settings-wrap">
                 <button type="button" class="settings-toggle" id="settings-toggle" aria-label="Einstellungen" aria-expanded="false" aria-controls="settings-panel">
                     <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                    <span class="settings-update-badge" id="settings-update-badge" aria-hidden="true" hidden>!</span>
                 </button>
                 <div class="settings-panel" id="settings-panel" role="menu" aria-hidden="true">
                     <button type="button" class="settings-action-btn" id="settings-theme-toggle" aria-pressed="false">
@@ -1686,6 +1734,7 @@
                     <button type="button" class="settings-action-btn" id="settings-refresh-btn">
                         <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
                         <span>App Aktualisieren</span>
+                        <span class="settings-action-update-badge" id="settings-refresh-update-badge" aria-hidden="true" hidden>Neu</span>
                     </button>
                     <button type="button" class="settings-action-btn danger" id="settings-reset-btn">
                         <i class="fa-solid fa-trash" aria-hidden="true"></i>
@@ -1849,6 +1898,9 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
+        const APP_VERSION = '2026.07.19.1'
+        const VERSION_FILE_PATH = 'version.json'
+        const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
         const COST_MULT = 1.15
         const OFFLINE_CAP_MS = 4 * 60 * 60 * 1000
@@ -1882,6 +1934,7 @@
         const BONUS_ADMIN_OBF_PASSWORD = [10, 59, 60, 36, 43, 31, 40, 60, 37, 61, 100, 123, 121, 123, 127, 104]
         const BONUS_GITHUB_TOKEN_OBF_KEY = 73
         const BONUS_GITHUB_TOKEN_OBF = [46, 32, 61, 33, 60, 43, 22, 57, 40, 61, 22, 120, 120, 8, 25, 1, 124, 17, 11, 16, 121, 113, 13, 7, 14, 11, 15, 61, 44, 43, 113, 16, 127, 22, 40, 34, 47, 32, 44, 15, 47, 16, 1, 56, 57, 16, 26, 29, 124, 2, 48, 29, 27, 47, 0, 120, 123, 40, 8, 11, 32, 61, 63, 57, 39, 11, 17, 5, 12, 14, 34, 43, 124, 127, 15, 126, 17, 31, 3, 14, 2, 14, 14, 17, 8, 121, 35, 36, 1, 30, 39, 7, 27]
+        let versionCheckTimer = null
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -4003,6 +4056,80 @@
             hint.classList.toggle('error', isError)
         }
 
+        function compareVersions(left, right) {
+            const leftParts = String(left || '').match(/\d+/g)?.map((n) => Number(n)) || []
+            const rightParts = String(right || '').match(/\d+/g)?.map((n) => Number(n)) || []
+            const maxLength = Math.max(leftParts.length, rightParts.length)
+
+            for (let i = 0; i < maxLength; i += 1) {
+                const l = leftParts[i] || 0
+                const r = rightParts[i] || 0
+                if (l > r) return 1
+                if (l < r) return -1
+            }
+
+            if (leftParts.length === 0 || rightParts.length === 0) {
+                const fallback = String(left || '').localeCompare(String(right || ''), undefined, { numeric: true, sensitivity: 'base' })
+                return fallback > 0 ? 1 : fallback < 0 ? -1 : 0
+            }
+
+            return 0
+        }
+
+        function setUpdateIndicatorsVisible(visible, latestVersion = '') {
+            const gearBadge = $('settings-update-badge')
+            const refreshBadge = $('settings-refresh-update-badge')
+            const refreshButton = $('settings-refresh-btn')
+            if (!gearBadge || !refreshBadge || !refreshButton) return
+
+            gearBadge.hidden = !visible
+            refreshBadge.hidden = !visible
+
+            if (visible) {
+                refreshButton.setAttribute('title', latestVersion ? `Neue Version verfügbar (${latestVersion})` : 'Neue Version verfügbar')
+            } else {
+                refreshButton.removeAttribute('title')
+            }
+        }
+
+        async function checkForAppUpdates() {
+            const requestUrl = `${VERSION_FILE_PATH}?t=${Date.now()}`
+            let response
+            try {
+                response = await fetch(requestUrl, { cache: 'no-store' })
+            } catch (_) {
+                return
+            }
+
+            if (!response.ok) {
+                return
+            }
+
+            let payload
+            try {
+                payload = await response.json()
+            } catch (_) {
+                return
+            }
+
+            const latestVersion = String(payload?.version || '').trim()
+            if (!latestVersion) {
+                setUpdateIndicatorsVisible(false)
+                return
+            }
+
+            const hasUpdate = compareVersions(latestVersion, APP_VERSION) > 0
+            setUpdateIndicatorsVisible(hasUpdate, latestVersion)
+        }
+
+        function startVersionChecks() {
+            checkForAppUpdates()
+            if (versionCheckTimer) {
+                clearInterval(versionCheckTimer)
+            }
+            versionCheckTimer = setInterval(checkForAppUpdates, VERSION_CHECK_INTERVAL_MS)
+        }
+
         function hideAllSettingsSubPanels() {
             resetConfirmStep = 0
             $('settings-transfer').classList.remove('visible')
@@ -4376,7 +4503,7 @@
                 const details = loadedCount !== undefined
                     ? ` (suche=${code}, geladen=${loadedCount}${sample ? `, sample=${sample}` : ''})`
                     : ''
-                setBonusRedeemHint(`Code nicht gefunden oder bereits global verbraucht.${details}`, true)
+                setBonusRedeemHint(`Code nicht gefunden oder bereits  verbraucht`, true)
                 return
             }
 
@@ -4801,11 +4928,13 @@
                 save()
             })
             initTabs()
+            startVersionChecks()
 
             setInterval(gameTick, TICK_MS)
             setInterval(save, AUTOSAVE_MS)
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'hidden') save()
+                if (document.visibilityState === 'visible') checkForAppUpdates()
             })
             window.addEventListener('beforeunload', save)
         }
