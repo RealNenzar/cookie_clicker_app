@@ -595,6 +595,7 @@
             top: 2.35rem;
             left: 0;
             width: min(24rem, calc(100vw - 2.5rem));
+            max-height: min(60vh, 22rem);
             background: var(--tabs-bg);
             border: 1px solid var(--ctrl-border);
             border-radius: 0.7rem;
@@ -603,10 +604,16 @@
             font-size: 0.72rem;
             text-align: left;
             color: var(--shop-name-color);
+            overflow-y: hidden;
+            scrollbar-width: none;
             opacity: 0;
             transform: translateY(-4px);
             pointer-events: none;
             transition: opacity 0.14s ease, transform 0.14s ease;
+        }
+
+        .patch-tooltip::-webkit-scrollbar {
+            width: 0;
         }
 
         .patch-tooltip ul {
@@ -622,6 +629,20 @@
         .patch-wrap:focus-within .patch-tooltip {
             opacity: 1;
             transform: translateY(0);
+            pointer-events: auto;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .patch-wrap:hover .patch-tooltip::-webkit-scrollbar,
+        .patch-wrap:focus-within .patch-tooltip::-webkit-scrollbar {
+            width: 0.42rem;
+        }
+
+        .patch-wrap:hover .patch-tooltip::-webkit-scrollbar-thumb,
+        .patch-wrap:focus-within .patch-tooltip::-webkit-scrollbar-thumb {
+            background: color-mix(in srgb, var(--shop-name-color) 40%, transparent);
+            border-radius: 999px;
         }
 
         .achievements-toggle {
@@ -1539,6 +1560,11 @@
                     <ul>
                         <li><strong>2026-07-19</strong>
                             <ul>
+                                <li>Bonus-Codes können jetzt pro Code nur einmal eingelöst werden</li>
+                                <li>Einlösen von Bonus-Codes funktioniert zuverlässiger, auch direkt nach dem Erstellen</li>
+                                <li>Neuer Button in den Einstellungen zum schnellen Aktualisieren der Seite</li>
+                                <li>Splitter aus Bonus-Codes bleiben jetzt auch nach dem Neuladen erhalten</li>
+                                <li>Patchnotes-Tooltip für lange Listen verbessert: scrollbar mit sichtbarer Leiste beim Hover</li>
                                 <li>Prestige um neue Upgrades erweitert und mehrere neue Erfolge ergänzt</li>
                                 <li>Milchtüten-Event hinzugefügt: Cookies fallen während des Effekts in Milch, Füllstand und Farbe steigen sichtbar mit</li>
                                 <li>Shop-Kaufmodus um Max erweitert und die Kaufleiste im Laden beim Scrollen fixiert</li>
@@ -1588,7 +1614,7 @@
                     </button>
                     <button type="button" class="settings-action-btn" id="settings-bonus-redeem-open-btn">
                         <i class="fa-solid fa-gift" aria-hidden="true"></i>
-                        <span>Bonus-Code einloesen</span>
+                        <span>Bonus-Code einlösen</span>
                     </button>
                     <button type="button" class="settings-action-btn" id="settings-bonus-admin-open-btn">
                         <i class="fa-solid fa-key" aria-hidden="true"></i>
@@ -3914,7 +3940,7 @@
             const raw = base64DecodeUtf8(String(encoded))
             const dot = raw.lastIndexOf('.')
             if (dot <= 0) {
-                throw new Error('Code-Datei ist ungueltig.')
+                throw new Error('Code-Datei ist ungültig.')
             }
             const payload = raw.slice(0, dot)
             const signature = raw.slice(dot + 1)
@@ -3940,7 +3966,7 @@
             }
             const json = await response.json()
             if (!json || typeof json !== 'object') {
-                throw new Error('Bonus-Code-Datei ist ungueltig.')
+                throw new Error('Bonus-Code-Datei ist ungültig.')
             }
             const items = decodeBonusCodes(json.codesEnc || '')
             return {
@@ -4007,7 +4033,7 @@
             const value = Number(entry.value)
             const durationSec = Math.max(0, Math.floor(Number(entry.durationSec || 0)))
             if (!Number.isFinite(value) || value <= 0) {
-                throw new Error('Bonuswert ist ungueltig.')
+                throw new Error('Bonuswert ist ungültig.')
             }
 
             if (type === 'cookies') {
@@ -4022,11 +4048,11 @@
                 }
                 state.prestige.totalShardsEarned += shards
             } else if (type === 'allMult') {
-                if (durationSec <= 0) throw new Error('Dauer fehlt fuer Multiplikator-Bonus.')
+                if (durationSec <= 0) throw new Error('Dauer fehlt für Multiplikator-Bonus.')
                 state.bonusAllMult = Math.max(state.bonusAllMult, value)
                 state.bonusAllUntil = Math.max(state.bonusAllUntil, now + durationSec * 1000)
             } else if (type === 'eventRate') {
-                if (durationSec <= 0) throw new Error('Dauer fehlt fuer Eventrate-Bonus.')
+                if (durationSec <= 0) throw new Error('Dauer fehlt für Eventrate-Bonus.')
                 state.bonusEventRateMult = Math.max(state.bonusEventRateMult, value)
                 state.bonusEventRateUntil = Math.max(state.bonusEventRateUntil, now + durationSec * 1000)
                 state.nextGoldenAt = Math.min(state.nextGoldenAt, now + goldenIntervalMs())
@@ -4060,7 +4086,7 @@
                 },
             })
             if (!response.ok) {
-                throw new Error('GitHub Datei konnte nicht geladen werden. Token/Repo pruefen.')
+                throw new Error('GitHub Datei konnte nicht geladen werden. Token/Repo prüfen.')
             }
             return response.json()
         }
@@ -4085,7 +4111,7 @@
             })
             if (!response.ok) {
                 if (response.status === 409) {
-                    throw new Error('GitHub Konflikt (Datei wurde parallel geaendert). Bitte erneut versuchen.')
+                    throw new Error('GitHub Konflikt (Datei wurde parallel geändert). Bitte erneut versuchen.')
                 }
                 throw new Error(`GitHub Update fehlgeschlagen (${response.status}).`)
             }
@@ -4181,7 +4207,7 @@
             }
 
             if (!githubConfigured()) {
-                setBonusRedeemHint('Repo-Konfiguration fehlt. Einloesen ist ohne Git-Backend deaktiviert.', true)
+                setBonusRedeemHint('Repo-Konfiguration fehlt. Einlösen ist ohne Git-Backend deaktiviert.', true)
                 return
             }
 
@@ -4197,7 +4223,7 @@
                 return
             }
 
-            setBonusRedeemHint('Code wird global geprueft und verbraucht...')
+            setBonusRedeemHint('Code wird global geprüft und verbraucht...')
             const consumeResult = await consumeBonusCodeFromRepo(token, code)
             if (!consumeResult || !consumeResult.entry) {
                 try {
@@ -4205,7 +4231,7 @@
                     const inPublicFile = publicData.items.some((item) => normalizeBonusCode(item.code || '') === code)
                     if (inPublicFile) {
                         setBonusRedeemHint(
-                            `Code ist oeffentlich vorhanden, aber API-Match fehlte (suche=${consumeResult?.debug?.code || code}, geladen=${consumeResult?.debug?.loadedCount ?? '-'}). Token/Repo/Branch pruefen.`,
+                            `Code ist öffentlich vorhanden, aber API-Match fehlte (suche=${consumeResult?.debug?.code || code}, geladen=${consumeResult?.debug?.loadedCount ?? '-'}). Token/Repo/Branch prüfen.`,
                             true
                         )
                         return
@@ -4225,7 +4251,7 @@
             applyBonusFromCodeEntry(consumeResult.entry)
             markBonusCodeUsed(code)
             input.value = ''
-            setBonusRedeemHint('Bonus aktiv. Code wurde global 1x verbraucht und aus der Datei geloescht.')
+            setBonusRedeemHint('Bonus aktiv. Code wurde global 1x verbraucht und aus der Datei gelöscht.')
         }
 
         async function unlockBonusAdmin() {
@@ -4268,11 +4294,11 @@
             const count = Math.max(1, Math.min(100, Math.floor(Number($('settings-bonus-count').value))))
 
             if (!Number.isFinite(value) || value <= 0) {
-                setBonusAdminHint('Bonuswert ist ungueltig.', true)
+                setBonusAdminHint('Bonuswert ist ungültig.', true)
                 return
             }
             if (needsDuration && (!Number.isFinite(durationSec) || durationSec <= 0)) {
-                setBonusAdminHint('Dauer ist ungueltig.', true)
+                setBonusAdminHint('Dauer ist ungültig.', true)
                 return
             }
 
