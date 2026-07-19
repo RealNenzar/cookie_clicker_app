@@ -1650,6 +1650,32 @@
         .tab-btn:active {
             transform: scale(0.97);
         }
+
+        .app-version-pill {
+            position: absolute;
+            right: 0.6rem;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 4.05rem);
+            z-index: 9;
+            font-size: 0.6rem;
+            line-height: 1;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--shop-desc-color);
+            background: var(--ctrl-bg);
+            border: 1px solid var(--ctrl-border);
+            border-radius: 999px;
+            padding: 0.25rem 0.45rem;
+            pointer-events: none;
+            opacity: 0.92;
+        }
+
+        @media (max-width: 430px) {
+            .app-version-pill {
+                bottom: calc(env(safe-area-inset-bottom, 0px) + 3.9rem);
+                right: 0.5rem;
+                font-size: 0.57rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1800,6 +1826,10 @@
                             <span>Spezial-Cookie-Rate</span>
                             <strong id="settings-bonus-event-status">Inaktiv</strong>
                         </div>
+                        <div class="settings-bonus-status-row">
+                            <span>Eingelöste Codes</span>
+                            <strong id="settings-bonus-used-count">0</strong>
+                        </div>
                     </div>
                     <div class="settings-reset-confirm" id="settings-reset-confirm">
                         <p class="settings-reset-confirm-text" id="settings-reset-confirm-text"></p>
@@ -1888,6 +1918,8 @@
                 <div class="shop" id="achievements-root"></div>
             </section>
         </div>
+
+        <div class="app-version-pill" id="app-version-pill" aria-label="Aktuelle Version"></div>
 
         <nav class="tabs" aria-label="Navigation">
             <button type="button" class="tab-btn active" data-tab="play">Keks</button>
@@ -2501,6 +2533,7 @@
         }
         let resetConfirmStep = 0
         let bonusAdminUnlocked = false
+        let redeemedBonusCodesCount = 0
 
         const $ = (id) => document.getElementById(id)
 
@@ -2569,7 +2602,8 @@
         function renderBonusStatus() {
             const allNode = $('settings-bonus-all-status')
             const eventNode = $('settings-bonus-event-status')
-            if (!allNode || !eventNode) return
+            const usedNode = $('settings-bonus-used-count')
+            if (!allNode || !eventNode || !usedNode) return
 
             const now = Date.now()
             const allActive = now < state.bonusAllUntil
@@ -2591,6 +2625,7 @@
 
             allNode.classList.toggle('active', allActive)
             eventNode.classList.toggle('active', eventActive)
+            usedNode.textContent = String(redeemedBonusCodesCount)
         }
 
         function milkResonanceRiseStep() {
@@ -4056,6 +4091,12 @@
             hint.classList.toggle('error', isError)
         }
 
+        function renderAppVersion() {
+            const node = $('app-version-pill')
+            if (!node) return
+            node.textContent = `v${APP_VERSION}`
+        }
+
         function compareVersions(left, right) {
             const leftParts = String(left || '').match(/\d+/g)?.map((n) => Number(n)) || []
             const rightParts = String(right || '').match(/\d+/g)?.map((n) => Number(n)) || []
@@ -4245,6 +4286,7 @@
             try {
                 localStorage.setItem(BONUS_CODES_STORAGE_KEY, JSON.stringify(list))
             } catch (_) { /* ignore */ }
+            redeemedBonusCodesCount = list.length
         }
 
         function normalizeBonusCode(value) {
@@ -4896,9 +4938,11 @@
 
         function init() {
             load()
+            redeemedBonusCodesCount = getUsedBonusCodes().length
             buildShop()
             buildPrestige()
             buildAchievements()
+            renderAppVersion()
             renderHeader()
             renderShop()
             renderPrestige()
