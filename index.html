@@ -315,6 +315,52 @@
             outline: none;
         }
 
+        .settings-action-btn.danger {
+            border-color: rgba(178, 39, 39, 0.5);
+            color: #b22727;
+        }
+
+        .settings-action-btn.danger:hover,
+        .settings-action-btn.danger:focus-visible {
+            background: rgba(178, 39, 39, 0.1);
+        }
+
+        .settings-reset-confirm {
+            margin-top: 0.55rem;
+            display: none;
+            gap: 0.4rem;
+            border: 1px solid rgba(178, 39, 39, 0.35);
+            border-radius: 0.6rem;
+            padding: 0.55rem;
+            background: rgba(178, 39, 39, 0.07);
+        }
+
+        .settings-reset-confirm.visible {
+            display: grid;
+        }
+
+        .settings-reset-confirm-text {
+            font-size: 0.7rem;
+            line-height: 1.35;
+            color: var(--shop-name-color);
+        }
+
+        .settings-reset-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+        }
+
+        .settings-reset-hint {
+            min-height: 1.1rem;
+            font-size: 0.66rem;
+            color: var(--shop-desc-color);
+        }
+
+        .settings-reset-hint.error {
+            color: #b22727;
+        }
+
         .settings-transfer {
             margin-top: 0.55rem;
             display: none;
@@ -366,6 +412,10 @@
 
         @media (max-width: 430px) {
             .settings-transfer-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-reset-actions {
                 grid-template-columns: 1fr;
             }
         }
@@ -1469,6 +1519,24 @@
                         <i class="fa-solid fa-file-import" aria-hidden="true"></i>
                         <span>Savegame importieren</span>
                     </button>
+                    <button type="button" class="settings-action-btn danger" id="settings-reset-btn">
+                        <i class="fa-solid fa-trash" aria-hidden="true"></i>
+                        <span>Alles zurücksetzen</span>
+                    </button>
+                    <div class="settings-reset-confirm" id="settings-reset-confirm">
+                        <p class="settings-reset-confirm-text" id="settings-reset-confirm-text"></p>
+                        <div class="settings-reset-actions">
+                            <button type="button" class="settings-action-btn danger" id="settings-reset-confirm-btn">
+                                <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+                                <span id="settings-reset-confirm-label">Bestätigen</span>
+                            </button>
+                            <button type="button" class="settings-action-btn" id="settings-reset-cancel-btn">
+                                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                                <span>Abbrechen</span>
+                            </button>
+                        </div>
+                        <p class="settings-reset-hint" id="settings-reset-hint"></p>
+                    </div>
                     <div class="settings-transfer" id="settings-transfer">
                         <label for="settings-transfer-text">Savegame-Zeichenkette</label>
                         <textarea id="settings-transfer-text" spellcheck="false" placeholder="Export- oder Import-Code"></textarea>
@@ -2134,6 +2202,7 @@
             },
             achievements: Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, false])),
         }
+        let resetConfirmStep = 0
 
         const $ = (id) => document.getElementById(id)
 
@@ -3415,9 +3484,16 @@
                 localStorage.removeItem('ls_cookie_clicker_v1')
             } catch (_) { /* quota / private mode */ }
             Object.assign(state, defaultState())
+            hideGoldenCookie()
+            hideDiamondCookie()
+            hideMilkCookie()
             renderHeader()
             renderShop()
             renderPrestige()
+            renderAchievements()
+            renderAudioControls()
+            renderThemeToggle()
+            save()
         }
 
         function createSavePayload() {
@@ -3589,6 +3665,12 @@
             hint.classList.toggle('error', isError)
         }
 
+        function setResetHint(message, isError = false) {
+            const hint = $('settings-reset-hint')
+            hint.textContent = message
+            hint.classList.toggle('error', isError)
+        }
+
         function setSettingsOpen(open) {
             $('settings-wrap').classList.toggle('open', open)
             $('settings-toggle').setAttribute('aria-expanded', String(open))
@@ -3599,6 +3681,7 @@
             const transfer = $('settings-transfer')
             const copyBtn = $('settings-copy-btn')
             const applyImportBtn = $('settings-apply-import-btn')
+            hideResetConfirmation(false)
             transfer.classList.add('visible')
 
             if (mode === 'export') {
@@ -3610,6 +3693,57 @@
                 applyImportBtn.style.display = ''
                 $('settings-transfer-text').readOnly = false
             }
+        }
+
+        function hideResetConfirmation(showCancelledHint = false) {
+            resetConfirmStep = 0
+            $('settings-reset-confirm').classList.remove('visible')
+            $('settings-reset-confirm-text').textContent = ''
+            $('settings-reset-confirm-label').textContent = 'Bestätigen'
+            setResetHint(showCancelledHint ? 'Reset abgebrochen.' : '')
+        }
+
+        function updateResetConfirmationStep() {
+            const questions = [
+                'Schritt 1/3: Wirklich den kompletten Spielstand zurücksetzen?',
+                'Schritt 2/3: Dadurch verlierst du ALLE Kekse, Upgrades, Prestige und Erfolge.',
+                'Schritt 3/3: Letzte Bestätigung. Jetzt endgültig alles löschen?'
+            ]
+            const labels = [
+                'Ja, weiter (1/3)',
+                'Ja, weiter (2/3)',
+                'Ja, jetzt resetten (3/3)'
+            ]
+            const idx = Math.max(0, Math.min(questions.length - 1, resetConfirmStep - 1))
+            $('settings-reset-confirm-text').textContent = questions[idx]
+            $('settings-reset-confirm-label').textContent = labels[idx]
+        }
+
+        function startResetConfirmation() {
+            $('settings-transfer').classList.remove('visible')
+            setSettingsHint('')
+            setResetHint('')
+            resetConfirmStep = 1
+            $('settings-reset-confirm').classList.add('visible')
+            updateResetConfirmationStep()
+        }
+
+        function confirmResetStep() {
+            if (resetConfirmStep < 1) {
+                startResetConfirmation()
+                return
+            }
+
+            if (resetConfirmStep < 3) {
+                resetConfirmStep += 1
+                updateResetConfirmationStep()
+                return
+            }
+
+            resetScore()
+            hideResetConfirmation(false)
+            setResetHint('Spielstand wurde vollständig zurückgesetzt.')
+            $('settings-reset-confirm').classList.add('visible')
         }
 
         async function copyTransferText() {
@@ -3698,6 +3832,18 @@
                 $('settings-transfer-text').value = ''
                 setSettingsHint('Import-Code einfügen und anwenden.')
                 $('settings-transfer-text').focus()
+            })
+
+            $('settings-reset-btn').addEventListener('click', () => {
+                startResetConfirmation()
+            })
+
+            $('settings-reset-confirm-btn').addEventListener('click', () => {
+                confirmResetStep()
+            })
+
+            $('settings-reset-cancel-btn').addEventListener('click', () => {
+                hideResetConfirmation(true)
             })
 
             $('settings-copy-btn').addEventListener('click', () => {
