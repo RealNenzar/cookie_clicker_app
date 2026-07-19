@@ -4049,8 +4049,50 @@
                 body: JSON.stringify(body),
             })
             if (!response.ok) {
-                throw new Error('GitHub Update fehlgeschlagen.')
+                if (response.status === 409) {
+                    throw new Error('GitHub Konflikt (Datei wurde parallel geaendert). Bitte erneut versuchen.')
+                }
+                throw new Error(`GitHub Update fehlgeschlagen (${response.status}).`)
             }
+        }
+
+        async function consumeBonusCodeFromRepo(token, code) {
+            const normalizedCode = String(code || '').trim().toUpperCase()
+            if (!normalizedCode) {
+                throw new Error('Code fehlt.')
+            }
+
+            for (let attempt = 0; attempt < 2; attempt += 1) {
+                const file = await getRepoFileFromGitHub(token)
+                const decoded = base64DecodeUtf8(String(file.content || '').replace(/\n/g, ''))
+                const json = JSON.parse(decoded)
+                const currentCodes = decodeBonusCodes(json.codesEnc || '')
+                const index = currentCodes.findIndex((item) => String(item.code || '').toUpperCase() === normalizedCode)
+
+                if (index < 0) {
+                    return null
+                }
+
+                const [entry] = currentCodes.splice(index, 1)
+                json.version = BONUS_CODES_FILE_VERSION
+                json.updatedAt = new Date().toISOString()
+                json.codesEnc = encodeBonusCodes(currentCodes)
+                const nextContent = base64EncodeUtf8(JSON.stringify(json, null, 2))
+
+                try {
+                    await writeRepoFileToGitHub(token, nextContent, file.sha, `bonus: consume ${normalizedCode}`)
+                    return entry
+                } catch (err) {
+                    const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
+                    const isConflict = message.includes('Konflikt')
+                    if (isConflict && attempt < 1) {
+                        continue
+                    }
+                    throw err
+                }
+            }
+
+            throw new Error('Code konnte nicht atomar aus Git entfernt werden.')
         }
 
         async function updateCodesInRepoWithToken(token, mutate, commitMessage) {
@@ -4082,44 +4124,34 @@
                 return
             }
 
+            if (!githubConfigured()) {
+                setBonusRedeemHint('Repo-Konfiguration fehlt. Einloesen ist ohne Git-Backend deaktiviert.', true)
+                return
+            }
+
+            const token = repoWriteTokenFromUiOrConfig()
+            if (!token) {
+                setBonusRedeemHint('GitHub Token fehlt. Ein globaler 1x-Code kann nur mit Token eingeloest werden.', true)
+                return
+            }
+
             const used = getUsedBonusCodes()
             if (used.includes(code)) {
                 setBonusRedeemHint('Dieser Code wurde auf diesem Client bereits genutzt.', true)
                 return
             }
 
-            setBonusRedeemHint('Code wird geprueft...')
-            const data = await fetchBonusCodeFile()
-            const entry = data.items.find((item) => String(item.code || '').toUpperCase() === code)
+            setBonusRedeemHint('Code wird global geprueft und verbraucht...')
+            const entry = await consumeBonusCodeFromRepo(token, code)
             if (!entry) {
-                setBonusRedeemHint('Code nicht gefunden oder bereits entfernt.', true)
+                setBonusRedeemHint('Code nicht gefunden oder bereits global verbraucht.', true)
                 return
             }
 
             applyBonusFromCodeEntry(entry)
             markBonusCodeUsed(code)
             input.value = ''
-
-            if (githubConfigured()) {
-                const token = repoWriteTokenFromUiOrConfig()
-                if (token) {
-                    try {
-                        await updateCodesInRepoWithToken(
-                            token,
-                            (existing) => existing.filter((item) => String(item.code || '').toUpperCase() !== code),
-                            `bonus: consume ${code}`
-                        )
-                        setBonusRedeemHint('Bonus aktiv. Code wurde aus Git entfernt.')
-                    } catch (err) {
-                        const message = err instanceof Error ? err.message : 'Unbekannter Fehler'
-                        setBonusRedeemHint(`Bonus aktiv, aber Git-Entfernung fehlgeschlagen: ${message}`, true)
-                    }
-                } else {
-                    setBonusRedeemHint('Bonus aktiv. Kein Repo-Token gesetzt, daher nur lokal als genutzt markiert.')
-                }
-            } else {
-                setBonusRedeemHint('Bonus aktiv. Repo-Konfiguration fehlt, daher nur lokal als genutzt markiert.')
-            }
+            setBonusRedeemHint('Bonus aktiv. Code wurde global 1x verbraucht und aus der Datei geloescht.')
         }
 
         async function unlockBonusAdmin() {
