@@ -605,6 +605,7 @@
             text-align: left;
             color: var(--shop-name-color);
             overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             opacity: 0;
             transform: translateY(-4px);
@@ -641,8 +642,23 @@
 
         .patch-wrap:hover .patch-tooltip::-webkit-scrollbar-thumb,
         .patch-wrap:focus-within .patch-tooltip::-webkit-scrollbar-thumb {
-            background: color-mix(in srgb, var(--shop-name-color) 40%, transparent);
+            background: rgba(120, 90, 60, 0.5);
             border-radius: 999px;
+        }
+
+        @media (hover: none) {
+            .patch-tooltip {
+                scrollbar-width: thin;
+            }
+
+            .patch-tooltip::-webkit-scrollbar {
+                width: 0.42rem;
+            }
+
+            .patch-tooltip::-webkit-scrollbar-thumb {
+                background: rgba(120, 90, 60, 0.5);
+                border-radius: 999px;
+            }
         }
 
         .achievements-toggle {
