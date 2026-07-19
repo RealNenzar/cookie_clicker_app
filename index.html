@@ -1618,7 +1618,7 @@
                 <div class="settings-panel" id="settings-panel" role="menu" aria-hidden="true">
                     <button type="button" class="settings-action-btn" id="settings-theme-toggle" aria-pressed="false">
                         <i class="fa-solid fa-moon" id="settings-theme-icon" aria-hidden="true"></i>
-                        <span id="settings-theme-label">Darkmode aktivieren</span>
+                        <span id="settings-theme-label">Nachtmodus aktivieren</span>
                     </button>
                     <button type="button" class="settings-action-btn" id="settings-export-btn">
                         <i class="fa-solid fa-file-export" aria-hidden="true"></i>
@@ -2766,7 +2766,7 @@
             const themeLabel = $('settings-theme-label')
             const themeIcon = $('settings-theme-icon')
             themeToggle.setAttribute('aria-pressed', String(state.darkMode))
-            themeLabel.textContent = state.darkMode ? 'Hellmodus aktivieren' : 'Darkmode aktivieren'
+            themeLabel.textContent = state.darkMode ? 'Tagmodus aktivieren' : 'Nachtmodus aktivieren'
             themeIcon.className = state.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'
         }
 
