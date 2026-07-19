@@ -976,10 +976,19 @@
         }
 
         .buy-amount-controls {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            padding: 0.2rem 0 0.55rem;
+            background: linear-gradient(180deg, rgba(250, 243, 232, 0.98) 0%, rgba(250, 243, 232, 0.92) 82%, rgba(250, 243, 232, 0) 100%);
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 0.4rem;
             margin-bottom: 0.7rem;
+        }
+
+        .app.dark-mode .buy-amount-controls {
+            background: linear-gradient(180deg, rgba(25, 25, 25, 0.98) 0%, rgba(25, 25, 25, 0.92) 82%, rgba(25, 25, 25, 0) 100%);
         }
 
         .buy-amount-btn {
@@ -1318,7 +1327,7 @@
         const PRESTIGE_BASE_MULT = 0.08
         const SHARD_BASE_THRESHOLD = 8000000
         const SHARD_GROWTH = 1.48
-        const BUY_AMOUNTS = [1, 10, 50, 100]
+        const BUY_AMOUNTS = [1, 10, 50, 100, 'max']
 
         const PRODUCERS = [
             { id: 'cursor', name: 'Cursor', icon: 'fa-solid fa-hand-pointer', cps: 0.1, baseCost: 15, desc: '+0.1 Kekse/Sek' },
@@ -1990,7 +1999,7 @@
                 btn.type = 'button'
                 btn.className = 'buy-amount-btn' + (state.buyAmount === amount ? ' active' : '')
                 btn.dataset.amount = String(amount)
-                btn.textContent = `x${amount}`
+                btn.textContent = amount === 'max' ? 'Max' : `x${amount}`
                 buyControls.appendChild(btn)
             }
             root.appendChild(buyControls)
@@ -2244,11 +2253,37 @@
         }
 
         function resolveBuyCount(kind, item, ownedStart) {
+            if (state.buyAmount === 'max') {
+                const maxBuyable = item.max ? item.max - ownedStart : Number.POSITIVE_INFINITY
+                return Math.max(0, affordableBuyCount(kind, item, ownedStart, maxBuyable))
+            }
+
             const selected = Number(state.buyAmount)
             if (kind === 'special') {
                 return Math.max(0, Math.min(selected, item.max - ownedStart))
             }
             return Math.max(1, selected)
+        }
+
+        function affordableBuyCount(kind, item, ownedStart, maxCount) {
+            let count = 0
+            let owned = ownedStart
+            let totalCost = 0
+            while (count < maxCount) {
+                const cost = kind === 'special'
+                    ? specialUpgradeCost(item, owned)
+                    : upgradeCost(item.baseCost, owned)
+
+                if (totalCost + cost > state.cookies) {
+                    break
+                }
+
+                totalCost += cost
+                owned++
+                count++
+            }
+
+            return count
         }
 
         function totalUpgradeCost(kind, item, ownedStart, count) {
@@ -2338,6 +2373,7 @@
             state.cookies = 0
             state.producers = Object.fromEntries(PRODUCERS.map((p) => [p.id, 0]))
             state.clicks = Object.fromEntries(CLICKS.map((c) => [c.id, 0]))
+            state.specialUpgrades = Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0]))
             state.frenzyUntil = 0
             state.diamondUntil = 0
             state.goldenVisible = false
@@ -2825,14 +2861,14 @@
                 state.cookies = data.cookies
                 state.lifetimeCookies = typeof data.lifetimeCookies === 'number' && data.lifetimeCookies >= 0 ? data.lifetimeCookies : data.cookies
                 state.lastSave = typeof data.lastSave === 'number' ? data.lastSave : Date.now()
-                const loadedBuyAmount = data.buyAmount
-                const normalizedBuyAmount = loadedBuyAmount === 'max' ? 100 : loadedBuyAmount
-                state.buyAmount = BUY_AMOUNTS.includes(normalizedBuyAmount) ? normalizedBuyAmount : 1
                 state.audioVolume = typeof data.audioVolume === 'number'
                     ? Math.min(1, Math.max(0, data.audioVolume))
                     : DEFAULT_VOLUME
                 state.audioMuted = data.audioMuted === true
                 state.darkMode = data.darkMode === true
+                state.buyAmount = data.buyAmount === 'max' || BUY_AMOUNTS.includes(data.buyAmount)
+                    ? data.buyAmount
+                    : 1
 
                 state.prestige.level = typeof data.prestige?.level === 'number' ? Math.max(0, Math.floor(data.prestige.level)) : 0
                 const loadedShards = typeof data.prestige?.shards === 'number' ? Math.max(0, Math.floor(data.prestige.shards)) : 0
@@ -2954,7 +2990,7 @@
                 const target = ev.target.closest('.buy-amount-btn')
                 if (!target) return
                 const value = target.dataset.amount
-                state.buyAmount = Number(value)
+                state.buyAmount = value === 'max' ? 'max' : Number(value)
                 renderShopMeta()
                 renderShop()
             })
