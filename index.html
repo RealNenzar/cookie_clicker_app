@@ -5137,6 +5137,8 @@
             setTimeout(() => toast.remove(), 3500)
         }
 
+        let offlineResumePending = false
+
         function evaluateAchievements() {
             let changed = false
             const newlyUnlocked = []
@@ -6813,6 +6815,7 @@
         }
 
         function pauseOfflineProgress() {
+            offlineResumePending = true
             save()
         }
 
@@ -6980,12 +6983,19 @@
                 if (document.visibilityState === 'hidden') {
                     pauseOfflineProgress()
                 } else {
-                    resumeOfflineProgress()
+                    if (offlineResumePending) {
+                        offlineResumePending = false
+                        resumeOfflineProgress()
+                    }
                     checkForAppUpdates()
                 }
             })
-            window.addEventListener('focus', resumeOfflineProgress)
-            window.addEventListener('pageshow', resumeOfflineProgress)
+            window.addEventListener('pageshow', (ev) => {
+                if (ev.persisted && offlineResumePending) {
+                    offlineResumePending = false
+                    resumeOfflineProgress()
+                }
+            })
             window.addEventListener('pagehide', pauseOfflineProgress)
             window.addEventListener('beforeunload', pauseOfflineProgress)
         }
