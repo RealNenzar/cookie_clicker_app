@@ -2326,7 +2326,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.14'
+        const APP_VERSION = '2026.07.20.15'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -5138,6 +5138,21 @@
         }
 
         let offlineResumePending = false
+        let pendingOfflineProgressToast = null
+
+        function queueOfflineProgressToast(earned, elapsedMs) {
+            if (!Number.isFinite(earned) || earned <= 0) return
+            pendingOfflineProgressToast = {
+                earned,
+                elapsedMs,
+            }
+        }
+
+        function flushOfflineProgressToast() {
+            if (!pendingOfflineProgressToast) return
+            showOfflineProgressToast(pendingOfflineProgressToast.earned, pendingOfflineProgressToast.elapsedMs)
+            pendingOfflineProgressToast = null
+        }
 
         function evaluateAchievements() {
             let changed = false
@@ -5895,7 +5910,10 @@
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
             state.nextDiamondAt = Date.now() + diamondIntervalMs()
             state.nextMilkAt = Date.now() + milkIntervalMs()
-            applyOfflineEarnings()
+            const offlineStartAt = state.lastSave
+            const offlineElapsed = Math.min(Math.max(0, Date.now() - offlineStartAt), offlineCapMs())
+            const offlineEarned = applyOfflineEarnings()
+            queueOfflineProgressToast(offlineEarned, offlineElapsed)
         }
 
         function load() {
@@ -6951,6 +6969,7 @@
             renderEffectSettings()
             renderActiveEffects()
             renderDailyPanel()
+            flushOfflineProgressToast()
             initShopControls()
             initHeaderPopovers()
             initSettingsMenu()
