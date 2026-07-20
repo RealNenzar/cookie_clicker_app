@@ -2052,6 +2052,7 @@
                                 <li>Drei tägliche Aufgaben und eine tägliche Zufallsbelohnung hinzugefügt</li>
                                 <li>Geschenk-Symbole zeigen jetzt abholbereite tägliche Belohnungen an</li>
                                 <li>„Alles zurücksetzen“ löscht jetzt auch den lokalen Verlauf eingelöster Bonus-Codes</li>
+                                <li>49 neue Erfolge für Early- und Midgame hinzugefügt – insgesamt gibt es jetzt 79</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -2334,7 +2335,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.6'
+        const APP_VERSION = '2026.07.20.7'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2484,6 +2485,15 @@
 
         const ACHIEVEMENTS = [
             {
+                id: 'firstCrumb',
+                name: 'Der erste Krümel',
+                desc: 'Erreiche 10 Lebenszeit-Kekse',
+                reward: '+0,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.005,
+                check: () => state.lifetimeCookies >= 10,
+            },
+            {
                 id: 'firstTap',
                 name: 'Erster Biss',
                 desc: 'Erreiche 100 Lebenszeit-Kekse',
@@ -2491,6 +2501,51 @@
                 type: 'tap',
                 value: 0.02,
                 check: () => state.lifetimeCookies >= 100,
+            },
+            {
+                id: 'cookieJar',
+                name: 'Das erste Glas',
+                desc: 'Erreiche 500 Lebenszeit-Kekse',
+                reward: '+0,5% Produktion',
+                type: 'cps',
+                value: 0.005,
+                check: () => state.lifetimeCookies >= 500,
+            },
+            {
+                id: 'firstSteps',
+                name: 'Zehn flinke Finger',
+                desc: 'Klicke 10-mal selbst',
+                reward: '+0,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.005,
+                check: () => state.manualClicksTotal >= 10,
+            },
+            {
+                id: 'firstProducer',
+                name: 'Hilfe ist unterwegs',
+                desc: 'Besitze deinen ersten Producer',
+                reward: '+0,5% Produktion',
+                type: 'cps',
+                value: 0.005,
+                check: () => totalProducerOwned() >= 1,
+            },
+            {
+                id: 'cursorHello',
+                name: 'Automatischer Anfang',
+                desc: 'Besitze deinen ersten Cursor',
+                reward: '+0,5% Produktion',
+                type: 'cps',
+                value: 0.005,
+                check: () => state.producers.cursor >= 1,
+            },
+            {
+                id: 'firstClickUpgrade',
+                name: 'Stärker als zuvor',
+                desc: 'Kaufe deine erste Klickverstärkung',
+                reward: '+0,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.005,
+                check: () => totalClickUpgradesOwned() >= 1,
             },
             {
                 id: 'crumbCollector',
@@ -2502,6 +2557,60 @@
                 check: () => state.lifetimeCookies >= 1000,
             },
             {
+                id: 'warmOven',
+                name: 'Der Ofen wird warm',
+                desc: 'Erreiche 5.000 Lebenszeit-Kekse',
+                reward: '+1% Produktion',
+                type: 'cps',
+                value: 0.01,
+                check: () => state.lifetimeCookies >= 5000,
+            },
+            {
+                id: 'tapWarmup',
+                name: 'Aufgewärmt',
+                desc: 'Klicke 50-mal selbst',
+                reward: '+0,75% Klick-Stärke',
+                type: 'tap',
+                value: 0.0075,
+                check: () => state.manualClicksTotal >= 50,
+            },
+            {
+                id: 'smallTeam',
+                name: 'Kleine Mannschaft',
+                desc: 'Besitze insgesamt 10 Producer',
+                reward: '+1% Produktion',
+                type: 'cps',
+                value: 0.01,
+                check: () => totalProducerOwned() >= 10,
+            },
+            {
+                id: 'clickCollection',
+                name: 'Fingertraining',
+                desc: 'Kaufe insgesamt 5 Klickverstärkungen',
+                reward: '+1% Klick-Stärke',
+                type: 'tap',
+                value: 0.01,
+                check: () => totalClickUpgradesOwned() >= 5,
+            },
+            {
+                id: 'grandmaHello',
+                name: 'Omas erster Arbeitstag',
+                desc: 'Besitze deine erste Oma',
+                reward: '+0,75% Produktion',
+                type: 'cps',
+                value: 0.0075,
+                check: () => state.producers.grandma >= 1,
+            },
+            {
+                id: 'firstBakery',
+                name: 'Eigene Backstube',
+                desc: 'Besitze deine erste Bäckerei',
+                reward: '+1% Produktion',
+                type: 'cps',
+                value: 0.01,
+                check: () => state.producers.bakery >= 1,
+            },
+            {
                 id: 'bakerApprentice',
                 name: 'Backstuben-Lehrling',
                 desc: 'Erreiche 10.000 Lebenszeit-Kekse',
@@ -2509,6 +2618,69 @@
                 type: 'cps',
                 value: 0.03,
                 check: () => state.lifetimeCookies >= 10000,
+            },
+            {
+                id: 'risingDough',
+                name: 'Der Teig geht auf',
+                desc: 'Erreiche 50.000 Lebenszeit-Kekse',
+                reward: '+1,25% Produktion',
+                type: 'cps',
+                value: 0.0125,
+                check: () => state.lifetimeCookies >= 50000,
+            },
+            {
+                id: 'cookieHill',
+                name: 'Ein kleiner Kekshügel',
+                desc: 'Erreiche 100.000 Lebenszeit-Kekse',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.lifetimeCookies >= 100000,
+            },
+            {
+                id: 'halfMillion',
+                name: 'Eine halbe Million',
+                desc: 'Erreiche 500.000 Lebenszeit-Kekse',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.lifetimeCookies >= 500000,
+            },
+            {
+                id: 'tapRoutine',
+                name: 'Klick-Routine',
+                desc: 'Klicke 250-mal selbst',
+                reward: '+1% Klick-Stärke',
+                type: 'tap',
+                value: 0.01,
+                check: () => state.manualClicksTotal >= 250,
+            },
+            {
+                id: 'cursorCrew',
+                name: 'Cursor-Trupp',
+                desc: 'Besitze 10 Cursor',
+                reward: '+0,75% Produktion',
+                type: 'cps',
+                value: 0.0075,
+                check: () => state.producers.cursor >= 10,
+            },
+            {
+                id: 'grandmaTable',
+                name: 'Kaffeetisch',
+                desc: 'Besitze 5 Omas',
+                reward: '+1% Produktion',
+                type: 'cps',
+                value: 0.01,
+                check: () => state.producers.grandma >= 5,
+            },
+            {
+                id: 'firstFactory',
+                name: 'Fließband an',
+                desc: 'Besitze deine erste Fabrik',
+                reward: '+1,25% Produktion',
+                type: 'cps',
+                value: 0.0125,
+                check: () => state.producers.factory >= 1,
             },
             {
                 id: 'starterEngine',
@@ -2520,6 +2692,33 @@
                 check: () => totalProducerOwned() >= 25,
             },
             {
+                id: 'busyBakery',
+                name: 'Es wird geschäftig',
+                desc: 'Besitze insgesamt 50 Producer',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => totalProducerOwned() >= 50,
+            },
+            {
+                id: 'strongGrip',
+                name: 'Fester Griff',
+                desc: 'Besitze 10 Starke Finger',
+                reward: '+0,75% Klick-Stärke',
+                type: 'tap',
+                value: 0.0075,
+                check: () => state.clicks.strong >= 10,
+            },
+            {
+                id: 'diamondTouch',
+                name: 'Diamantene Berührung',
+                desc: 'Besitze deinen ersten Diamant-Klick',
+                reward: '+1,25% Klick-Stärke',
+                type: 'tap',
+                value: 0.0125,
+                check: () => state.clicks.diamond >= 1,
+            },
+            {
                 id: 'clickCrafter',
                 name: 'Klick-Schmied',
                 desc: 'Kaufe insgesamt 10 Klick-Upgrades',
@@ -2529,6 +2728,186 @@
                 check: () => Object.values(state.clicks).reduce((sum, n) => sum + n, 0) >= 10,
             },
             {
+                id: 'clickWorkshop',
+                name: 'Klick-Werkstatt',
+                desc: 'Kaufe insgesamt 25 Klickverstärkungen',
+                reward: '+1,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.015,
+                check: () => totalClickUpgradesOwned() >= 25,
+            },
+            {
+                id: 'tapFan',
+                name: 'Klickbegeistert',
+                desc: 'Klicke 1.000-mal selbst',
+                reward: '+1,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.015,
+                check: () => state.manualClicksTotal >= 1000,
+            },
+            {
+                id: 'tapVeteran',
+                name: 'Eingeklickt',
+                desc: 'Klicke 5.000-mal selbst',
+                reward: '+2,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.025,
+                check: () => state.manualClicksTotal >= 5000,
+            },
+            {
+                id: 'firstCritical',
+                name: 'Volltreffer',
+                desc: 'Lande deinen ersten kritischen Klick',
+                reward: '+0,5% Krit-Chance',
+                type: 'critChance',
+                value: 0.005,
+                check: () => state.criticalClicksTotal >= 1,
+            },
+            {
+                id: 'criticalTen',
+                name: 'Glückssträhne',
+                desc: 'Lande 10 kritische Klicks',
+                reward: '+0,5% Krit-Chance',
+                type: 'critChance',
+                value: 0.005,
+                check: () => state.criticalClicksTotal >= 10,
+            },
+            {
+                id: 'criticalCentury',
+                name: 'Kritische Masse',
+                desc: 'Lande 100 kritische Klicks',
+                reward: '+1% Krit-Chance',
+                type: 'critChance',
+                value: 0.01,
+                check: () => state.criticalClicksTotal >= 100,
+            },
+            {
+                id: 'droneOnline',
+                name: 'Drohne online',
+                desc: 'Kaufe deine erste Klick-Drohne',
+                reward: '+0,75% Klick-Stärke',
+                type: 'tap',
+                value: 0.0075,
+                check: () => specialUpgradeLevel('autoDrone') >= 1,
+            },
+            {
+                id: 'firstOverclock',
+                name: 'Ein bisschen schneller',
+                desc: 'Kaufe die erste Drohnen-Overclock-Stufe',
+                reward: '+0,75% Klick-Stärke',
+                type: 'tap',
+                value: 0.0075,
+                check: () => specialUpgradeLevel('droneOverclock') >= 1,
+            },
+            {
+                id: 'droneAim',
+                name: 'Zielsystem installiert',
+                desc: 'Kaufe die erste Drohnen-Präzisions-Stufe',
+                reward: '+1% Klick-Stärke',
+                type: 'tap',
+                value: 0.01,
+                check: () => specialUpgradeLevel('droneCrit') >= 1,
+            },
+            {
+                id: 'droneTwin',
+                name: 'Doppelter Einsatz',
+                desc: 'Kaufe die erste Drohnen-Doppelschlag-Stufe',
+                reward: '+1% Klick-Stärke',
+                type: 'tap',
+                value: 0.01,
+                check: () => specialUpgradeLevel('droneDouble') >= 1,
+            },
+            {
+                id: 'firstDroneCritical',
+                name: 'Maschineller Volltreffer',
+                desc: 'Lasse eine Drohne kritisch treffen',
+                reward: '+1% Klick-Stärke',
+                type: 'tap',
+                value: 0.01,
+                check: () => state.droneCritsTotal >= 1,
+            },
+            {
+                id: 'firstDroneDouble',
+                name: 'Doppelt gebacken',
+                desc: 'Lasse eine Drohne doppelt klicken',
+                reward: '+1% Produktion',
+                type: 'cps',
+                value: 0.01,
+                check: () => state.droneDoublesTotal >= 1,
+            },
+            {
+                id: 'firstSpecialEvent',
+                name: 'Was war das?',
+                desc: 'Aktiviere dein erstes Spezial-Event',
+                reward: '+1% Produktion',
+                type: 'cps',
+                value: 0.01,
+                check: () => state.randomEventsTriggered >= 1,
+            },
+            {
+                id: 'eventTour',
+                name: 'Event-Tour',
+                desc: 'Aktiviere 5 Spezial-Events',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.randomEventsTriggered >= 5,
+            },
+            {
+                id: 'firstMilkEvent',
+                name: 'Milch und Kekse',
+                desc: 'Aktiviere die Milchtüte zum ersten Mal',
+                reward: '+1% Klick-Stärke',
+                type: 'tap',
+                value: 0.01,
+                check: () => state.milkEventsTriggered >= 1,
+            },
+            {
+                id: 'dailyGift',
+                name: 'Guten Morgen',
+                desc: 'Hole deine erste Tagesbelohnung ab',
+                reward: '+0,75% Produktion',
+                type: 'cps',
+                value: 0.0075,
+                check: () => state.dailyRewardsClaimed >= 1,
+            },
+            {
+                id: 'dailyTaskDone',
+                name: 'Tageswerk',
+                desc: 'Schließe deine erste tägliche Aufgabe ab',
+                reward: '+0,75% Klick-Stärke',
+                type: 'tap',
+                value: 0.0075,
+                check: () => state.dailyTasksClaimed >= 1,
+            },
+            {
+                id: 'dailyRegular',
+                name: 'Stammkunde',
+                desc: 'Schließe 5 tägliche Aufgaben ab',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.dailyTasksClaimed >= 5,
+            },
+            {
+                id: 'firstWarehouse',
+                name: 'Platz für mehr',
+                desc: 'Besitze dein erstes Lagerhaus',
+                reward: '+1,25% Produktion',
+                type: 'cps',
+                value: 0.0125,
+                check: () => state.producers.warehouse >= 1,
+            },
+            {
+                id: 'firstShipping',
+                name: 'Ab auf die Straße',
+                desc: 'Besitze dein erstes Versandzentrum',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.producers.shipping >= 1,
+            },
+            {
                 id: 'goldRush',
                 name: 'Goldrausch',
                 desc: 'Erreiche 1 Mio. Lebenszeit-Kekse',
@@ -2536,6 +2915,69 @@
                 type: 'cps',
                 value: 0.04,
                 check: () => state.lifetimeCookies >= 1000000,
+            },
+            {
+                id: 'cookieMountain',
+                name: 'Keksberg',
+                desc: 'Erreiche 5 Mio. Lebenszeit-Kekse',
+                reward: '+2,5% Produktion',
+                type: 'cps',
+                value: 0.025,
+                check: () => state.lifetimeCookies >= 5000000,
+            },
+            {
+                id: 'cookieDistrict',
+                name: 'Keksviertel',
+                desc: 'Erreiche 25 Mio. Lebenszeit-Kekse',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => state.lifetimeCookies >= 25000000,
+            },
+            {
+                id: 'factoryFloor',
+                name: 'Fabrikhalle',
+                desc: 'Besitze 5 Fabriken',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.producers.factory >= 5,
+            },
+            {
+                id: 'warehouseRow',
+                name: 'Volle Regale',
+                desc: 'Besitze 5 Lagerhäuser',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.producers.warehouse >= 5,
+            },
+            {
+                id: 'deliveryFleet',
+                name: 'Lieferflotte',
+                desc: 'Besitze 5 Versandzentren',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.producers.shipping >= 5,
+            },
+            {
+                id: 'droneCriticalRun',
+                name: 'Präzisionsserie',
+                desc: 'Erziele 25 kritische Drohnen-Klicks',
+                reward: '+1,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.015,
+                check: () => state.droneCritsTotal >= 25,
+            },
+            {
+                id: 'droneDoubleRun',
+                name: 'Doppelschicht',
+                desc: 'Erziele 25 Drohnen-Doppelklicks',
+                reward: '+1,5% Produktion',
+                type: 'cps',
+                value: 0.015,
+                check: () => state.droneDoublesTotal >= 25,
             },
             {
                 id: 'industrialEra',
@@ -2956,6 +3398,12 @@
             milkCookiesFallen: 0,
             milkEventsTriggered: 0,
             randomEventsTriggered: 0,
+            manualClicksTotal: 0,
+            criticalClicksTotal: 0,
+            droneCritsTotal: 0,
+            droneDoublesTotal: 0,
+            dailyTasksClaimed: 0,
+            dailyRewardsClaimed: 0,
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
@@ -3160,6 +3608,7 @@
             if (progress < task.target) return
 
             task.claimed = true
+            state.dailyTasksClaimed++
             if (task.rewardType === 'shards') {
                 grantDirectShards(task.rewardValue)
             } else {
@@ -3191,6 +3640,8 @@
                 state.daily.rewardText = 'Legendär: 3 Splitter'
             }
             state.daily.rewardClaimed = true
+            state.dailyRewardsClaimed++
+            evaluateAchievements()
             renderHeader()
             renderDailyPanel()
             save()
@@ -3415,6 +3866,10 @@
                 total += state.producers[p.id]
             }
             return total
+        }
+
+        function totalClickUpgradesOwned() {
+            return Object.values(state.clicks).reduce((sum, owned) => sum + owned, 0)
         }
 
         function achievementBonus(type) {
@@ -4525,10 +4980,12 @@
 
         function onTapCookie(ev) {
             trackManualTap()
+            state.manualClicksTotal++
             trackDailyProgress('clicks', 1)
             const baseTap = calcTap()
             const didCrit = Math.random() < critChance()
             const tap = didCrit ? baseTap * critMultiplier() : baseTap
+            if (didCrit) state.criticalClicksTotal++
             playTapSound(tap)
             addCookies(tap, true)
             pulseCookie()
@@ -4720,6 +5177,12 @@
                 milkCookiesFallen: 0,
                 milkEventsTriggered: 0,
                 randomEventsTriggered: 0,
+                manualClicksTotal: 0,
+                criticalClicksTotal: 0,
+                droneCritsTotal: 0,
+                droneDoublesTotal: 0,
+                dailyTasksClaimed: 0,
+                dailyRewardsClaimed: 0,
                 goldenVisible: false,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 diamondVisible: false,
@@ -4793,6 +5256,12 @@
                 milkCookiesFallen: state.milkCookiesFallen,
                 milkEventsTriggered: state.milkEventsTriggered,
                 randomEventsTriggered: state.randomEventsTriggered,
+                manualClicksTotal: state.manualClicksTotal,
+                criticalClicksTotal: state.criticalClicksTotal,
+                droneCritsTotal: state.droneCritsTotal,
+                droneDoublesTotal: state.droneDoublesTotal,
+                dailyTasksClaimed: state.dailyTasksClaimed,
+                dailyRewardsClaimed: state.dailyRewardsClaimed,
                 prestige: {
                     level: state.prestige.level,
                     shards: state.prestige.shards,
@@ -4878,6 +5347,12 @@
             state.milkCookiesFallen = typeof data.milkCookiesFallen === 'number' ? Math.max(0, Math.floor(data.milkCookiesFallen)) : 0
             state.milkEventsTriggered = typeof data.milkEventsTriggered === 'number' ? Math.max(0, Math.floor(data.milkEventsTriggered)) : 0
             state.randomEventsTriggered = typeof data.randomEventsTriggered === 'number' ? Math.max(0, Math.floor(data.randomEventsTriggered)) : 0
+            state.manualClicksTotal = typeof data.manualClicksTotal === 'number' ? Math.max(0, Math.floor(data.manualClicksTotal)) : 0
+            state.criticalClicksTotal = typeof data.criticalClicksTotal === 'number' ? Math.max(0, Math.floor(data.criticalClicksTotal)) : 0
+            state.droneCritsTotal = typeof data.droneCritsTotal === 'number' ? Math.max(0, Math.floor(data.droneCritsTotal)) : 0
+            state.droneDoublesTotal = typeof data.droneDoublesTotal === 'number' ? Math.max(0, Math.floor(data.droneDoublesTotal)) : 0
+            state.dailyTasksClaimed = typeof data.dailyTasksClaimed === 'number' ? Math.max(0, Math.floor(data.dailyTasksClaimed)) : 0
+            state.dailyRewardsClaimed = typeof data.dailyRewardsClaimed === 'number' ? Math.max(0, Math.floor(data.dailyRewardsClaimed)) : 0
             state.milkUntil = 0
             state.milkVisible = false
             state.milkLevel = 0
@@ -5796,6 +6271,8 @@
             if (autoCps > 0) {
                 const didDroneCrit = Math.random() < droneCritChance()
                 const didDroneDouble = Math.random() < droneDoubleChance()
+                if (didDroneCrit) state.droneCritsTotal++
+                if (didDroneDouble) state.droneDoublesTotal++
                 let droneBatch = (calcTap() * autoCps * TICK_MS) / 1000
                 if (didDroneCrit) droneBatch *= critMultiplier()
                 if (didDroneDouble) droneBatch *= 2
