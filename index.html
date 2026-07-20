@@ -2042,6 +2042,8 @@
                                 <li>49 neue Erfolge für Early- und Midgame hinzugefügt – insgesamt gibt es jetzt 79</li>
                                 <li>30 weitere Mid- und Endgame-Erfolge hinzugefügt – insgesamt gibt es jetzt 109</li>
                                 <li>Hilfe und Patchnotes öffnen jetzt per Klick und erscheinen scrollbar neben ihren Buttons</li>
+                                <li>20 neue schwere Endgame-Erfolge ohne Prestige-Voraussetzungen hinzugefügt – insgesamt gibt es jetzt 129</li>
+                                <li>Offline-Produktion läuft nach dem Schließen des FiveM-Handys wieder zuverlässig weiter und wird beim Öffnen nachgetragen</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -2324,7 +2326,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.9'
+        const APP_VERSION = '2026.07.20.11'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2336,6 +2338,7 @@
         const FRENZY_MULT = 2
         const DIAMOND_MULT = 3
         const TICK_MS = 100
+        const BACKGROUND_GAP_MS = 750
         const AUTOSAVE_MS = 15000
         const CLICK_RATE_WINDOW_MS = 1000
         const DEFAULT_VOLUME = 0.7
@@ -3399,6 +3402,186 @@
                 type: 'cps',
                 value: 0.025,
                 check: () => state.dailyRewardsClaimed >= 7,
+            },
+            {
+                id: 'cookieTrillionaire',
+                name: 'Keks-Billionär',
+                desc: 'Erreiche 1 Bio. Lebenszeit-Kekse',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => state.lifetimeCookies >= 1000000000000,
+            },
+            {
+                id: 'tenTrillionLegacy',
+                name: 'Zehn-Billionen-Vermächtnis',
+                desc: 'Erreiche 10 Bio. Lebenszeit-Kekse',
+                reward: '+5,5% Produktion',
+                type: 'cps',
+                value: 0.055,
+                check: () => state.lifetimeCookies >= 10000000000000,
+            },
+            {
+                id: 'hundredTrillionRealm',
+                name: 'Das Reich der hundert Billionen',
+                desc: 'Erreiche 100 Bio. Lebenszeit-Kekse',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => state.lifetimeCookies >= 100000000000000,
+            },
+            {
+                id: 'cookieQuadrillionaire',
+                name: 'Jenseits aller Keksberge',
+                desc: 'Erreiche 1 Brd. Lebenszeit-Kekse',
+                reward: '+7% Produktion',
+                type: 'cps',
+                value: 0.07,
+                check: () => state.lifetimeCookies >= 1000000000000000,
+            },
+            {
+                id: 'producerWorld',
+                name: 'Eine Welt voller Backstuben',
+                desc: 'Besitze insgesamt 1.000 Producer',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => totalProducerOwned() >= 1000,
+            },
+            {
+                id: 'balancedIndustry',
+                name: 'Lückenlose Industrie',
+                desc: 'Besitze von jedem Producer mindestens 25',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => PRODUCERS.every((producer) => state.producers[producer.id] >= 25),
+            },
+            {
+                id: 'singularityNetwork',
+                name: 'Singularitäts-Netzwerk',
+                desc: 'Besitze 10 Singularitäts-Bäcker',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => state.producers.singularity >= 10,
+            },
+            {
+                id: 'singularityDominion',
+                name: 'Herrscher des Ereignishorizonts',
+                desc: 'Besitze 25 Singularitäts-Bäcker',
+                reward: '+7% Produktion',
+                type: 'cps',
+                value: 0.07,
+                check: () => state.producers.singularity >= 25,
+            },
+            {
+                id: 'clickEmpire',
+                name: 'Klick-Imperium',
+                desc: 'Kaufe insgesamt 150 Klickverstärkungen',
+                reward: '+5% Klick-Stärke',
+                type: 'tap',
+                value: 0.05,
+                check: () => totalClickUpgradesOwned() >= 150,
+            },
+            {
+                id: 'clickDominion',
+                name: 'Unaufhaltsame Hände',
+                desc: 'Kaufe insgesamt 250 Klickverstärkungen',
+                reward: '+7% Klick-Stärke',
+                type: 'tap',
+                value: 0.07,
+                check: () => totalClickUpgradesOwned() >= 250,
+            },
+            {
+                id: 'cosmicFist',
+                name: 'Kosmische Faust',
+                desc: 'Besitze 10 Kosmische Klicks',
+                reward: '+6% Klick-Stärke',
+                type: 'tap',
+                value: 0.06,
+                check: () => state.clicks.cosmic >= 10,
+            },
+            {
+                id: 'manualMarathon',
+                name: 'Klick-Marathon',
+                desc: 'Klicke 25.000-mal selbst',
+                reward: '+4% Klick-Stärke',
+                type: 'tap',
+                value: 0.04,
+                check: () => state.manualClicksTotal >= 25000,
+            },
+            {
+                id: 'manualLegend',
+                name: 'Hunderttausendfacher Wille',
+                desc: 'Klicke 100.000-mal selbst',
+                reward: '+7% Klick-Stärke',
+                type: 'tap',
+                value: 0.07,
+                check: () => state.manualClicksTotal >= 100000,
+            },
+            {
+                id: 'criticalStorm',
+                name: 'Kritischer Sturm',
+                desc: 'Lande 2.500 kritische Klicks',
+                reward: '+2% Krit-Chance',
+                type: 'critChance',
+                value: 0.02,
+                check: () => state.criticalClicksTotal >= 2500,
+            },
+            {
+                id: 'criticalLegend',
+                name: 'Kein Zufall mehr',
+                desc: 'Lande 10.000 kritische Klicks',
+                reward: '+3% Krit-Chance',
+                type: 'critChance',
+                value: 0.03,
+                check: () => state.criticalClicksTotal >= 10000,
+            },
+            {
+                id: 'droneSniperLegion',
+                name: 'Scharfschützen-Legion',
+                desc: 'Erziele 1.000 kritische Drohnen-Klicks',
+                reward: '+5% Klick-Stärke',
+                type: 'tap',
+                value: 0.05,
+                check: () => state.droneCritsTotal >= 1000,
+            },
+            {
+                id: 'droneDoubleLegion',
+                name: 'Doppelschlag-Legion',
+                desc: 'Erziele 1.000 Drohnen-Doppelklicks',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => state.droneDoublesTotal >= 1000,
+            },
+            {
+                id: 'eventCenturion',
+                name: 'Jäger des Unmöglichen',
+                desc: 'Aktiviere 100 Spezial-Events',
+                reward: '+6% Produktion',
+                type: 'cps',
+                value: 0.06,
+                check: () => state.randomEventsTriggered >= 100,
+            },
+            {
+                id: 'milkMaster',
+                name: 'Meister der Schokoladenflut',
+                desc: 'Aktiviere die Milchtüte 50-mal',
+                reward: '+6% Klick-Stärke',
+                type: 'tap',
+                value: 0.06,
+                check: () => state.milkEventsTriggered >= 50,
+            },
+            {
+                id: 'machinePerfection',
+                name: 'Perfektion der Maschinen',
+                desc: 'Maximiere alle Spezial- und Drohnen-Upgrades',
+                reward: '+7% Produktion',
+                type: 'cps',
+                value: 0.07,
+                check: () => SPECIAL_UPGRADES.every((upgrade) => specialUpgradeLevel(upgrade.id) >= upgrade.max),
             },
             {
                 id: 'firstAscension',
@@ -5401,21 +5584,22 @@
             renderHeader()
         }
 
-        function applyOfflineEarnings() {
-            const now = Date.now()
-            const elapsed = Math.min(now - state.lastSave, offlineCapMs())
-            if (elapsed <= 0) return
+        function applyOfflineEarnings(now = Date.now()) {
+            const previousProgressAt = Number.isFinite(state.lastSave) ? state.lastSave : now
+            const elapsed = Math.min(Math.max(0, now - previousProgressAt), offlineCapMs())
+            state.lastSave = now
+            if (elapsed <= 0) return 0
 
             const cps = calcCps()
-            if (cps <= 0) return
+            if (cps <= 0) return 0
 
             const earned = (elapsed / 1000) * cps * offlineIncomeMult()
-            if (earned < 0.01) return
+            if (earned < 0.01) return 0
 
             state.cookies += earned
             state.lifetimeCookies += earned
             processShardMilestones()
-            state.lastSave = Date.now()
+            return earned
         }
 
         function defaultState() {
@@ -5492,7 +5676,6 @@
         }
 
         function createSavePayload() {
-            state.lastSave = Date.now()
             return {
                 cookies: state.cookies,
                 lifetimeCookies: state.lifetimeCookies,
@@ -6564,25 +6747,56 @@
             updateBonusDurationVisibility()
         }
 
+        function refreshAfterOfflineProgress(earned) {
+            if (earned <= 0) return
+            evaluateAchievements()
+            renderHeader()
+            renderShop()
+            renderPrestige()
+            renderAchievements()
+            renderDailyPanel()
+        }
+
+        function resumeOfflineProgress() {
+            const earned = applyOfflineEarnings()
+            refreshAfterOfflineProgress(earned)
+            save()
+            return earned
+        }
+
+        function pauseOfflineProgress() {
+            save()
+        }
+
         function gameTick() {
             const now = Date.now()
+            if (document.visibilityState === 'hidden') return
+
+            const elapsedSinceProgress = Math.max(0, now - state.lastSave)
+            if (elapsedSinceProgress >= BACKGROUND_GAP_MS) {
+                resumeOfflineProgress()
+                return
+            }
+
+            const tickElapsedMs = Math.min(elapsedSinceProgress, BACKGROUND_GAP_MS)
+            state.lastSave = now
             if (ensureDailyState()) {
                 renderDailyNotification()
                 save()
             }
             const didDecayManualRate = pruneManualTapRate(now)
             const cps = calcCps()
-            if (cps > 0) {
-                addCookies((cps * TICK_MS) / 1000, false)
+            if (cps > 0 && tickElapsedMs > 0) {
+                addCookies((cps * tickElapsedMs) / 1000, false)
             }
 
             const autoCps = autoClicksPerSecond()
-            if (autoCps > 0) {
+            if (autoCps > 0 && tickElapsedMs > 0) {
                 const didDroneCrit = Math.random() < droneCritChance()
                 const didDroneDouble = Math.random() < droneDoubleChance()
                 if (didDroneCrit) state.droneCritsTotal++
                 if (didDroneDouble) state.droneDoublesTotal++
-                let droneBatch = (calcTap() * autoCps * TICK_MS) / 1000
+                let droneBatch = (calcTap() * autoCps * tickElapsedMs) / 1000
                 if (didDroneCrit) droneBatch *= critMultiplier()
                 if (didDroneDouble) droneBatch *= 2
                 const gainedDroneCookies = droneBatch * incomeMult()
@@ -6717,10 +6931,17 @@
             setInterval(gameTick, TICK_MS)
             setInterval(save, AUTOSAVE_MS)
             document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'hidden') save()
-                if (document.visibilityState === 'visible') checkForAppUpdates()
+                if (document.visibilityState === 'hidden') {
+                    pauseOfflineProgress()
+                } else {
+                    resumeOfflineProgress()
+                    checkForAppUpdates()
+                }
             })
-            window.addEventListener('beforeunload', save)
+            window.addEventListener('focus', resumeOfflineProgress)
+            window.addEventListener('pageshow', resumeOfflineProgress)
+            window.addEventListener('pagehide', pauseOfflineProgress)
+            window.addEventListener('beforeunload', pauseOfflineProgress)
         }
 
         init()
