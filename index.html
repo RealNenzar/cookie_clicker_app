@@ -2043,7 +2043,7 @@
                                 <li>30 weitere Mid- und Endgame-Erfolge hinzugefügt – insgesamt gibt es jetzt 109</li>
                                 <li>Hilfe und Patchnotes öffnen jetzt per Klick und erscheinen scrollbar neben ihren Buttons</li>
                                 <li>20 neue schwere Endgame-Erfolge ohne Prestige-Voraussetzungen hinzugefügt – insgesamt gibt es jetzt 129</li>
-                                <li>Offline-Produktion läuft nach dem Schließen des FiveM-Handys wieder zuverlässig weiter und wird beim Öffnen nachgetragen</li>
+                                <li>Produktion läuft auch bei minimierter oder ausgeblendeter FiveM-Handy-App weiter; pausierte Timer werden automatisch nachgetragen</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -2326,7 +2326,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.11'
+        const APP_VERSION = '2026.07.20.12'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -6770,8 +6770,6 @@
 
         function gameTick() {
             const now = Date.now()
-            if (document.visibilityState === 'hidden') return
-
             const elapsedSinceProgress = Math.max(0, now - state.lastSave)
             if (elapsedSinceProgress >= BACKGROUND_GAP_MS) {
                 resumeOfflineProgress()
