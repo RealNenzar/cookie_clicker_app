@@ -4425,7 +4425,7 @@
 
         function formatNum(n) {
             if (n < 1000) return Math.floor(n).toString()
-            const units = ['K', 'M', 'B', 'T', 'Qa', 'Qi']
+            const units = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No']
             let u = -1
             let v = n
             while (v >= 1000 && u < units.length - 1) {
