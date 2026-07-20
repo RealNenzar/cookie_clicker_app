@@ -125,8 +125,120 @@
             display: flex;
             flex-direction: column;
             height: 100%;
+            position: relative;
             background: linear-gradient(180deg, var(--app-bg-1) 0%, var(--app-bg-2) 100%);
             color: var(--app-text);
+        }
+
+        .active-effects {
+            display: none;
+            gap: 0.35rem;
+            padding: 0.35rem 0.7rem;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--header-border);
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-shrink: 0;
+            z-index: 7;
+        }
+
+        .active-effects.visible {
+            display: flex;
+        }
+
+        .active-effects::-webkit-scrollbar {
+            display: none;
+        }
+
+        .effect-chip {
+            position: relative;
+            min-width: 7rem;
+            flex: 1 0 7rem;
+            overflow: hidden;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.55rem;
+            padding: 0.35rem 0.45rem 0.42rem;
+            background: var(--ctrl-bg);
+            color: var(--ctrl-fg);
+            font-size: 0.62rem;
+            line-height: 1.15;
+        }
+
+        .effect-chip-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.4rem;
+            font-weight: 800;
+        }
+
+        .effect-chip-meta {
+            margin-top: 0.14rem;
+            opacity: 0.82;
+        }
+
+        .effect-chip-progress {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 0.18rem;
+            width: var(--effect-progress, 0%);
+            background: linear-gradient(90deg, #e3a526, #fff1a3);
+            transition: width 0.1s linear;
+        }
+
+        .effect-chip.diamond .effect-chip-progress {
+            background: linear-gradient(90deg, #2cbce7, #b9f4ff);
+        }
+
+        .effect-chip.milk .effect-chip-progress {
+            background: linear-gradient(90deg, #9b542d, #f2d2a8);
+        }
+
+        .achievement-toast-stack {
+            position: absolute;
+            top: 7.3rem;
+            left: 50%;
+            width: min(20rem, calc(100% - 2rem));
+            transform: translateX(-50%);
+            display: grid;
+            gap: 0.4rem;
+            z-index: 30;
+            pointer-events: none;
+        }
+
+        .achievement-toast {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.55rem;
+            align-items: center;
+            border: 1px solid var(--achievement-unlocked-border);
+            border-radius: 0.7rem;
+            padding: 0.55rem 0.65rem;
+            background: var(--achievement-unlocked-bg);
+            color: var(--achievement-unlocked-fg);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
+            animation: achievement-toast-in 3.4s ease both;
+        }
+
+        .achievement-toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .achievement-toast strong,
+        .achievement-toast span {
+            display: block;
+        }
+
+        .achievement-toast span {
+            margin-top: 0.12rem;
+            font-size: 0.65rem;
+            opacity: 0.9;
+        }
+
+        @keyframes achievement-toast-in {
+            0% { opacity: 0; transform: translateY(-12px) scale(0.96); }
+            12%, 82% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-8px) scale(0.98); }
         }
 
         .app.frenzy-active {
@@ -283,6 +395,49 @@
             box-shadow: 0 0 0 0 rgba(234, 43, 43, 0.55);
             animation: update-badge-pulse 1.7s ease-in-out infinite;
             pointer-events: none;
+        }
+
+        .settings-daily-badge {
+            position: absolute;
+            left: -0.28rem;
+            bottom: -0.24rem;
+            width: 1.05rem;
+            height: 1.05rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #ffd86a 0%, #dc8d13 100%);
+            color: #5f3700;
+            border: 1px solid rgba(255, 255, 255, 0.78);
+            font-size: 0.54rem;
+            box-shadow: 0 0 0 0 rgba(220, 141, 19, 0.52);
+            animation: update-badge-pulse 1.7s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .settings-action-daily-badge {
+            margin-left: auto;
+            min-width: 1.35rem;
+            height: 1.15rem;
+            padding: 0 0.28rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.18rem;
+            background: linear-gradient(180deg, #ffd86a 0%, #dc8d13 100%);
+            color: #5f3700;
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            font-size: 0.57rem;
+            font-weight: 900;
+            line-height: 1;
+            animation: update-badge-pulse 1.7s ease-in-out infinite;
+        }
+
+        .settings-daily-badge[hidden],
+        .settings-action-daily-badge[hidden] {
+            display: none;
         }
 
         .settings-action-update-badge {
@@ -533,6 +688,87 @@
 
         .settings-bonus-hint.error {
             color: #b22727;
+        }
+
+        .settings-daily {
+            margin-top: 0.55rem;
+            display: none;
+            gap: 0.5rem;
+        }
+
+        .settings-daily.visible {
+            display: grid;
+        }
+
+        .settings-daily-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+            align-items: baseline;
+            color: var(--shop-name-color);
+        }
+
+        .settings-daily-head strong {
+            font-size: 0.78rem;
+        }
+
+        .settings-daily-head span,
+        .settings-daily-hint {
+            font-size: 0.64rem;
+            color: var(--shop-desc-color);
+        }
+
+        .daily-task-list {
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .daily-task {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.55rem;
+            background: var(--ctrl-bg);
+            padding: 0.48rem;
+            display: grid;
+            gap: 0.3rem;
+        }
+
+        .daily-task.complete {
+            border-color: rgba(57, 151, 83, 0.62);
+        }
+
+        .daily-task-title,
+        .daily-task-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .daily-task-title {
+            color: var(--shop-name-color);
+            font-size: 0.69rem;
+            font-weight: 800;
+        }
+
+        .daily-task-meta {
+            color: var(--shop-desc-color);
+            font-size: 0.62rem;
+        }
+
+        .daily-task-progress {
+            height: 0.32rem;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(120, 90, 60, 0.18);
+        }
+
+        .daily-task-progress span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #c98728, #f3cf6d);
+        }
+
+        .daily-task button {
+            justify-content: center;
         }
 
         .settings-bonus-admin-controls {
@@ -1810,6 +2046,12 @@
                                 <li>Klickverstärkungen besitzen jetzt aufeinander aufbauende Synergien</li>
                                 <li>Neue Einstellung zum Reduzieren von Partikel- und Hintergrundeffekten</li>
                                 <li>Drohnen-Klicks und ihre erzeugten Cookies können jetzt eingeblendet werden</li>
+                                <li>Aktive Spezial-Events zeigen jetzt Restzeit und aktuellen Multiplikator an</li>
+                                <li>Neue Erfolgsmeldungen informieren sofort über freigeschaltete Erfolge</li>
+                                <li>Klick-Drohnen können durch neue Upgrades kritisch treffen und doppelt klicken</li>
+                                <li>Drei tägliche Aufgaben und eine tägliche Zufallsbelohnung hinzugefügt</li>
+                                <li>Geschenk-Symbole zeigen jetzt abholbereite tägliche Belohnungen an</li>
+                                <li>„Alles zurücksetzen“ löscht jetzt auch den lokalen Verlauf eingelöster Bonus-Codes</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -1853,6 +2095,7 @@
                 <button type="button" class="settings-toggle" id="settings-toggle" aria-label="Einstellungen" aria-expanded="false" aria-controls="settings-panel">
                     <i class="fa-solid fa-gear" aria-hidden="true"></i>
                     <span class="settings-update-badge" id="settings-update-badge" aria-hidden="true" hidden>!</span>
+                    <span class="settings-daily-badge" id="settings-daily-badge" aria-hidden="true" hidden><i class="fa-solid fa-gift"></i></span>
                 </button>
                 <div class="settings-panel" id="settings-panel" role="menu" aria-hidden="true">
                     <button type="button" class="settings-action-btn" id="settings-theme-toggle" aria-pressed="false">
@@ -1867,6 +2110,23 @@
                         <i class="fa-solid fa-robot" id="settings-drone-visuals-icon" aria-hidden="true"></i>
                         <span id="settings-drone-visuals-label">Drohnen-Klicks anzeigen</span>
                     </button>
+                    <button type="button" class="settings-action-btn" id="settings-daily-open-btn">
+                        <i class="fa-solid fa-calendar-day" aria-hidden="true"></i>
+                        <span>Tägliches öffnen</span>
+                        <span class="settings-action-daily-badge" id="settings-action-daily-badge" aria-hidden="true" hidden><i class="fa-solid fa-gift"></i><span id="settings-action-daily-count">1</span></span>
+                    </button>
+                    <div class="settings-daily" id="settings-daily-panel">
+                        <div class="settings-daily-head">
+                            <strong>🎁 Tägliches</strong>
+                            <span id="settings-daily-reset"></span>
+                        </div>
+                        <button type="button" class="settings-action-btn" id="settings-daily-reward-btn">
+                            <i class="fa-solid fa-gift" aria-hidden="true"></i>
+                            <span id="settings-daily-reward-label">Tagesbelohnung abholen</span>
+                        </button>
+                        <p class="settings-daily-hint" id="settings-daily-hint"></p>
+                        <div class="daily-task-list" id="daily-task-list"></div>
+                    </div>
                     <div class="audio-controls settings-audio-controls" aria-label="Audio-Steuerung">
                         <label for="volume-slider">Ton</label>
                         <input type="range" id="volume-slider" min="0" max="100" step="1" value="70" aria-label="Lautstärke" />
@@ -2016,6 +2276,9 @@
             </div>
         </header>
 
+        <div class="active-effects" id="active-effects" aria-label="Aktive Effekte"></div>
+        <div class="achievement-toast-stack" id="achievement-toast-stack" aria-live="polite" aria-atomic="false"></div>
+
         <div class="panels">
             <section class="panel active" id="panel-play" aria-label="Spielen">
                 <div class="play-area" id="play-area">
@@ -2071,7 +2334,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.3'
+        const APP_VERSION = '2026.07.20.6'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2198,6 +2461,24 @@
                 baseCost: 28000,
                 costMult: 2.18,
                 max: 20,
+            },
+            {
+                id: 'droneCrit',
+                name: 'Drohnen-Präzision',
+                icon: 'fa-solid fa-crosshairs',
+                desc: '+2,5% Krit-Chance für Drohnen pro Stufe',
+                baseCost: 140000,
+                costMult: 2.14,
+                max: 15,
+            },
+            {
+                id: 'droneDouble',
+                name: 'Drohnen-Doppelschlag',
+                icon: 'fa-solid fa-clone',
+                desc: '+2,5% Doppelklick-Chance für Drohnen pro Stufe',
+                baseCost: 360000,
+                costMult: 2.22,
+                max: 12,
             },
         ]
 
@@ -2688,6 +2969,7 @@
             bonusAllMult: 1,
             bonusEventRateUntil: 0,
             bonusEventRateMult: 1,
+            daily: createEmptyDailyState(),
             prestige: {
                 level: 0,
                 shards: 0,
@@ -2702,6 +2984,7 @@
         let resetConfirmStep = 0
         let bonusAdminUnlocked = false
         let redeemedBonusCodesCount = 0
+        let lastDailyRenderAt = 0
 
         const $ = (id) => document.getElementById(id)
 
@@ -2767,6 +3050,185 @@
             return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
         }
 
+        function dailyDateKey(date = new Date()) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+        }
+
+        function createEmptyDailyState() {
+            return {
+                date: '',
+                rewardClaimed: false,
+                rewardText: '',
+                progress: { clicks: 0, cookies: 0, purchases: 0, events: 0 },
+                tasks: [],
+            }
+        }
+
+        function dailyCookieBaseReward() {
+            return Math.max(1000, Math.floor((calcCps() + calcTap() * 2 + 1) * 300))
+        }
+
+        function generateDailyTasks(dateKey) {
+            const seed = [...dateKey].reduce((sum, char) => sum + char.charCodeAt(0), 0)
+            const cookieTarget = Math.max(5000, Math.floor((calcCps() + calcTap() * 2 + 1) * 240))
+            const baseReward = dailyCookieBaseReward()
+            const definitions = [
+                { id: 'clicks', type: 'clicks', label: 'Klicke den großen Keks', target: 250 + (seed % 3) * 100, rewardType: 'cookies', rewardValue: baseReward },
+                { id: 'cookies', type: 'cookies', label: 'Produziere Cookies', target: cookieTarget, rewardType: 'cookies', rewardValue: baseReward * 2 },
+                { id: 'purchases', type: 'purchases', label: 'Kaufe Upgrades oder Producer', target: 10 + (seed % 2) * 5, rewardType: 'shards', rewardValue: 1 },
+                { id: 'events', type: 'events', label: 'Aktiviere ein Spezial-Event', target: 1, rewardType: 'cookies', rewardValue: baseReward * 2 },
+            ]
+            const start = seed % definitions.length
+            return [0, 1, 2].map((offset) => ({ ...definitions[(start + offset) % definitions.length], claimed: false }))
+        }
+
+        function ensureDailyState() {
+            const today = dailyDateKey()
+            if (!state.daily || state.daily.date !== today || !Array.isArray(state.daily.tasks) || !state.daily.progress || typeof state.daily.progress !== 'object') {
+                state.daily = createEmptyDailyState()
+                state.daily.date = today
+                state.daily.tasks = generateDailyTasks(today)
+                return true
+            }
+            return false
+        }
+
+        function dailyClaimableCount() {
+            ensureDailyState()
+            let count = state.daily.rewardClaimed ? 0 : 1
+            for (const task of state.daily.tasks) {
+                const progress = Number(state.daily.progress[task.type]) || 0
+                if (!task.claimed && progress >= task.target) count++
+            }
+            return count
+        }
+
+        function renderDailyNotification() {
+            const gearBadge = $('settings-daily-badge')
+            const actionBadge = $('settings-action-daily-badge')
+            const countNode = $('settings-action-daily-count')
+            if (!gearBadge || !actionBadge || !countNode) return
+
+            const count = dailyClaimableCount()
+            const hidden = count <= 0
+            gearBadge.hidden = hidden
+            actionBadge.hidden = hidden
+            countNode.textContent = String(count)
+            $('settings-daily-open-btn').setAttribute(
+                'title',
+                hidden ? 'Tägliche Aufgaben und Belohnung' : `${count} tägliche Belohnung${count === 1 ? '' : 'en'} abholbereit`
+            )
+        }
+
+        function trackDailyProgress(type, amount = 1) {
+            ensureDailyState()
+            if (!(type in state.daily.progress)) return
+            state.daily.progress[type] = Math.max(0, Number(state.daily.progress[type]) || 0) + Math.max(0, amount)
+            renderDailyNotification()
+        }
+
+        function dailyTaskRewardText(task) {
+            return task.rewardType === 'shards'
+                ? `${formatNum(task.rewardValue)} Splitter`
+                : `${formatNum(task.rewardValue)} Cookies`
+        }
+
+        function grantDirectCookies(amount) {
+            const gained = Math.max(0, Number(amount) || 0)
+            state.cookies += gained
+            state.lifetimeCookies += gained
+            processShardMilestones()
+            evaluateAchievements()
+        }
+
+        function grantDirectShards(amount) {
+            const shards = Math.max(1, Math.floor(Number(amount) || 0))
+            if (state.prestige.level > 0) {
+                state.prestige.shards += shards
+            } else {
+                state.prestige.runShards += shards
+            }
+            state.prestige.totalShardsEarned += shards
+            evaluateAchievements()
+        }
+
+        function claimDailyTask(taskId) {
+            ensureDailyState()
+            const task = state.daily.tasks.find((item) => item.id === taskId)
+            if (!task || task.claimed) return
+            const progress = Number(state.daily.progress[task.type]) || 0
+            if (progress < task.target) return
+
+            task.claimed = true
+            if (task.rewardType === 'shards') {
+                grantDirectShards(task.rewardValue)
+            } else {
+                grantDirectCookies(task.rewardValue)
+            }
+            renderHeader()
+            renderDailyPanel()
+            save()
+        }
+
+        function claimDailyReward() {
+            ensureDailyState()
+            if (state.daily.rewardClaimed) return
+
+            const baseReward = dailyCookieBaseReward()
+            const roll = Math.random()
+            if (roll < 0.58) {
+                grantDirectCookies(baseReward)
+                state.daily.rewardText = `Normal: ${formatNum(baseReward)} Cookies`
+            } else if (roll < 0.83) {
+                grantDirectCookies(baseReward * 3)
+                state.daily.rewardText = `Selten: ${formatNum(baseReward * 3)} Cookies`
+            } else if (roll < 0.96) {
+                state.bonusAllMult = Math.max(state.bonusAllMult, 1.15)
+                state.bonusAllUntil = Math.max(state.bonusAllUntil, Date.now() + 10 * 60 * 1000)
+                state.daily.rewardText = 'Episch: +15% für 10 Minuten'
+            } else {
+                grantDirectShards(3)
+                state.daily.rewardText = 'Legendär: 3 Splitter'
+            }
+            state.daily.rewardClaimed = true
+            renderHeader()
+            renderDailyPanel()
+            save()
+        }
+
+        function dailyResetText() {
+            const next = new Date()
+            next.setHours(24, 0, 0, 0)
+            const remaining = Math.max(0, next.getTime() - Date.now())
+            const hours = Math.floor(remaining / 3600000)
+            const minutes = Math.floor((remaining % 3600000) / 60000)
+            return `Neu in ${hours}h ${minutes}m`
+        }
+
+        function renderDailyPanel() {
+            if (!$('settings-daily-panel')) return
+            ensureDailyState()
+            $('settings-daily-reset').textContent = dailyResetText()
+            $('settings-daily-reward-btn').disabled = state.daily.rewardClaimed
+            $('settings-daily-reward-label').textContent = state.daily.rewardClaimed
+                ? 'Tagesbelohnung abgeholt'
+                : 'Tagesbelohnung abholen'
+            $('settings-daily-hint').textContent = state.daily.rewardText || 'Einmal täglich wartet eine zufällige Belohnung.'
+
+            $('daily-task-list').innerHTML = state.daily.tasks.map((task) => {
+                const progress = Math.min(task.target, Number(state.daily.progress[task.type]) || 0)
+                const complete = progress >= task.target
+                const percent = Math.min(100, progress / Math.max(1, task.target) * 100)
+                return `<article class="daily-task${complete ? ' complete' : ''}">
+                    <div class="daily-task-title"><span>${task.label}</span><span>${formatNum(progress)}/${formatNum(task.target)}</span></div>
+                    <div class="daily-task-progress"><span style="width:${percent}%"></span></div>
+                    <div class="daily-task-meta"><span>Belohnung: ${dailyTaskRewardText(task)}</span></div>
+                    <button type="button" class="settings-action-btn daily-task-claim" data-task-id="${task.id}" ${complete && !task.claimed ? '' : 'disabled'}>${task.claimed ? 'Abgeholt' : complete ? 'Belohnung abholen' : 'Noch nicht abgeschlossen'}</button>
+                </article>`
+            }).join('')
+            renderDailyNotification()
+        }
+
         function renderBonusStatus() {
             const allNode = $('settings-bonus-all-status')
             const eventNode = $('settings-bonus-event-status')
@@ -2794,6 +3256,57 @@
             allNode.classList.toggle('active', allActive)
             eventNode.classList.toggle('active', eventActive)
             usedNode.textContent = String(redeemedBonusCodesCount)
+        }
+
+        function renderActiveEffects(now = Date.now()) {
+            const root = $('active-effects')
+            if (!root) return
+
+            const effects = []
+            if (now < state.frenzyUntil) {
+                const duration = frenzyDurationMs()
+                effects.push({
+                    kind: 'gold',
+                    icon: '⭐',
+                    name: 'Goldrausch',
+                    until: state.frenzyUntil,
+                    duration,
+                    mult: frenzyPowerMult(),
+                })
+            }
+            if (now < state.diamondUntil) {
+                const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
+                effects.push({
+                    kind: 'diamond',
+                    icon: '💎',
+                    name: 'Diamantrausch',
+                    until: state.diamondUntil,
+                    duration,
+                    mult: DIAMOND_MULT * frenzyPowerMult(),
+                })
+            }
+            if (now < state.milkUntil) {
+                const duration = MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900
+                effects.push({
+                    kind: 'milk',
+                    icon: '🥛',
+                    name: 'Kakao-Flut',
+                    until: state.milkUntil,
+                    duration,
+                    mult: milkEventBonusMult(),
+                })
+            }
+
+            root.classList.toggle('visible', effects.length > 0)
+            root.innerHTML = effects.map((effect) => {
+                const remaining = Math.max(0, effect.until - now)
+                const progress = Math.max(0, Math.min(100, remaining / Math.max(1, effect.duration) * 100))
+                return `<div class="effect-chip ${effect.kind}" style="--effect-progress:${progress}%">
+                    <div class="effect-chip-head"><span>${effect.icon} ${effect.name}</span><span>${(remaining / 1000).toFixed(1)}s</span></div>
+                    <div class="effect-chip-meta">Aktuell x${formatStatNum(effect.mult)}</div>
+                    <span class="effect-chip-progress"></span>
+                </div>`
+            }).join('')
         }
 
         function milkResonanceRiseStep() {
@@ -2936,6 +3449,14 @@
             if (level <= 0) return 0
             const overclockMult = 1 + specialUpgradeLevel('droneOverclock') * 0.14
             return level * (0.45 + (level - 1) * 0.08) * (1 + prestigeUpgradeLevel('hyperFocus') * 0.04) * overclockMult
+        }
+
+        function droneCritChance() {
+            return Math.min(0.5, specialUpgradeLevel('droneCrit') * 0.025)
+        }
+
+        function droneDoubleChance() {
+            return Math.min(0.5, specialUpgradeLevel('droneDouble') * 0.025)
         }
 
         function producerSynergyMult(targetId) {
@@ -3099,6 +3620,7 @@
             state.cookies += gained
             if (gained > 0) {
                 state.lifetimeCookies += gained
+                trackDailyProgress('cookies', gained)
                 processShardMilestones()
                 evaluateAchievements()
             }
@@ -3589,6 +4111,7 @@
                 return
             }
 
+            trackDailyProgress('purchases', bought)
             evaluateAchievements()
             renderHeader()
             renderShop()
@@ -3671,17 +4194,37 @@
             save()
         }
 
+        function showAchievementToast(achievement) {
+            const root = $('achievement-toast-stack')
+            if (!root || !achievement) return
+
+            const toast = document.createElement('div')
+            toast.className = 'achievement-toast'
+            toast.innerHTML = `<span class="achievement-toast-icon">🏆</span>
+                <div><strong>${achievement.name}</strong><span>${achievement.reward}</span></div>`
+            root.appendChild(toast)
+            while (root.children.length > 3) {
+                root.firstElementChild.remove()
+            }
+            setTimeout(() => toast.remove(), 3500)
+        }
+
         function evaluateAchievements() {
             let changed = false
+            const newlyUnlocked = []
             for (const achievement of ACHIEVEMENTS) {
                 if (state.achievements[achievement.id]) continue
                 if (achievement.check()) {
                     state.achievements[achievement.id] = true
+                    newlyUnlocked.push(achievement)
                     changed = true
                 }
             }
 
             if (changed) {
+                newlyUnlocked.forEach((achievement, index) => {
+                    setTimeout(() => showAchievementToast(achievement), index * 550)
+                })
                 renderHeader()
                 const shopPanel = $('panel-shop')
                 if (shopPanel && shopPanel.classList.contains('active')) {
@@ -3814,6 +4357,9 @@
         let tapAudioCtx = null
         let tapMasterGain = null
         let lastDroneVisualAt = 0
+        let pendingDroneVisualCookies = 0
+        let pendingDroneVisualCrit = false
+        let pendingDroneVisualDouble = false
 
         function ensureTapAudio() {
             if (!tapAudioCtx) {
@@ -3904,13 +4450,14 @@
             setTimeout(() => spark.remove(), 470)
         }
 
-        function spawnDroneProductionVisual(amount, x, y) {
+        function spawnDroneProductionVisual(amount, x, y, didCrit = false, didDouble = false) {
             const layer = $('effects-layer')
             if (!layer || amount <= 0) return
 
             const el = document.createElement('span')
             el.className = 'float-plus drone-plus'
-            el.textContent = `🤖 +${formatNum(amount)}`
+            const tags = `${didCrit ? ' KRIT' : ''}${didDouble ? ' x2' : ''}`
+            el.textContent = `🤖${tags} +${formatNum(amount)}`
             el.style.left = (x + 18 + (Math.random() - 0.5) * 24) + 'px'
             el.style.top = (y - 32) + 'px'
             layer.appendChild(el)
@@ -3938,15 +4485,20 @@
             setTimeout(() => badge.remove(), 820)
         }
 
-        function maybeRenderDroneAutoTapVisual(autoCps) {
-            if (autoCps <= 0 || !state.showDroneClicks) return
+        function maybeRenderDroneAutoTapVisual(autoCps, gainedCookies, didCrit, didDouble) {
+            if (autoCps <= 0 || !state.showDroneClicks) {
+                pendingDroneVisualCookies = 0
+                pendingDroneVisualCrit = false
+                pendingDroneVisualDouble = false
+                return
+            }
+            pendingDroneVisualCookies += Math.max(0, gainedCookies)
+            pendingDroneVisualCrit ||= didCrit
+            pendingDroneVisualDouble ||= didDouble
             const now = Date.now()
             const normalInterval = Math.max(130, 980 / (1 + Math.log2(autoCps + 1)))
             const intervalMs = state.reducedEffects ? Math.max(520, normalInterval) : normalInterval
             if (lastDroneVisualAt > 0 && now - lastDroneVisualAt < intervalMs) return
-            const elapsedMs = lastDroneVisualAt > 0
-                ? Math.min(1500, Math.max(TICK_MS, now - lastDroneVisualAt))
-                : intervalMs
             lastDroneVisualAt = now
 
             const pos = cookieCenterInPlayArea()
@@ -3954,8 +4506,16 @@
                 spawnDroneClickVisual(pos.x, pos.y)
                 pulseCookie()
             }
-            const produced = calcTap() * autoCps * elapsedMs / 1000 * incomeMult()
-            spawnDroneProductionVisual(produced, pos.x, pos.y)
+            spawnDroneProductionVisual(
+                pendingDroneVisualCookies,
+                pos.x,
+                pos.y,
+                pendingDroneVisualCrit,
+                pendingDroneVisualDouble
+            )
+            pendingDroneVisualCookies = 0
+            pendingDroneVisualCrit = false
+            pendingDroneVisualDouble = false
         }
 
         function onCookieMouseDown(ev) {
@@ -3965,6 +4525,7 @@
 
         function onTapCookie(ev) {
             trackManualTap()
+            trackDailyProgress('clicks', 1)
             const baseTap = calcTap()
             const didCrit = Math.random() < critChance()
             const tap = didCrit ? baseTap * critMultiplier() : baseTap
@@ -4094,6 +4655,7 @@
             state.milkLastRiseAt = now
             state.milkEventsTriggered++
             state.randomEventsTriggered++
+            trackDailyProgress('events', 1)
             const layer = $('milk-layer')
             layer.classList.remove('starting')
             void layer.offsetWidth
@@ -4108,6 +4670,7 @@
             const now = Date.now()
             state.frenzyUntil = now + frenzyDurationMs()
             state.randomEventsTriggered++
+            trackDailyProgress('events', 1)
             renderHeader()
         }
 
@@ -4118,6 +4681,7 @@
             const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
             state.diamondUntil = now + duration
             state.randomEventsTriggered++
+            trackDailyProgress('events', 1)
             renderHeader()
         }
 
@@ -4169,6 +4733,7 @@
                 bonusAllMult: 1,
                 bonusEventRateUntil: 0,
                 bonusEventRateMult: 1,
+                daily: createEmptyDailyState(),
                 prestige: {
                     level: 0,
                     shards: 0,
@@ -4186,7 +4751,9 @@
             try {
                 localStorage.removeItem(SAVE_KEY)
                 localStorage.removeItem('ls_cookie_clicker_v1')
+                localStorage.removeItem(BONUS_CODES_STORAGE_KEY)
             } catch (_) { /* quota / private mode */ }
+            redeemedBonusCodesCount = 0
             Object.assign(state, defaultState())
             hideGoldenCookie()
             hideDiamondCookie()
@@ -4198,6 +4765,7 @@
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
+            renderDailyPanel()
             save()
         }
 
@@ -4217,6 +4785,7 @@
                 darkMode: state.darkMode,
                 reducedEffects: state.reducedEffects,
                 showDroneClicks: state.showDroneClicks,
+                daily: state.daily,
                 bonusAllUntil: state.bonusAllUntil,
                 bonusAllMult: state.bonusAllMult,
                 bonusEventRateUntil: state.bonusEventRateUntil,
@@ -4300,6 +4869,8 @@
             state.darkMode = data.darkMode === true
             state.reducedEffects = data.reducedEffects === true
             state.showDroneClicks = data.showDroneClicks === true
+            state.daily = data.daily && typeof data.daily === 'object' ? data.daily : createEmptyDailyState()
+            ensureDailyState()
             state.bonusAllUntil = typeof data.bonusAllUntil === 'number' ? Math.max(0, Math.floor(data.bonusAllUntil)) : 0
             state.bonusAllMult = typeof data.bonusAllMult === 'number' ? Math.max(1, data.bonusAllMult) : 1
             state.bonusEventRateUntil = typeof data.bonusEventRateUntil === 'number' ? Math.max(0, Math.floor(data.bonusEventRateUntil)) : 0
@@ -4486,6 +5057,14 @@
             $('settings-reset-confirm').classList.remove('visible')
             $('settings-bonus-redeem-panel').classList.remove('visible')
             $('settings-bonus-admin-panel').classList.remove('visible')
+            $('settings-daily-panel').classList.remove('visible')
+        }
+
+        function showDailyPanel() {
+            hideAllSettingsSubPanels()
+            ensureDailyState()
+            renderDailyPanel()
+            $('settings-daily-panel').classList.add('visible')
         }
 
         function showBonusRedeemPanel() {
@@ -5045,6 +5624,7 @@
                 renderAudioControls()
                 renderThemeToggle()
                 renderEffectSettings()
+                renderDailyPanel()
                 save()
                 setSettingsHint('Spielstand erfolgreich importiert.')
             } catch (_) {
@@ -5098,12 +5678,30 @@
             $('settings-drone-visuals-toggle').addEventListener('click', () => {
                 state.showDroneClicks = !state.showDroneClicks
                 lastDroneVisualAt = 0
+                pendingDroneVisualCookies = 0
+                pendingDroneVisualCrit = false
+                pendingDroneVisualDouble = false
                 if (!state.showDroneClicks) {
                     document.querySelectorAll('.drone-click, .drone-hit-spark, .drone-plus')
                         .forEach((node) => node.remove())
                 }
                 renderEffectSettings()
                 save()
+            })
+
+            $('settings-daily-open-btn').addEventListener('click', () => {
+                if ($('settings-daily-panel').classList.contains('visible')) {
+                    hideAllSettingsSubPanels()
+                } else {
+                    showDailyPanel()
+                }
+            })
+
+            $('settings-daily-reward-btn').addEventListener('click', claimDailyReward)
+            $('daily-task-list').addEventListener('click', (ev) => {
+                const btn = ev.target.closest('.daily-task-claim')
+                if (!btn) return
+                claimDailyTask(btn.dataset.taskId)
             })
 
             $('settings-export-btn').addEventListener('click', () => {
@@ -5184,6 +5782,10 @@
 
         function gameTick() {
             const now = Date.now()
+            if (ensureDailyState()) {
+                renderDailyNotification()
+                save()
+            }
             const didDecayManualRate = pruneManualTapRate(now)
             const cps = calcCps()
             if (cps > 0) {
@@ -5192,8 +5794,14 @@
 
             const autoCps = autoClicksPerSecond()
             if (autoCps > 0) {
-                addCookies((calcTap() * autoCps * TICK_MS) / 1000, false)
-                maybeRenderDroneAutoTapVisual(autoCps)
+                const didDroneCrit = Math.random() < droneCritChance()
+                const didDroneDouble = Math.random() < droneDoubleChance()
+                let droneBatch = (calcTap() * autoCps * TICK_MS) / 1000
+                if (didDroneCrit) droneBatch *= critMultiplier()
+                if (didDroneDouble) droneBatch *= 2
+                const gainedDroneCookies = droneBatch * incomeMult()
+                addCookies(droneBatch, false)
+                maybeRenderDroneAutoTapVisual(autoCps, gainedDroneCookies, didDroneCrit, didDroneDouble)
             }
 
             rainTick()
@@ -5223,6 +5831,11 @@
             }
 
             renderBonusStatus()
+            renderActiveEffects(now)
+            if ($('settings-daily-panel').classList.contains('visible') && now - lastDailyRenderAt >= 500) {
+                lastDailyRenderAt = now
+                renderDailyPanel()
+            }
         }
 
         function initTabs() {
@@ -5287,6 +5900,8 @@
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
+            renderActiveEffects()
+            renderDailyPanel()
             initShopControls()
             initSettingsMenu()
 
