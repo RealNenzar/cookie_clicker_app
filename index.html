@@ -3761,7 +3761,7 @@
                 id: 'splitterArchiv',
                 name: 'Splitter-Archiv',
                 icon: 'fa-solid fa-archive',
-                desc: 'Ein Teil der Prestige-Kosten kommt als permanente Splitter zurück',
+                desc: 'Pro Stufe kommen 0,5 % der Prestige-Kosten als permanente Splitter zurück',
                 baseCost: 7,
                 costMult: 1.84,
                 max: 10,
@@ -4228,7 +4228,7 @@
         }
 
         function splitterArchivBonus(cost) {
-            return Math.floor(cost * prestigeUpgradeLevel('splitterArchiv') * 0.2)
+            return Math.floor(cost * prestigeUpgradeLevel('splitterArchiv') * 0.005)
         }
 
         function nullPointBonusPerLevel() {
