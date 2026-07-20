@@ -381,6 +381,11 @@
             outline: none;
         }
 
+        .settings-action-btn[aria-pressed='true'] {
+            background: var(--ctrl-bg-hover);
+            box-shadow: inset 0 0 0 1px var(--ctrl-border);
+        }
+
         .settings-action-btn.danger {
             border-color: rgba(178, 39, 39, 0.5);
             color: #b22727;
@@ -1326,6 +1331,12 @@
             text-shadow: 0 1px 0 var(--float-shadow);
         }
 
+        .float-plus.drone-plus {
+            color: #3977a8;
+            font-size: 0.92rem;
+            z-index: 2;
+        }
+
         @keyframes float-up {
             0% { opacity: 1; transform: translateY(0) scale(1); }
             55% { opacity: 1; transform: translateY(-56px) scale(1.1); }
@@ -1797,6 +1808,8 @@
                                 <li>Mit steigendem Füllstand verwandelt sich die Milch zunehmend in dunklen Kakao</li>
                                 <li>Spawn-Intervall der Milchtüte nach dem Test wieder auf den Standardwert zurückgesetzt</li>
                                 <li>Klickverstärkungen besitzen jetzt aufeinander aufbauende Synergien</li>
+                                <li>Neue Einstellung zum Reduzieren von Partikel- und Hintergrundeffekten</li>
+                                <li>Drohnen-Klicks und ihre erzeugten Cookies können jetzt eingeblendet werden</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -1845,6 +1858,14 @@
                     <button type="button" class="settings-action-btn" id="settings-theme-toggle" aria-pressed="false">
                         <i class="fa-solid fa-moon" id="settings-theme-icon" aria-hidden="true"></i>
                         <span id="settings-theme-label">Nachtmodus aktivieren</span>
+                    </button>
+                    <button type="button" class="settings-action-btn" id="settings-effects-toggle" aria-pressed="false">
+                        <i class="fa-solid fa-wand-magic-sparkles" id="settings-effects-icon" aria-hidden="true"></i>
+                        <span id="settings-effects-label">Reduzierte Effekte aktivieren</span>
+                    </button>
+                    <button type="button" class="settings-action-btn" id="settings-drone-visuals-toggle" aria-pressed="false">
+                        <i class="fa-solid fa-robot" id="settings-drone-visuals-icon" aria-hidden="true"></i>
+                        <span id="settings-drone-visuals-label">Drohnen-Klicks anzeigen</span>
                     </button>
                     <div class="audio-controls settings-audio-controls" aria-label="Audio-Steuerung">
                         <label for="volume-slider">Ton</label>
@@ -2050,7 +2071,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.2'
+        const APP_VERSION = '2026.07.20.3'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2661,6 +2682,8 @@
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
+            reducedEffects: false,
+            showDroneClicks: false,
             bonusAllUntil: 0,
             bonusAllMult: 1,
             bonusEventRateUntil: 0,
@@ -3185,6 +3208,26 @@
             themeIcon.className = state.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon'
         }
 
+        function renderEffectSettings() {
+            const effectsToggle = $('settings-effects-toggle')
+            const effectsLabel = $('settings-effects-label')
+            const effectsIcon = $('settings-effects-icon')
+            effectsToggle.setAttribute('aria-pressed', String(state.reducedEffects))
+            effectsLabel.textContent = state.reducedEffects
+                ? 'Normale Effekte aktivieren'
+                : 'Reduzierte Effekte aktivieren'
+            effectsIcon.className = state.reducedEffects
+                ? 'fa-solid fa-eye'
+                : 'fa-solid fa-wand-magic-sparkles'
+
+            const droneToggle = $('settings-drone-visuals-toggle')
+            const droneLabel = $('settings-drone-visuals-label')
+            droneToggle.setAttribute('aria-pressed', String(state.showDroneClicks))
+            droneLabel.textContent = state.showDroneClicks
+                ? 'Drohnen-Klicks ausblenden'
+                : 'Drohnen-Klicks anzeigen'
+        }
+
         function buildShop() {
             const root = $('shop-root')
             root.innerHTML = ''
@@ -3671,7 +3714,7 @@
 
         function spawnJumpCookies(x, y, perTap) {
             const layer = $('effects-layer')
-            const count = jumpCookieCount(perTap)
+            const count = state.reducedEffects ? 1 : jumpCookieCount(perTap)
             const size = jumpCookieSize(perTap)
             const spread = 18 + Math.log10(perTap + 1) * 12
 
@@ -3698,13 +3741,24 @@
             return Math.min(2.4, 0.5 + Math.log10(cps + 1) * 0.5)
         }
 
-        function spawnRainCookie(atX, perTap) {
+        function registerRainCookieForMilk() {
+            if (!isMilkActive()) return
+            state.milkCookiesFallen++
+            raiseMilkFromFallenCookie()
+        }
+
+        function spawnRainCookie(atX, perTap, showVisual = true) {
             const layer = $('cookie-rain')
             if (!layer) return
 
             const fromTap = atX != null
             const cps = calcCps() * incomeMult()
             if (!fromTap && cps <= 0) return
+
+            if (!showVisual) {
+                registerRainCookieForMilk()
+                return
+            }
 
             const el = document.createElement('span')
             el.className = 'rain-cookie' + (fromTap ? ' tap-rain' : '')
@@ -3727,17 +3781,15 @@
             const duration = (fromTap ? 2.2 : 2.8) + Math.random() * (fromTap ? 1.6 : 2.4)
             el.style.animationDuration = duration + 's'
             layer.appendChild(el)
-            if (isMilkActive()) {
-                state.milkCookiesFallen++
-                raiseMilkFromFallenCookie()
-            }
+            registerRainCookieForMilk()
             setTimeout(() => el.remove(), duration * 1000 + 50)
         }
 
         function spawnTapRainCookies(x, perTap) {
             const count = Math.min(5, Math.max(2, 2 + Math.floor(Math.log10(perTap + 1) * 1.8)))
             for (let i = 0; i < count; i++) {
-                setTimeout(() => spawnRainCookie(x, perTap), i * 40)
+                const showVisual = !state.reducedEffects || i === 0
+                setTimeout(() => spawnRainCookie(x, perTap, showVisual), i * 40)
             }
         }
 
@@ -3747,7 +3799,7 @@
 
             const chance = Math.min(1, cps / 12)
             if (Math.random() < chance) {
-                spawnRainCookie()
+                spawnRainCookie(undefined, undefined, !state.reducedEffects)
             }
         }
 
@@ -3852,6 +3904,19 @@
             setTimeout(() => spark.remove(), 470)
         }
 
+        function spawnDroneProductionVisual(amount, x, y) {
+            const layer = $('effects-layer')
+            if (!layer || amount <= 0) return
+
+            const el = document.createElement('span')
+            el.className = 'float-plus drone-plus'
+            el.textContent = `🤖 +${formatNum(amount)}`
+            el.style.left = (x + 18 + (Math.random() - 0.5) * 24) + 'px'
+            el.style.top = (y - 32) + 'px'
+            layer.appendChild(el)
+            setTimeout(() => el.remove(), 1300)
+        }
+
         function spawnPrecisionStrikeEffect(x, y, multiplier) {
             const layer = $('effects-layer')
             if (!layer) return
@@ -3874,15 +3939,23 @@
         }
 
         function maybeRenderDroneAutoTapVisual(autoCps) {
-            if (autoCps <= 0) return
+            if (autoCps <= 0 || !state.showDroneClicks) return
             const now = Date.now()
-            const intervalMs = Math.max(130, 980 / (1 + Math.log2(autoCps + 1)))
-            if (now - lastDroneVisualAt < intervalMs) return
+            const normalInterval = Math.max(130, 980 / (1 + Math.log2(autoCps + 1)))
+            const intervalMs = state.reducedEffects ? Math.max(520, normalInterval) : normalInterval
+            if (lastDroneVisualAt > 0 && now - lastDroneVisualAt < intervalMs) return
+            const elapsedMs = lastDroneVisualAt > 0
+                ? Math.min(1500, Math.max(TICK_MS, now - lastDroneVisualAt))
+                : intervalMs
             lastDroneVisualAt = now
 
             const pos = cookieCenterInPlayArea()
-            spawnDroneClickVisual(pos.x, pos.y)
-            pulseCookie()
+            if (!state.reducedEffects) {
+                spawnDroneClickVisual(pos.x, pos.y)
+                pulseCookie()
+            }
+            const produced = calcTap() * autoCps * elapsedMs / 1000 * incomeMult()
+            spawnDroneProductionVisual(produced, pos.x, pos.y)
         }
 
         function onCookieMouseDown(ev) {
@@ -3912,7 +3985,7 @@
             spawnJumpCookies(x, y, tap * incomeMult())
             spawnTapRainCookies(x, tap * incomeMult())
             spawnFloatPlus(tap, x - 20, y - 28)
-            if (didCrit) {
+            if (didCrit && !state.reducedEffects) {
                 spawnPrecisionStrikeEffect(x, y, critMultiplier())
             }
         }
@@ -4090,6 +4163,8 @@
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
+                reducedEffects: false,
+                showDroneClicks: false,
                 bonusAllUntil: 0,
                 bonusAllMult: 1,
                 bonusEventRateUntil: 0,
@@ -4122,6 +4197,7 @@
             renderAchievements()
             renderAudioControls()
             renderThemeToggle()
+            renderEffectSettings()
             save()
         }
 
@@ -4139,6 +4215,8 @@
                 audioVolume: state.audioVolume,
                 audioMuted: state.audioMuted,
                 darkMode: state.darkMode,
+                reducedEffects: state.reducedEffects,
+                showDroneClicks: state.showDroneClicks,
                 bonusAllUntil: state.bonusAllUntil,
                 bonusAllMult: state.bonusAllMult,
                 bonusEventRateUntil: state.bonusEventRateUntil,
@@ -4220,6 +4298,8 @@
                 : DEFAULT_VOLUME
             state.audioMuted = data.audioMuted === true
             state.darkMode = data.darkMode === true
+            state.reducedEffects = data.reducedEffects === true
+            state.showDroneClicks = data.showDroneClicks === true
             state.bonusAllUntil = typeof data.bonusAllUntil === 'number' ? Math.max(0, Math.floor(data.bonusAllUntil)) : 0
             state.bonusAllMult = typeof data.bonusAllMult === 'number' ? Math.max(1, data.bonusAllMult) : 1
             state.bonusEventRateUntil = typeof data.bonusEventRateUntil === 'number' ? Math.max(0, Math.floor(data.bonusEventRateUntil)) : 0
@@ -4964,6 +5044,7 @@
                 renderAchievements()
                 renderAudioControls()
                 renderThemeToggle()
+                renderEffectSettings()
                 save()
                 setSettingsHint('Spielstand erfolgreich importiert.')
             } catch (_) {
@@ -5000,6 +5081,28 @@
             $('settings-theme-toggle').addEventListener('click', () => {
                 state.darkMode = !state.darkMode
                 renderThemeToggle()
+                save()
+            })
+
+            $('settings-effects-toggle').addEventListener('click', () => {
+                state.reducedEffects = !state.reducedEffects
+                if (state.reducedEffects) {
+                    document.querySelectorAll('.rain-cookie, .jump-cookie, .precision-ring, .precision-badge')
+                        .forEach((node) => node.remove())
+                }
+                lastDroneVisualAt = 0
+                renderEffectSettings()
+                save()
+            })
+
+            $('settings-drone-visuals-toggle').addEventListener('click', () => {
+                state.showDroneClicks = !state.showDroneClicks
+                lastDroneVisualAt = 0
+                if (!state.showDroneClicks) {
+                    document.querySelectorAll('.drone-click, .drone-hit-spark, .drone-plus')
+                        .forEach((node) => node.remove())
+                }
+                renderEffectSettings()
                 save()
             })
 
@@ -5183,6 +5286,7 @@
             renderAchievements()
             renderAudioControls()
             renderThemeToggle()
+            renderEffectSettings()
             initShopControls()
             initSettingsMenu()
 
