@@ -2326,7 +2326,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.13'
+        const APP_VERSION = '2026.07.20.14'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -4444,6 +4444,21 @@
             return formatNum(n)
         }
 
+        function formatDurationCompact(ms) {
+            const totalSeconds = Math.max(0, Math.floor(ms / 1000))
+            const hours = Math.floor(totalSeconds / 3600)
+            const minutes = Math.floor((totalSeconds % 3600) / 60)
+            const seconds = totalSeconds % 60
+
+            if (hours > 0) {
+                return `${hours}h ${minutes}m`
+            }
+            if (minutes > 0) {
+                return `${minutes}m ${seconds}s`
+            }
+            return `${seconds}s`
+        }
+
         function incomeMult() {
             const now = Date.now()
             let mult = 1
@@ -5099,6 +5114,22 @@
             toast.className = 'achievement-toast'
             toast.innerHTML = `<span class="achievement-toast-icon">🏆</span>
                 <div><strong>${achievement.name}</strong><span>${achievement.reward}</span></div>`
+            root.appendChild(toast)
+            while (root.children.length > 3) {
+                root.firstElementChild.remove()
+            }
+            setTimeout(() => toast.remove(), 3500)
+        }
+
+        function showOfflineProgressToast(earned, elapsedMs) {
+            if (!Number.isFinite(earned) || earned <= 0) return
+            const root = $('achievement-toast-stack')
+            if (!root) return
+
+            const toast = document.createElement('div')
+            toast.className = 'achievement-toast'
+            toast.innerHTML = `<span class="achievement-toast-icon">🌙</span>
+                <div><strong>Offline produziert: +${formatNum(earned)} Kekse</strong><span>Zeitraum: ${formatDurationCompact(elapsedMs)}</span></div>`
             root.appendChild(toast)
             while (root.children.length > 3) {
                 root.firstElementChild.remove()
@@ -6760,7 +6791,7 @@
             updateBonusDurationVisibility()
         }
 
-        function refreshAfterOfflineProgress(earned) {
+        function refreshAfterOfflineProgress(earned, elapsedMs = 0) {
             if (earned <= 0) return
             evaluateAchievements()
             renderHeader()
@@ -6768,11 +6799,15 @@
             renderPrestige()
             renderAchievements()
             renderDailyPanel()
+            showOfflineProgressToast(earned, elapsedMs)
         }
 
         function resumeOfflineProgress() {
+            const now = Date.now()
+            const previousProgressAt = Number.isFinite(state.lastSave) ? state.lastSave : now
+            const elapsed = Math.min(Math.max(0, now - previousProgressAt), offlineCapMs())
             const earned = applyOfflineEarnings()
-            refreshAfterOfflineProgress(earned)
+            refreshAfterOfflineProgress(earned, elapsed)
             save()
             return earned
         }
