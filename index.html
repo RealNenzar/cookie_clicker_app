@@ -836,6 +836,11 @@
             z-index: 6;
         }
 
+        .help-wrap.open,
+        .patch-wrap.open {
+            z-index: 20;
+        }
+
         .achievements-wrap {
             position: absolute;
             top: 3.95rem;
@@ -861,7 +866,8 @@
         }
 
         .help-toggle:hover,
-        .help-toggle:focus-visible {
+        .help-toggle:focus-visible,
+        .help-wrap.open .help-toggle {
             transform: scale(1.06);
             background: var(--ctrl-bg-hover);
             outline: none;
@@ -869,9 +875,10 @@
 
         .help-tooltip {
             position: absolute;
-            top: 2.35rem;
-            left: 0;
-            width: min(22rem, calc(100vw - 2.5rem));
+            top: 0;
+            left: 2.45rem;
+            width: min(22rem, calc(100vw - 4.4rem));
+            max-height: min(50vh, 16rem);
             background: var(--tabs-bg);
             border: 1px solid var(--ctrl-border);
             border-radius: 0.7rem;
@@ -880,8 +887,11 @@
             font-size: 0.73rem;
             text-align: left;
             color: var(--shop-name-color);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
             opacity: 0;
-            transform: translateY(-4px);
+            transform: translateX(-4px);
             pointer-events: none;
             transition: opacity 0.14s ease, transform 0.14s ease;
         }
@@ -895,10 +905,10 @@
             margin-top: 0.35rem;
         }
 
-        .help-wrap:hover .help-tooltip,
-        .help-wrap:focus-within .help-tooltip {
+        .help-wrap.open .help-tooltip {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
+            pointer-events: auto;
         }
 
         .patch-toggle {
@@ -919,7 +929,8 @@
         }
 
         .patch-toggle:hover,
-        .patch-toggle:focus-visible {
+        .patch-toggle:focus-visible,
+        .patch-wrap.open .patch-toggle {
             transform: scale(1.06);
             background: var(--ctrl-bg-hover);
             outline: none;
@@ -927,9 +938,9 @@
 
         .patch-tooltip {
             position: absolute;
-            top: 2.35rem;
-            left: 0;
-            width: min(24rem, calc(100vw - 2.5rem));
+            top: 0;
+            left: 2.45rem;
+            width: min(24rem, calc(100vw - 4.4rem));
             max-height: min(60vh, 22rem);
             background: var(--tabs-bg);
             border: 1px solid var(--ctrl-border);
@@ -939,17 +950,22 @@
             font-size: 0.72rem;
             text-align: left;
             color: var(--shop-name-color);
-            overflow-y: hidden;
+            overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            scrollbar-width: thin;
             opacity: 0;
-            transform: translateY(-4px);
+            transform: translateX(-4px);
             pointer-events: none;
             transition: opacity 0.14s ease, transform 0.14s ease;
         }
 
         .patch-tooltip::-webkit-scrollbar {
-            width: 0;
+            width: 0.42rem;
+        }
+
+        .patch-tooltip::-webkit-scrollbar-thumb {
+            background: rgba(120, 90, 60, 0.5);
+            border-radius: 999px;
         }
 
         .patch-tooltip ul {
@@ -961,39 +977,10 @@
             margin-top: 0.35rem;
         }
 
-        .patch-wrap:hover .patch-tooltip,
-        .patch-wrap:focus-within .patch-tooltip {
+        .patch-wrap.open .patch-tooltip {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
             pointer-events: auto;
-            overflow-y: auto;
-            scrollbar-width: thin;
-        }
-
-        .patch-wrap:hover .patch-tooltip::-webkit-scrollbar,
-        .patch-wrap:focus-within .patch-tooltip::-webkit-scrollbar {
-            width: 0.42rem;
-        }
-
-        .patch-wrap:hover .patch-tooltip::-webkit-scrollbar-thumb,
-        .patch-wrap:focus-within .patch-tooltip::-webkit-scrollbar-thumb {
-            background: rgba(120, 90, 60, 0.5);
-            border-radius: 999px;
-        }
-
-        @media (hover: none) {
-            .patch-tooltip {
-                scrollbar-width: thin;
-            }
-
-            .patch-tooltip::-webkit-scrollbar {
-                width: 0.42rem;
-            }
-
-            .patch-tooltip::-webkit-scrollbar-thumb {
-                background: rgba(120, 90, 60, 0.5);
-                border-radius: 999px;
-            }
         }
 
         .achievements-toggle {
@@ -2022,18 +2009,18 @@
 <body>
     <div class="app" id="app">
         <header class="header">
-            <div class="help-wrap">
-                <button type="button" class="help-toggle" aria-label="Hinweise anzeigen">?</button>
-                <div class="help-tooltip" role="note">
+            <div class="help-wrap" id="help-wrap">
+                <button type="button" class="help-toggle" id="help-toggle" aria-label="Hinweise anzeigen" aria-expanded="false" aria-controls="help-tooltip">?</button>
+                <div class="help-tooltip" id="help-tooltip" role="note" aria-hidden="true">
                     <ul>
                         <li>Der Fortschritt wird solange gespeichert bis man seine Client-Cache in FiveM löscht.</li>
                         <li>Der Offline-Fortschritt funktioniert nur während man Online auf dem Server ist.</li>
                     </ul>
                 </div>
             </div>
-            <div class="patch-wrap">
-                <button type="button" class="patch-toggle" aria-label="Patchnotes anzeigen">📝</button>
-                <div class="patch-tooltip" role="note">
+            <div class="patch-wrap" id="patch-wrap">
+                <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
+                <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
                         <li><strong>2026-07-20</strong>
                             <ul>
@@ -2053,6 +2040,8 @@
                                 <li>Geschenk-Symbole zeigen jetzt abholbereite tägliche Belohnungen an</li>
                                 <li>„Alles zurücksetzen“ löscht jetzt auch den lokalen Verlauf eingelöster Bonus-Codes</li>
                                 <li>49 neue Erfolge für Early- und Midgame hinzugefügt – insgesamt gibt es jetzt 79</li>
+                                <li>30 weitere Mid- und Endgame-Erfolge hinzugefügt – insgesamt gibt es jetzt 109</li>
+                                <li>Hilfe und Patchnotes öffnen jetzt per Klick und erscheinen scrollbar neben ihren Buttons</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -2268,7 +2257,7 @@
                 <span>pro Sek <strong id="cps-display">0</strong></span>
             </div>
             <div class="stats-row">
-                <span>deine Klickrate <strong id="self-clickrate-display">0/s</strong></span>
+                <span>Klickrate <strong id="self-clickrate-display">0/s</strong></span>
                 <span>Drohnenrate <strong id="drone-clickrate-display">0/s</strong></span>
             </div>
             <div class="stats-row">
@@ -2335,7 +2324,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.7'
+        const APP_VERSION = '2026.07.20.9'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -3185,6 +3174,276 @@
                 type: 'cps',
                 value: 0.07,
                 check: () => state.prestige.totalShardsEarned >= 500,
+            },
+            {
+                id: 'hundredMillionClub',
+                name: 'Hundert-Millionen-Club',
+                desc: 'Erreiche 100 Mio. Lebenszeit-Kekse',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => state.lifetimeCookies >= 100000000,
+            },
+            {
+                id: 'cookieBillionaire',
+                name: 'Keks-Milliardär',
+                desc: 'Erreiche 1 Mrd. Lebenszeit-Kekse',
+                reward: '+3,5% Produktion',
+                type: 'cps',
+                value: 0.035,
+                check: () => state.lifetimeCookies >= 1000000000,
+            },
+            {
+                id: 'tenBillionBatch',
+                name: 'Zehn Milliarden später',
+                desc: 'Erreiche 10 Mrd. Lebenszeit-Kekse',
+                reward: '+4% Produktion',
+                type: 'cps',
+                value: 0.04,
+                check: () => state.lifetimeCookies >= 10000000000,
+            },
+            {
+                id: 'cookieEmpire',
+                name: 'Keks-Imperium',
+                desc: 'Erreiche 100 Mrd. Lebenszeit-Kekse',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => state.lifetimeCookies >= 100000000000,
+            },
+            {
+                id: 'producerCity',
+                name: 'Produktionsstadt',
+                desc: 'Besitze insgesamt 300 Producer',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => totalProducerOwned() >= 300,
+            },
+            {
+                id: 'producerNation',
+                name: 'Produktionsnation',
+                desc: 'Besitze insgesamt 500 Producer',
+                reward: '+4% Produktion',
+                type: 'cps',
+                value: 0.04,
+                check: () => totalProducerOwned() >= 500,
+            },
+            {
+                id: 'firstMegaBakery',
+                name: 'Groß, größer, Mega',
+                desc: 'Besitze deine erste Mega-Bäckerei',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.producers.mega >= 1,
+            },
+            {
+                id: 'firstBank',
+                name: 'Kekse auf der Bank',
+                desc: 'Besitze deine erste Keks-Bank',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.producers.bank >= 1,
+            },
+            {
+                id: 'firstLab',
+                name: 'Wissenschaftlich gebacken',
+                desc: 'Besitze dein erstes Keks-Labor',
+                reward: '+2,5% Produktion',
+                type: 'cps',
+                value: 0.025,
+                check: () => state.producers.lab >= 1,
+            },
+            {
+                id: 'firstOrbitalOven',
+                name: 'Backen im Orbit',
+                desc: 'Besitze deinen ersten Orbital-Ofen',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => state.producers.orbital >= 1,
+            },
+            {
+                id: 'firstQuantumMill',
+                name: 'Quantenkrümel',
+                desc: 'Besitze deine erste Quanten-Mühle',
+                reward: '+3,5% Produktion',
+                type: 'cps',
+                value: 0.035,
+                check: () => state.producers.quantum >= 1,
+            },
+            {
+                id: 'firstSingularity',
+                name: 'Backen am Ereignishorizont',
+                desc: 'Besitze deinen ersten Singularitäts-Bäcker',
+                reward: '+5% Produktion',
+                type: 'cps',
+                value: 0.05,
+                check: () => state.producers.singularity >= 1,
+            },
+            {
+                id: 'clickArmory',
+                name: 'Klick-Arsenal',
+                desc: 'Kaufe insgesamt 50 Klickverstärkungen',
+                reward: '+3% Klick-Stärke',
+                type: 'tap',
+                value: 0.03,
+                check: () => totalClickUpgradesOwned() >= 50,
+            },
+            {
+                id: 'clickWarehouse',
+                name: 'Finger-Lager',
+                desc: 'Kaufe insgesamt 100 Klickverstärkungen',
+                reward: '+4% Klick-Stärke',
+                type: 'tap',
+                value: 0.04,
+                check: () => totalClickUpgradesOwned() >= 100,
+            },
+            {
+                id: 'firstPlasmaStrike',
+                name: 'Plasma in der Hand',
+                desc: 'Besitze deinen ersten Plasma-Schlag',
+                reward: '+2% Klick-Stärke',
+                type: 'tap',
+                value: 0.02,
+                check: () => state.clicks.plasma >= 1,
+            },
+            {
+                id: 'firstNeutronKnuckle',
+                name: 'Neutronenfaust',
+                desc: 'Besitze deinen ersten Neutron-Knöchel',
+                reward: '+3% Klick-Stärke',
+                type: 'tap',
+                value: 0.03,
+                check: () => state.clicks.neutron >= 1,
+            },
+            {
+                id: 'tenThousandTaps',
+                name: 'Zehntausendfach geklickt',
+                desc: 'Klicke 10.000-mal selbst',
+                reward: '+3% Klick-Stärke',
+                type: 'tap',
+                value: 0.03,
+                check: () => state.manualClicksTotal >= 10000,
+            },
+            {
+                id: 'criticalFiveHundred',
+                name: 'Krit-Profi',
+                desc: 'Lande 500 kritische Klicks',
+                reward: '+1,5% Krit-Chance',
+                type: 'critChance',
+                value: 0.015,
+                check: () => state.criticalClicksTotal >= 500,
+            },
+            {
+                id: 'droneCriticalCentury',
+                name: 'Drohnen-Scharfschützen',
+                desc: 'Erziele 100 kritische Drohnen-Klicks',
+                reward: '+2% Klick-Stärke',
+                type: 'tap',
+                value: 0.02,
+                check: () => state.droneCritsTotal >= 100,
+            },
+            {
+                id: 'droneDoubleCentury',
+                name: 'Hundert Doppelschläge',
+                desc: 'Erziele 100 Drohnen-Doppelklicks',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.droneDoublesTotal >= 100,
+            },
+            {
+                id: 'eventRegular',
+                name: 'Event-Stammgast',
+                desc: 'Aktiviere 10 Spezial-Events',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.randomEventsTriggered >= 10,
+            },
+            {
+                id: 'eventHunter',
+                name: 'Event-Jäger',
+                desc: 'Aktiviere 25 Spezial-Events',
+                reward: '+3% Produktion',
+                type: 'cps',
+                value: 0.03,
+                check: () => state.randomEventsTriggered >= 25,
+            },
+            {
+                id: 'milkConnoisseur',
+                name: 'Kakao-Kenner',
+                desc: 'Aktiviere die Milchtüte 10-mal',
+                reward: '+3% Klick-Stärke',
+                type: 'tap',
+                value: 0.03,
+                check: () => state.milkEventsTriggered >= 10,
+            },
+            {
+                id: 'dailyWorker',
+                name: 'Tägliche Routine',
+                desc: 'Schließe 15 tägliche Aufgaben ab',
+                reward: '+2,5% Produktion',
+                type: 'cps',
+                value: 0.025,
+                check: () => state.dailyTasksClaimed >= 15,
+            },
+            {
+                id: 'weeklyVisitor',
+                name: 'Eine Woche dabei',
+                desc: 'Hole 7 Tagesbelohnungen ab',
+                reward: '+2,5% Produktion',
+                type: 'cps',
+                value: 0.025,
+                check: () => state.dailyRewardsClaimed >= 7,
+            },
+            {
+                id: 'firstAscension',
+                name: 'Der erste Aufstieg',
+                desc: 'Erreiche Prestige-Stufe 1',
+                reward: '+2% globale Einkünfte',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.prestige.level >= 1,
+            },
+            {
+                id: 'prestigeFive',
+                name: 'Kosmischer Bäcker',
+                desc: 'Erreiche Prestige-Stufe 5',
+                reward: '+4% globale Einkünfte',
+                type: 'cps',
+                value: 0.04,
+                check: () => state.prestige.level >= 5,
+            },
+            {
+                id: 'shardPouch',
+                name: 'Splitterbeutel',
+                desc: 'Sammle insgesamt 50 Splitter',
+                reward: '+2% Produktion',
+                type: 'cps',
+                value: 0.02,
+                check: () => state.prestige.totalShardsEarned >= 50,
+            },
+            {
+                id: 'producerSynergyQuarter',
+                name: 'Verzahnte Produktion',
+                desc: 'Erreiche +25% Synergie für den Forschungscampus',
+                reward: '+2,5% Produktion',
+                type: 'cps',
+                value: 0.025,
+                check: () => producerSynergyMult('campus') >= 1.25,
+            },
+            {
+                id: 'clickSynergyQuarter',
+                name: 'Perfekte Schlagfolge',
+                desc: 'Erreiche +25% Synergie für Goldene Knöchel',
+                reward: '+2,5% Klick-Stärke',
+                type: 'tap',
+                value: 0.025,
+                check: () => clickSynergyMult('golden') >= 1.25,
             },
             {
                 id: 'zeroPoint',
@@ -6107,6 +6366,56 @@
             }
         }
 
+        function setHeaderPopoverOpen(wrap, toggle, panel, open) {
+            wrap.classList.toggle('open', open)
+            toggle.setAttribute('aria-expanded', String(open))
+            toggle.setAttribute('aria-label', `${toggle.id === 'help-toggle' ? 'Hinweise' : 'Patchnotes'} ${open ? 'schließen' : 'anzeigen'}`)
+            panel.setAttribute('aria-hidden', String(!open))
+        }
+
+        function initHeaderPopovers() {
+            const popovers = [
+                {
+                    wrap: $('help-wrap'),
+                    toggle: $('help-toggle'),
+                    panel: $('help-tooltip'),
+                },
+                {
+                    wrap: $('patch-wrap'),
+                    toggle: $('patch-toggle'),
+                    panel: $('patch-tooltip'),
+                },
+            ]
+
+            const closeAll = (except = null) => {
+                popovers.forEach((popover) => {
+                    if (popover !== except) {
+                        setHeaderPopoverOpen(popover.wrap, popover.toggle, popover.panel, false)
+                    }
+                })
+            }
+
+            popovers.forEach((popover) => {
+                popover.toggle.addEventListener('click', () => {
+                    const shouldOpen = !popover.wrap.classList.contains('open')
+                    closeAll(popover)
+                    setHeaderPopoverOpen(popover.wrap, popover.toggle, popover.panel, shouldOpen)
+                })
+            })
+
+            document.addEventListener('click', (ev) => {
+                if (!popovers.some((popover) => popover.wrap.contains(ev.target))) {
+                    closeAll()
+                }
+            })
+
+            document.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Escape') {
+                    closeAll()
+                }
+            })
+        }
+
         function initSettingsMenu() {
             const settingsWrap = $('settings-wrap')
             const settingsToggle = $('settings-toggle')
@@ -6380,6 +6689,7 @@
             renderActiveEffects()
             renderDailyPanel()
             initShopControls()
+            initHeaderPopovers()
             initSettingsMenu()
 
             $('big-cookie').addEventListener('mousedown', onCookieMouseDown)
