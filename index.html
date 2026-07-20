@@ -1796,6 +1796,7 @@
                                 <li>Der Event-Bonus wächst jetzt deutlich mit dem erreichten Milchstand</li>
                                 <li>Mit steigendem Füllstand verwandelt sich die Milch zunehmend in dunklen Kakao</li>
                                 <li>Spawn-Intervall der Milchtüte nach dem Test wieder auf den Standardwert zurückgesetzt</li>
+                                <li>Klickverstärkungen besitzen jetzt aufeinander aufbauende Synergien</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
@@ -2049,7 +2050,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.1'
+        const APP_VERSION = '2026.07.20.2'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2125,6 +2126,19 @@
             { id: 'plasma', name: 'Plasma-Schlag', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K pro Klick' },
             { id: 'neutron', name: 'Neutron-Knöchel', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M pro Klick' },
             { id: 'cosmic', name: 'Kosmischer Klick', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M pro Klick' },
+        ]
+
+        const CLICK_SYNERGIES = [
+            { from: 'strong', to: 'iron', bonusPerSource: 0.01 },
+            { from: 'iron', to: 'diamond', bonusPerSource: 0.008 },
+            { from: 'diamond', to: 'steel', bonusPerSource: 0.006 },
+            { from: 'steel', to: 'golden', bonusPerSource: 0.005 },
+            { from: 'golden', to: 'hydraulic', bonusPerSource: 0.004 },
+            { from: 'hydraulic', to: 'laser', bonusPerSource: 0.0035 },
+            { from: 'laser', to: 'titanium', bonusPerSource: 0.003 },
+            { from: 'titanium', to: 'plasma', bonusPerSource: 0.0025 },
+            { from: 'plasma', to: 'neutron', bonusPerSource: 0.002 },
+            { from: 'neutron', to: 'cosmic', bonusPerSource: 0.0015 },
         ]
 
         const SPECIAL_UPGRADES = [
@@ -2928,6 +2942,33 @@
             return ` | Synergie (${affects.join(', ')})`
         }
 
+        function clickSynergyMult(targetId) {
+            let mult = 1
+            for (const synergy of CLICK_SYNERGIES) {
+                if (synergy.to === targetId) {
+                    mult += state.clicks[synergy.from] * synergy.bonusPerSource
+                }
+            }
+            return mult
+        }
+
+        function clickSynergyText(targetId) {
+            const affects = CLICK_SYNERGIES
+                .filter((synergy) => synergy.to === targetId)
+                .map((synergy) => {
+                    const from = CLICKS.find((click) => click.id === synergy.from)
+                    if (!from) return ''
+                    const bonus = state.clicks[synergy.from] * synergy.bonusPerSource
+                    return `${from.name}: +${formatPct(bonus)}`
+                })
+                .filter(Boolean)
+
+            if (affects.length === 0) {
+                return ''
+            }
+            return ` | Synergie (${affects.join(', ')})`
+        }
+
         function canAscendPrestige() {
             return (state.prestige.shards + state.prestige.runShards) >= nextPrestigeCost()
         }
@@ -2985,7 +3026,7 @@
         function calcTap() {
             let tap = BASE_TAP
             for (const c of CLICKS) {
-                tap += c.bonus * state.clicks[c.id]
+                tap += c.bonus * state.clicks[c.id] * clickSynergyMult(c.id)
             }
             return tap * tapBonusMult() * cosmicOrbitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('tap'))
         }
@@ -3279,7 +3320,11 @@
                 <span class="icon"><i class="${item.icon}" aria-hidden="true"></i></span>
                 <span class="info">
                     <div class="name">${item.name}</div>
-                    <div class="desc">${kind === 'producer' ? item.desc + producerSynergyText(item.id) : item.desc}</div>
+                    <div class="desc">${kind === 'producer'
+                        ? item.desc + producerSynergyText(item.id)
+                        : kind === 'click'
+                            ? item.desc + clickSynergyText(item.id)
+                            : item.desc}</div>
                 </span>
                 <span class="meta">
                     <div class="cost">${formatNum(cost)}</div>
@@ -3394,6 +3439,7 @@
                 const buyCount = resolveBuyCount(kind, item, owned)
                 cost = totalUpgradeCost(kind, item, owned, buyCount)
                 btn.disabled = buyCount < 1 || !canAfford(cost)
+                btn.querySelector('.desc').textContent = item.desc + clickSynergyText(item.id)
             } else if (kind === 'special') {
                 owned = specialUpgradeLevel(item.id)
                 const buyCount = resolveBuyCount(kind, item, owned)
