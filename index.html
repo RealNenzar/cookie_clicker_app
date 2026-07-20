@@ -2326,7 +2326,7 @@
 
     <script>
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.12'
+        const APP_VERSION = '2026.07.20.13'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -5590,10 +5590,23 @@
             state.lastSave = now
             if (elapsed <= 0) return 0
 
-            const cps = calcCps()
-            if (cps <= 0) return 0
+            const elapsedSeconds = elapsed / 1000
+            const producerCps = calcCps()
+            const producerEarned = producerCps > 0 ? elapsedSeconds * producerCps : 0
 
-            const earned = (elapsed / 1000) * cps * offlineIncomeMult()
+            let droneEarned = 0
+            const autoCps = autoClicksPerSecond()
+            if (autoCps > 0) {
+                const baseDroneTapPerSecond = calcTap() * autoCps
+                const expectedCritMult = 1 + droneCritChance() * (critMultiplier() - 1)
+                const expectedDoubleMult = 1 + droneDoubleChance()
+                droneEarned = elapsedSeconds * baseDroneTapPerSecond * expectedCritMult * expectedDoubleMult
+            }
+
+            const totalBaseEarned = producerEarned + droneEarned
+            if (totalBaseEarned <= 0) return 0
+
+            const earned = totalBaseEarned * offlineIncomeMult()
             if (earned < 0.01) return 0
 
             state.cookies += earned
