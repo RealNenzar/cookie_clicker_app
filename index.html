@@ -131,36 +131,31 @@
         }
 
         .active-effects {
+            position: absolute;
+            top: 0.75rem;
+            left: 50%;
+            width: min(20rem, calc(100% - 2rem));
+            transform: translateX(-50%);
             display: none;
             gap: 0.35rem;
-            padding: 0.35rem 0.7rem;
-            background: var(--header-bg);
-            border-bottom: 1px solid var(--header-border);
-            overflow-x: auto;
-            scrollbar-width: none;
-            flex-shrink: 0;
-            z-index: 7;
+            z-index: 20;
+            pointer-events: none;
         }
 
         .active-effects.visible {
-            display: flex;
-        }
-
-        .active-effects::-webkit-scrollbar {
-            display: none;
+            display: grid;
         }
 
         .effect-chip {
             position: relative;
-            min-width: 7rem;
-            flex: 1 0 7rem;
             overflow: hidden;
-            border: 1px solid var(--ctrl-border);
-            border-radius: 0.55rem;
-            padding: 0.35rem 0.45rem 0.42rem;
-            background: var(--ctrl-bg);
-            color: var(--ctrl-fg);
-            font-size: 0.62rem;
+            border: 1px solid var(--achievement-unlocked-border);
+            border-radius: 0.7rem;
+            padding: 0.55rem 0.65rem 0.62rem;
+            background: var(--achievement-unlocked-bg);
+            color: var(--achievement-unlocked-fg);
+            box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
+            font-size: 0.65rem;
             line-height: 1.15;
         }
 
@@ -723,6 +718,16 @@
             gap: 0.4rem;
         }
 
+        .daily-reroll-row {
+            display: grid;
+            gap: 0.25rem;
+        }
+
+        .daily-reroll-row small {
+            color: var(--shop-desc-color);
+            font-size: 0.61rem;
+        }
+
         .daily-task {
             border: 1px solid var(--ctrl-border);
             border-radius: 0.55rem;
@@ -822,21 +827,13 @@
             }
         }
 
-        .help-wrap {
+        .patch-wrap {
             position: absolute;
             top: 1.4rem;
             left: 0.9rem;
             z-index: 6;
         }
 
-        .patch-wrap {
-            position: absolute;
-            top: 3.95rem;
-            left: 0.9rem;
-            z-index: 6;
-        }
-
-        .help-wrap.open,
         .patch-wrap.open {
             z-index: 20;
         }
@@ -846,69 +843,6 @@
             top: 3.95rem;
             right: 0.9rem;
             z-index: 6;
-        }
-
-        .help-toggle {
-            border: 1px solid var(--ctrl-border);
-            background: var(--theme-btn-bg);
-            color: var(--theme-btn-fg);
-            width: 2rem;
-            height: 2rem;
-            border-radius: 999px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            font-weight: 800;
-            box-shadow: 0 2px 8px var(--theme-btn-shadow);
-            transition: transform 0.12s ease, background 0.12s ease;
-        }
-
-        .help-toggle:hover,
-        .help-toggle:focus-visible,
-        .help-wrap.open .help-toggle {
-            transform: scale(1.06);
-            background: var(--ctrl-bg-hover);
-            outline: none;
-        }
-
-        .help-tooltip {
-            position: absolute;
-            top: 0;
-            left: 2.45rem;
-            width: min(22rem, calc(100vw - 4.4rem));
-            max-height: min(50vh, 16rem);
-            background: var(--tabs-bg);
-            border: 1px solid var(--ctrl-border);
-            border-radius: 0.7rem;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
-            padding: 0.7rem 0.75rem;
-            font-size: 0.73rem;
-            text-align: left;
-            color: var(--shop-name-color);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            opacity: 0;
-            transform: translateX(-4px);
-            pointer-events: none;
-            transition: opacity 0.14s ease, transform 0.14s ease;
-        }
-
-        .help-tooltip ul {
-            margin: 0;
-            padding-left: 1rem;
-        }
-
-        .help-tooltip li + li {
-            margin-top: 0.35rem;
-        }
-
-        .help-wrap.open .help-tooltip {
-            opacity: 1;
-            transform: translateX(0);
-            pointer-events: auto;
         }
 
         .patch-toggle {
@@ -1967,7 +1901,8 @@
         }
 
         .achievement-row {
-            display: flex;
+            display: grid;
+            grid-template-columns: 2rem minmax(0, 1fr) minmax(5.25rem, auto);
             align-items: center;
             gap: 0.65rem;
             width: 100%;
@@ -1988,6 +1923,11 @@
             font-size: 1.1rem;
             flex-shrink: 0;
             color: var(--shop-icon-color);
+        }
+
+        .achievement-row .info {
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
 
         .achievement-row.unlocked .icon {
@@ -2014,15 +1954,17 @@
         }
 
         .achievement-row .meta {
-            margin-left: auto;
+            min-width: 0;
+            max-width: 8rem;
             text-align: right;
-            flex-shrink: 0;
+            overflow-wrap: anywhere;
         }
 
         .achievement-row .reward {
             font-size: 0.68rem;
             color: var(--shop-cost-color);
             font-weight: 700;
+            overflow-wrap: anywhere;
         }
 
         .achievement-row .status {
@@ -2034,11 +1976,29 @@
             padding: 0.14rem 0.42rem;
             border-radius: 999px;
             background: var(--achievement-locked-pill-bg);
+            max-width: 100%;
+            white-space: normal;
+            overflow-wrap: anywhere;
         }
 
         .achievement-row.unlocked .status {
             background: var(--achievement-unlocked-pill-bg);
             color: var(--achievement-unlocked-pill-fg);
+        }
+
+        @media (max-width: 420px) {
+            .achievement-row {
+                grid-template-columns: 2rem minmax(0, 1fr);
+                align-items: start;
+            }
+
+            .achievement-row .meta {
+                grid-column: 2;
+                width: 100%;
+                max-width: none;
+                margin-top: 0.2rem;
+                text-align: left;
+            }
         }
 
         .prestige-summary {
@@ -2171,19 +2131,24 @@
 <body>
     <div class="app" id="app">
         <header class="header">
-            <div class="help-wrap" id="help-wrap">
-                <button type="button" class="help-toggle" id="help-toggle" aria-label="Hinweise anzeigen" aria-expanded="false" aria-controls="help-tooltip">?</button>
-                <div class="help-tooltip" id="help-tooltip" role="note" aria-hidden="true">
-                    <ul>
-                        <li>Der Fortschritt wird solange gespeichert bis man seine Client-Cache in FiveM löscht.</li>
-                        <li>Der Offline-Fortschritt funktioniert nur während man Online auf dem Server ist.</li>
-                    </ul>
-                </div>
-            </div>
             <div class="patch-wrap" id="patch-wrap">
                 <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
                 <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
+                        <li><strong>2026-07-22</strong>
+                            <ul>
+                                <li>Offene tägliche Aufgaben können jetzt zweimal pro Tag neu gewürfelt werden</li>
+                                <li>Der permanente Schicksalswürfel erhöht die täglichen Versuche auf bis zu fünf</li>
+                                <li>Abgeschlossene Aufgaben und die tägliche Zufallsbelohnung bleiben beim Würfeln erhalten</li>
+                                <li>Effektanzeigen und Klickanimationen bleiben auch bei sehr schnellem Klicken flüssig</li>
+                                <li>Im normalen Effektmodus werden wieder alle Klick- und Hintergrundanimationen angezeigt</li>
+                                <li>Die Cookie-Zahlen erscheinen wieder zuverlässig bei jedem Klick</li>
+                                <li>16 neue Langzeit-Erfolge hinzugefügt – insgesamt gibt es jetzt 145</li>
+                                <li>20 weitere Endgame-Erfolge hinzugefügt – insgesamt gibt es jetzt 165</li>
+                                <li>Erfolgskarten bleiben mit Belohnung und Status vollständig im sichtbaren Bereich</li>
+                                <li>Der nicht mehr benötigte Hilfe-Button wurde entfernt</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-21</strong>
                             <ul>
                                 <li>Fünf permanente Keksrezepte mit stapelbaren Ertragsboni hinzugefügt</li>
@@ -2290,6 +2255,13 @@
                             <span id="settings-daily-reward-label">Tagesbelohnung abholen</span>
                         </button>
                         <p class="settings-daily-hint" id="settings-daily-hint"></p>
+                        <div class="daily-reroll-row">
+                            <button type="button" class="settings-action-btn" id="settings-daily-reroll-btn">
+                                <i class="fa-solid fa-dice" aria-hidden="true"></i>
+                                <span id="settings-daily-reroll-label">Offene Aufgaben neu würfeln</span>
+                            </button>
+                            <small id="settings-daily-reroll-hint"></small>
+                        </div>
                         <div class="daily-task-list" id="daily-task-list"></div>
                     </div>
                     <div class="audio-controls settings-audio-controls" aria-label="Audio-Steuerung">
@@ -2441,10 +2413,10 @@
             </div>
         </header>
 
-        <div class="active-effects" id="active-effects" aria-label="Aktive Effekte"></div>
         <div class="achievement-toast-stack" id="achievement-toast-stack" aria-live="polite" aria-atomic="false"></div>
 
         <div class="panels">
+            <div class="active-effects" id="active-effects" aria-label="Aktive Effekte"></div>
             <section class="panel active" id="panel-play" aria-label="Spielen">
                 <div class="play-area" id="play-area">
                     <div class="cookie-rain-layer" id="cookie-rain" aria-hidden="true"></div>
@@ -2506,7 +2478,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.21.4'
+        const APP_VERSION = '2026.07.22.8'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2715,6 +2687,11 @@
                 icon: 'fa-solid fa-glass-water', desc: 'Permanent +150% Stärke für Milch-Events',
                 baseCost: 7500000000000000000, max: 1, bonus: 1.50, visualClass: 'milk-cosmic', badge: '✨',
                 palette: ['177, 244, 255', '111, 132, 242', '67, 27, 121', '139, 233, 255', '190, 91, 242'],
+            },
+            {
+                id: 'dailyRerollMastery', category: 'daily', name: 'Schicksalswürfel',
+                icon: 'fa-solid fa-dice', desc: '+1 täglicher Aufgaben-Reroll pro Stufe (maximal 5 insgesamt)',
+                baseCost: 250000000000, costMult: 1000, max: 3,
             },
         ]
 
@@ -3880,6 +3857,190 @@
                 value: 0.08,
                 check: () => state.prestige.level >= 15,
             },
+            {
+                id: 'dailyMonth', name: 'Ein Monat voller Kekse',
+                desc: 'Schließe 30 tägliche Aufgaben ab', reward: '+3% Produktion',
+                type: 'cps', value: 0.03, check: () => state.dailyTasksClaimed >= 30,
+            },
+            {
+                id: 'dailyQuarter', name: 'Aufgaben-Champion',
+                desc: 'Schließe 75 tägliche Aufgaben ab', reward: '+5% Produktion',
+                type: 'cps', value: 0.05, check: () => state.dailyTasksClaimed >= 75,
+            },
+            {
+                id: 'dailyFortnight', name: 'Zwei Wochen Glück',
+                desc: 'Hole 14 Tagesbelohnungen ab', reward: '+3% Klick-Stärke',
+                type: 'tap', value: 0.03, check: () => state.dailyRewardsClaimed >= 14,
+            },
+            {
+                id: 'dailyGiftMonth', name: 'Treuer Stammgast',
+                desc: 'Hole 30 Tagesbelohnungen ab', reward: '+5% Produktion',
+                type: 'cps', value: 0.05, check: () => state.dailyRewardsClaimed >= 30,
+            },
+            {
+                id: 'rerollApprentice', name: 'Noch einmal!',
+                desc: 'Würfle insgesamt 10 tägliche Aufgaben-Sets neu', reward: '+2,5% Klick-Stärke',
+                type: 'tap', value: 0.025, check: () => state.dailyRerollsUsedTotal >= 10,
+            },
+            {
+                id: 'rerollMaster', name: 'Meister des Schicksals',
+                desc: 'Würfle insgesamt 50 tägliche Aufgaben-Sets neu', reward: '+5% Produktion',
+                type: 'cps', value: 0.05, check: () => state.dailyRerollsUsedTotal >= 50,
+            },
+            {
+                id: 'eventLegend', name: 'Magnet für Wunder',
+                desc: 'Aktiviere 250 Spezial-Events', reward: '+7% Produktion',
+                type: 'cps', value: 0.07, check: () => state.randomEventsTriggered >= 250,
+            },
+            {
+                id: 'milkCentury', name: 'Hundert Fluten',
+                desc: 'Aktiviere die Milchtüte 100-mal', reward: '+7% Klick-Stärke',
+                type: 'tap', value: 0.07, check: () => state.milkEventsTriggered >= 100,
+            },
+            {
+                id: 'permanentCollector', name: 'Für die Ewigkeit',
+                desc: 'Kaufe 5 Stufen permanenter Upgrades', reward: '+4% Produktion',
+                type: 'cps', value: 0.04,
+                check: () => Object.values(state.permanentUpgrades).reduce((sum, level) => sum + level, 0) >= 5,
+            },
+            {
+                id: 'permanentLegacy', name: 'Unvergängliches Vermächtnis',
+                desc: 'Maximiere alle permanenten Upgrades', reward: '+8% Produktion',
+                type: 'cps', value: 0.08,
+                check: () => PERMANENT_UPGRADES.every((upgrade) => permanentUpgradeLevel(upgrade.id) >= upgrade.max),
+            },
+            {
+                id: 'producerMetropolis', name: 'Backstuben-Metropole',
+                desc: 'Besitze insgesamt 2.500 Producer', reward: '+8% Produktion',
+                type: 'cps', value: 0.08, check: () => totalProducerOwned() >= 2500,
+            },
+            {
+                id: 'balancedEmpire', name: 'Perfekt ausbalanciert',
+                desc: 'Besitze von jedem Producer mindestens 50', reward: '+8% Produktion',
+                type: 'cps', value: 0.08,
+                check: () => PRODUCERS.every((producer) => state.producers[producer.id] >= 50),
+            },
+            {
+                id: 'clickDynasty', name: 'Dynastie der Hände',
+                desc: 'Kaufe insgesamt 500 Klickverstärkungen', reward: '+8% Klick-Stärke',
+                type: 'tap', value: 0.08, check: () => totalClickUpgradesOwned() >= 500,
+            },
+            {
+                id: 'manualMyth', name: 'Eine Viertelmillion Klicks',
+                desc: 'Klicke 250.000-mal selbst', reward: '+9% Klick-Stärke',
+                type: 'tap', value: 0.09, check: () => state.manualClicksTotal >= 250000,
+            },
+            {
+                id: 'shardTreasury', name: 'Kosmische Schatzkammer',
+                desc: 'Sammle insgesamt 250 Splitter', reward: '+5% Produktion',
+                type: 'cps', value: 0.05, check: () => state.prestige.totalShardsEarned >= 250,
+            },
+            {
+                id: 'prestigeLegend', name: 'Jenseits der Sterne',
+                desc: 'Erreiche Prestige-Stufe 25', reward: '+10% globale Einkünfte',
+                type: 'cps', value: 0.10, check: () => state.prestige.level >= 25,
+            },
+            {
+                id: 'dailyVeteran', name: 'Nie einen Tag langweilig',
+                desc: 'Schließe 150 tägliche Aufgaben ab', reward: '+7% Produktion',
+                type: 'cps', value: 0.07, check: () => state.dailyTasksClaimed >= 150,
+            },
+            {
+                id: 'dailyGiftVeteran', name: 'Sechzig Tage Glück',
+                desc: 'Hole 60 Tagesbelohnungen ab', reward: '+7% Klick-Stärke',
+                type: 'tap', value: 0.07, check: () => state.dailyRewardsClaimed >= 60,
+            },
+            {
+                id: 'rerollLegend', name: 'Das Schicksal gehorcht',
+                desc: 'Würfle insgesamt 100 tägliche Aufgaben-Sets neu', reward: '+7% Produktion',
+                type: 'cps', value: 0.07, check: () => state.dailyRerollsUsedTotal >= 100,
+            },
+            {
+                id: 'eventMaster', name: 'Im Auge des Wunders',
+                desc: 'Aktiviere 500 Spezial-Events', reward: '+8% Produktion',
+                type: 'cps', value: 0.08, check: () => state.randomEventsTriggered >= 500,
+            },
+            {
+                id: 'eventMyth', name: 'Tausendfaches Wunder',
+                desc: 'Aktiviere 1.000 Spezial-Events', reward: '+10% Produktion',
+                type: 'cps', value: 0.10, check: () => state.randomEventsTriggered >= 1000,
+            },
+            {
+                id: 'milkLegend', name: 'Ozean aus Kakao',
+                desc: 'Aktiviere die Milchtüte 250-mal', reward: '+9% Klick-Stärke',
+                type: 'tap', value: 0.09, check: () => state.milkEventsTriggered >= 250,
+            },
+            {
+                id: 'producerPlanet', name: 'Ein Planet voller Backstuben',
+                desc: 'Besitze insgesamt 5.000 Producer', reward: '+10% Produktion',
+                type: 'cps', value: 0.10, check: () => totalProducerOwned() >= 5000,
+            },
+            {
+                id: 'balancedUniverse', name: 'Lückenloses Universum',
+                desc: 'Besitze von jedem Producer mindestens 100', reward: '+10% Produktion',
+                type: 'cps', value: 0.10,
+                check: () => PRODUCERS.every((producer) => state.producers[producer.id] >= 100),
+            },
+            {
+                id: 'singularityEmpire', name: 'Jenseits des Ereignishorizonts',
+                desc: 'Besitze 50 Singularitäts-Bäcker', reward: '+9% Produktion',
+                type: 'cps', value: 0.09, check: () => state.producers.singularity >= 50,
+            },
+            {
+                id: 'clickMillennium', name: 'Tausendfache Verstärkung',
+                desc: 'Kaufe insgesamt 1.000 Klickverstärkungen', reward: '+10% Klick-Stärke',
+                type: 'tap', value: 0.10, check: () => totalClickUpgradesOwned() >= 1000,
+            },
+            {
+                id: 'manualHalfMillion', name: 'Unermüdliche Finger',
+                desc: 'Klicke 500.000-mal selbst', reward: '+10% Klick-Stärke',
+                type: 'tap', value: 0.10, check: () => state.manualClicksTotal >= 500000,
+            },
+            {
+                id: 'manualMillion', name: 'Die millionste Berührung',
+                desc: 'Klicke 1.000.000-mal selbst', reward: '+12% Klick-Stärke',
+                type: 'tap', value: 0.12, check: () => state.manualClicksTotal >= 1000000,
+            },
+            {
+                id: 'criticalTempest', name: 'Kritischer Orkan',
+                desc: 'Lande 25.000 kritische Klicks', reward: '+3% Krit-Chance',
+                type: 'critChance', value: 0.03, check: () => state.criticalClicksTotal >= 25000,
+            },
+            {
+                id: 'criticalDestiny', name: 'Vorbestimmter Treffer',
+                desc: 'Lande 50.000 kritische Klicks', reward: '+4% Krit-Chance',
+                type: 'critChance', value: 0.04, check: () => state.criticalClicksTotal >= 50000,
+            },
+            {
+                id: 'droneSniperArmy', name: 'Armee der Präzision',
+                desc: 'Erziele 5.000 kritische Drohnen-Klicks', reward: '+8% Klick-Stärke',
+                type: 'tap', value: 0.08, check: () => state.droneCritsTotal >= 5000,
+            },
+            {
+                id: 'droneDoubleArmy', name: 'Armee der Doppelschläge',
+                desc: 'Erziele 5.000 Drohnen-Doppelklicks', reward: '+8% Produktion',
+                type: 'cps', value: 0.08, check: () => state.droneDoublesTotal >= 5000,
+            },
+            {
+                id: 'shardFortress', name: 'Festung aus Splittern',
+                desc: 'Sammle insgesamt 1.000 Splitter', reward: '+9% Produktion',
+                type: 'cps', value: 0.09, check: () => state.prestige.totalShardsEarned >= 1000,
+            },
+            {
+                id: 'prestigeMyth', name: 'Unendlicher Aufstieg',
+                desc: 'Erreiche Prestige-Stufe 50', reward: '+12% globale Einkünfte',
+                type: 'cps', value: 0.12, check: () => state.prestige.level >= 50,
+            },
+            {
+                id: 'cookieQuintillionaire', name: 'Trillionen-Titan',
+                desc: 'Erreiche 1 Trillion Lebenszeit-Kekse', reward: '+9% Produktion',
+                type: 'cps', value: 0.09, check: () => state.lifetimeCookies >= 1e18,
+            },
+            {
+                id: 'cookieSextillionaire', name: 'Trilliarden-Traum',
+                desc: 'Erreiche 1 Trilliarde Lebenszeit-Kekse', reward: '+11% Produktion',
+                type: 'cps', value: 0.11, check: () => state.lifetimeCookies >= 1e21,
+            },
         ]
 
         const PRESTIGE_UPGRADES = [
@@ -4090,6 +4251,7 @@
             droneDoublesTotal: 0,
             dailyTasksClaimed: 0,
             dailyRewardsClaimed: 0,
+            dailyRerollsUsedTotal: 0,
             goldenVisible: false,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
@@ -4143,8 +4305,8 @@
             return state.permanentUpgrades[id] || 0
         }
 
-        function permanentUpgradeCost(item) {
-            return Math.max(1, Math.floor(item.baseCost * shopCostDiscount()))
+        function permanentUpgradeCost(item, owned = 0) {
+            return Math.max(1, Math.floor(item.baseCost * Math.pow(item.costMult || 1, owned) * shopCostDiscount()))
         }
 
         function permanentBonusFor(category) {
@@ -4222,6 +4384,7 @@
                 date: '',
                 rewardClaimed: false,
                 rewardText: '',
+                rerollsUsed: 0,
                 progress: { clicks: 0, cookies: 0, purchases: 0, events: 0 },
                 tasks: [],
             }
@@ -4231,18 +4394,73 @@
             return Math.max(1000, Math.floor((calcCps() + calcTap() * 2 + 1) * 300))
         }
 
-        function generateDailyTasks(dateKey) {
+        function dailyTaskDefinitions(dateKey) {
             const seed = [...dateKey].reduce((sum, char) => sum + char.charCodeAt(0), 0)
             const cookieTarget = Math.max(5000, Math.floor((calcCps() + calcTap() * 2 + 1) * 240))
             const baseReward = dailyCookieBaseReward()
-            const definitions = [
+            return [
                 { id: 'clicks', type: 'clicks', label: 'Klicke den großen Keks', target: 250 + (seed % 3) * 100, rewardType: 'cookies', rewardValue: baseReward },
                 { id: 'cookies', type: 'cookies', label: 'Produziere Cookies', target: cookieTarget, rewardType: 'cookies', rewardValue: baseReward * 2 },
                 { id: 'purchases', type: 'purchases', label: 'Kaufe Upgrades oder Producer', target: 10 + (seed % 2) * 5, rewardType: 'shards', rewardValue: 1 },
                 { id: 'events', type: 'events', label: 'Aktiviere ein Spezial-Event', target: 1, rewardType: 'cookies', rewardValue: baseReward * 2 },
             ]
+        }
+
+        function generateDailyTasks(dateKey) {
+            const definitions = dailyTaskDefinitions(dateKey)
+            const seed = [...dateKey].reduce((sum, char) => sum + char.charCodeAt(0), 0)
             const start = seed % definitions.length
             return [0, 1, 2].map((offset) => ({ ...definitions[(start + offset) % definitions.length], claimed: false }))
+        }
+
+        function dailyRerollLimit() {
+            return 2 + permanentUpgradeLevel('dailyRerollMastery')
+        }
+
+        function rerollOpenDailyTasks() {
+            ensureDailyState()
+            const used = Math.max(0, Math.floor(Number(state.daily.rerollsUsed) || 0))
+            if (used >= dailyRerollLimit()) return
+
+            const lockedTasks = state.daily.tasks.filter((task) => {
+                const progress = Number(state.daily.progress[task.type]) || 0
+                return task.claimed || progress >= task.target
+            })
+            const openTasks = state.daily.tasks.filter((task) => !lockedTasks.includes(task))
+            if (openTasks.length === 0) return
+
+            const allDefinitions = dailyTaskDefinitions(`${state.daily.date}-reroll-${used}-${Math.random()}`)
+            const lockedTypes = new Set(lockedTasks.map((task) => task.type))
+            const candidates = allDefinitions.filter((task) => !lockedTypes.has(task.type))
+            const findDifferentAssignments = (taskIndex, available, assigned = []) => {
+                if (taskIndex >= openTasks.length) return assigned
+                const oldType = openTasks[taskIndex].type
+                const choices = available.filter((task) => task.type !== oldType)
+                for (const choice of choices) {
+                    const result = findDifferentAssignments(
+                        taskIndex + 1,
+                        available.filter((task) => task !== choice),
+                        [...assigned, { ...choice, claimed: false }]
+                    )
+                    if (result) return result
+                }
+                return null
+            }
+            const replacements = findDifferentAssignments(0, candidates)
+            if (!replacements) return
+
+            let replacementIndex = 0
+            state.daily.tasks = state.daily.tasks.map((task) => {
+                if (lockedTasks.includes(task)) return task
+                const replacement = replacements[replacementIndex++]
+                state.daily.progress[replacement.type] = 0
+                return replacement
+            })
+            state.daily.rerollsUsed = used + 1
+            state.dailyRerollsUsedTotal++
+            evaluateAchievements()
+            renderDailyPanel()
+            save()
         }
 
         function ensureDailyState() {
@@ -4374,12 +4592,20 @@
         function renderDailyPanel() {
             if (!$('settings-daily-panel')) return
             ensureDailyState()
+            state.daily.rerollsUsed = Math.max(0, Math.floor(Number(state.daily.rerollsUsed) || 0))
             $('settings-daily-reset').textContent = dailyResetText()
             $('settings-daily-reward-btn').disabled = state.daily.rewardClaimed
             $('settings-daily-reward-label').textContent = state.daily.rewardClaimed
                 ? 'Tagesbelohnung abgeholt'
                 : 'Tagesbelohnung abholen'
             $('settings-daily-hint').textContent = state.daily.rewardText || 'Einmal täglich wartet eine zufällige Belohnung.'
+            const rerollsRemaining = Math.max(0, dailyRerollLimit() - state.daily.rerollsUsed)
+            const hasOpenTask = state.daily.tasks.some((task) => !task.claimed && (Number(state.daily.progress[task.type]) || 0) < task.target)
+            $('settings-daily-reroll-btn').disabled = rerollsRemaining <= 0 || !hasOpenTask
+            $('settings-daily-reroll-label').textContent = `Offene Aufgaben neu würfeln (${rerollsRemaining})`
+            $('settings-daily-reroll-hint').textContent = hasOpenTask
+                ? `Heute noch ${rerollsRemaining} von ${dailyRerollLimit()} Rerolls. Abgeschlossene Aufgaben und Tagesbelohnung bleiben unverändert.`
+                : 'Alle Aufgaben sind abgeschlossen und können nicht neu gewürfelt werden.'
 
             $('daily-task-list').innerHTML = state.daily.tasks.map((task) => {
                 const progress = Math.min(task.target, Number(state.daily.progress[task.type]) || 0)
@@ -4465,15 +4691,25 @@
             }
 
             root.classList.toggle('visible', effects.length > 0)
-            root.innerHTML = effects.map((effect) => {
+            const currentKinds = [...root.children].map((node) => node.dataset.effectKind).join(',')
+            const nextKinds = effects.map((effect) => effect.kind).join(',')
+            if (currentKinds !== nextKinds) {
+                root.innerHTML = effects.map((effect) => `<div class="effect-chip ${effect.kind}" data-effect-kind="${effect.kind}">
+                    <div class="effect-chip-head"><span>${effect.icon} ${effect.name}</span><span class="effect-chip-time"></span></div>
+                    <div class="effect-chip-meta"></div>
+                    <span class="effect-chip-progress"></span>
+                </div>`).join('')
+            }
+
+            for (const effect of effects) {
                 const remaining = Math.max(0, effect.until - now)
                 const progress = Math.max(0, Math.min(100, remaining / Math.max(1, effect.duration) * 100))
-                return `<div class="effect-chip ${effect.kind}" style="--effect-progress:${progress}%">
-                    <div class="effect-chip-head"><span>${effect.icon} ${effect.name}</span><span>${(remaining / 1000).toFixed(1)}s</span></div>
-                    <div class="effect-chip-meta">Aktuell x${formatStatNum(effect.mult)}</div>
-                    <span class="effect-chip-progress"></span>
-                </div>`
-            }).join('')
+                const chip = root.querySelector(`[data-effect-kind="${effect.kind}"]`)
+                if (!chip) continue
+                chip.style.setProperty('--effect-progress', `${progress}%`)
+                chip.querySelector('.effect-chip-time').textContent = `${(remaining / 1000).toFixed(1)}s`
+                chip.querySelector('.effect-chip-meta').textContent = `Aktuell x${formatStatNum(effect.mult)}`
+            }
         }
 
         function milkResonanceRiseStep() {
@@ -5049,6 +5285,14 @@
                 root.appendChild(createUpgradeRow(item, 'permanent'))
             }
 
+            const permanentDailyTitle = document.createElement('h2')
+            permanentDailyTitle.className = 'shop-section-title'
+            permanentDailyTitle.textContent = 'Permanente Tages-Upgrades'
+            root.appendChild(permanentDailyTitle)
+            for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'daily')) {
+                root.appendChild(createUpgradeRow(item, 'permanent'))
+            }
+
             const prodTitle = document.createElement('h2')
             prodTitle.className = 'shop-section-title'
             prodTitle.textContent = 'Produktion'
@@ -5180,9 +5424,9 @@
                             : item.desc}</div>
                 </span>
                 <span class="meta">
-                    <div class="cost">${kind === 'permanent' && owned > 0 ? 'Gekauft' : formatNum(cost)}</div>
+                    <div class="cost">${kind === 'permanent' && owned >= item.max ? 'Maximal' : formatNum(cost)}</div>
                     <div class="owned">${kind === 'permanent'
-                        ? (owned > 0 ? 'Permanent: Aktiv' : 'Permanent: 0/1')
+                        ? `Permanent: ${owned}/${item.max}`
                         : kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`}</div>
                 </span>
             `
@@ -5314,9 +5558,9 @@
                 btn.disabled = state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
             }
 
-            btn.querySelector('.cost').textContent = kind === 'permanent' && owned > 0 ? 'Gekauft' : formatNum(cost)
+            btn.querySelector('.cost').textContent = kind === 'permanent' && owned >= item.max ? 'Maximal' : formatNum(cost)
             btn.querySelector('.owned').textContent = kind === 'permanent'
-                ? (owned > 0 ? 'Permanent: Aktiv' : 'Permanent: 0/1')
+                ? `Permanent: ${owned}/${item.max}`
                 : kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
         }
 
@@ -5341,7 +5585,7 @@
                 const cost = kind === 'special'
                     ? specialUpgradeCost(item, owned)
                     : kind === 'permanent'
-                        ? permanentUpgradeCost(item)
+                        ? permanentUpgradeCost(item, owned)
                         : upgradeCost(item.baseCost, owned)
 
                 if (totalCost + cost > state.cookies) {
@@ -5363,7 +5607,7 @@
                 total += kind === 'special'
                     ? specialUpgradeCost(item, owned)
                     : kind === 'permanent'
-                        ? permanentUpgradeCost(item)
+                        ? permanentUpgradeCost(item, owned)
                         : upgradeCost(item.baseCost, owned)
                 owned++
             }
@@ -5405,7 +5649,7 @@
                 const cost = kind === 'special'
                     ? specialUpgradeCost(item, currentOwned)
                     : kind === 'permanent'
-                        ? permanentUpgradeCost(item)
+                        ? permanentUpgradeCost(item, currentOwned)
                         : upgradeCost(item.baseCost, currentOwned)
 
                 if (kind === 'producer') {
@@ -5603,12 +5847,13 @@
         }
 
         function spawnFloatPlus(amount, x, y) {
+            const layer = $('effects-layer')
             const el = document.createElement('span')
             el.className = 'float-plus'
             el.textContent = '+' + formatNum(amount * incomeMult())
             el.style.left = x + 'px'
             el.style.top = y + 'px'
-            $('effects-layer').appendChild(el)
+            layer.appendChild(el)
             setTimeout(() => el.remove(), 1300)
         }
 
@@ -5622,7 +5867,10 @@
 
         function spawnJumpCookies(x, y, perTap) {
             const layer = $('effects-layer')
-            const count = state.reducedEffects ? 1 : jumpCookieCount(perTap)
+            const freeSlots = state.reducedEffects
+                ? Math.max(0, 70 - layer.getElementsByClassName('jump-cookie').length)
+                : Number.POSITIVE_INFINITY
+            const count = Math.min(freeSlots, state.reducedEffects ? 1 : jumpCookieCount(perTap))
             const size = jumpCookieSize(perTap)
             const spread = 18 + Math.log10(perTap + 1) * 12
 
@@ -5664,6 +5912,10 @@
             if (!fromTap && cps <= 0) return
 
             if (!showVisual) {
+                registerRainCookieForMilk()
+                return
+            }
+            if (state.reducedEffects && layer.children.length >= 70) {
                 registerRainCookieForMilk()
                 return
             }
@@ -5711,7 +5963,12 @@
             }
         }
 
+        let lastCookiePulseAt = 0
+
         function pulseCookie() {
+            const now = performance.now()
+            if (now - lastCookiePulseAt < 16) return
+            lastCookiePulseAt = now
             const cookie = $('big-cookie')
             cookie.classList.remove('pulse')
             void cookie.offsetWidth
@@ -5897,7 +6154,7 @@
             const tap = didCrit ? baseTap * critMultiplier() : baseTap
             if (didCrit) state.criticalClicksTotal++
             playTapSound(tap)
-            addCookies(tap, true)
+            addCookies(tap, false)
             pulseCookie()
 
             const area = $('play-area').getBoundingClientRect()
@@ -5918,10 +6175,9 @@
             }
         }
 
-        function placeGoldenCookie() {
-            const btn = $('golden-cookie')
+        function placeEventCookie(id, pad) {
+            const btn = $(id)
             const area = $('play-area')
-            const pad = 16
             const width = Math.max(btn.offsetWidth, parseFloat(getComputedStyle(btn).width) || 52)
             const height = Math.max(btn.offsetHeight, parseFloat(getComputedStyle(btn).height) || 52)
             const minX = pad
@@ -5932,32 +6188,37 @@
             btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
         }
 
+        function placeGoldenCookie() {
+            placeEventCookie('golden-cookie', 16)
+        }
+
         function placeDiamondCookie() {
-            const btn = $('diamond-cookie')
-            const area = $('play-area')
-            const pad = 20
-            const width = Math.max(btn.offsetWidth, parseFloat(getComputedStyle(btn).width) || 49)
-            const height = Math.max(btn.offsetHeight, parseFloat(getComputedStyle(btn).height) || 49)
-            const minX = pad
-            const minY = pad
-            const maxX = Math.max(minX, area.clientWidth - width - pad)
-            const maxY = Math.max(minY, area.clientHeight - height - pad)
-            btn.style.left = (minX + Math.random() * (maxX - minX)) + 'px'
-            btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
+            placeEventCookie('diamond-cookie', 20)
         }
 
         function placeMilkCookie() {
-            const btn = $('milk-cookie')
+            placeEventCookie('milk-cookie', 18)
+        }
+
+        function keepEventCookiesInBounds() {
             const area = $('play-area')
-            const pad = 18
-            const width = Math.max(btn.offsetWidth, parseFloat(getComputedStyle(btn).width) || 50)
-            const height = Math.max(btn.offsetHeight, parseFloat(getComputedStyle(btn).height) || 50)
-            const minX = pad
-            const minY = pad
-            const maxX = Math.max(minX, area.clientWidth - width - pad)
-            const maxY = Math.max(minY, area.clientHeight - height - pad)
-            btn.style.left = (minX + Math.random() * (maxX - minX)) + 'px'
-            btn.style.top = (minY + Math.random() * (maxY - minY)) + 'px'
+            const cookies = [
+                { id: 'golden-cookie', pad: 16 },
+                { id: 'diamond-cookie', pad: 20 },
+                { id: 'milk-cookie', pad: 18 },
+            ]
+            for (const item of cookies) {
+                const btn = $(item.id)
+                const style = getComputedStyle(btn)
+                const width = Math.max(btn.offsetWidth, parseFloat(style.width) || 52)
+                const height = Math.max(btn.offsetHeight, parseFloat(style.height) || 52)
+                const maxX = Math.max(item.pad, area.clientWidth - width - item.pad)
+                const maxY = Math.max(item.pad, area.clientHeight - height - item.pad)
+                const left = Math.min(maxX, Math.max(item.pad, parseFloat(btn.style.left) || item.pad))
+                const top = Math.min(maxY, Math.max(item.pad, parseFloat(btn.style.top) || item.pad))
+                btn.style.left = `${left}px`
+                btn.style.top = `${top}px`
+            }
         }
 
         function showGoldenCookie() {
@@ -6111,6 +6372,7 @@
                 droneDoublesTotal: 0,
                 dailyTasksClaimed: 0,
                 dailyRewardsClaimed: 0,
+                dailyRerollsUsedTotal: 0,
                 goldenVisible: false,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 diamondVisible: false,
@@ -6191,6 +6453,7 @@
                 droneDoublesTotal: state.droneDoublesTotal,
                 dailyTasksClaimed: state.dailyTasksClaimed,
                 dailyRewardsClaimed: state.dailyRewardsClaimed,
+                dailyRerollsUsedTotal: state.dailyRerollsUsedTotal,
                 prestige: {
                     level: state.prestige.level,
                     shards: state.prestige.shards,
@@ -6325,7 +6588,7 @@
             const counters = [
                 data.milkCookiesFallen, data.milkEventsTriggered, data.randomEventsTriggered,
                 data.manualClicksTotal, data.criticalClicksTotal, data.droneCritsTotal,
-                data.droneDoublesTotal, data.dailyTasksClaimed, data.dailyRewardsClaimed,
+                data.droneDoublesTotal, data.dailyTasksClaimed, data.dailyRewardsClaimed, data.dailyRerollsUsedTotal,
                 data.prestige?.level, data.prestige?.shards, data.prestige?.runShards,
                 data.prestige?.totalShardsEarned, data.prestige?.shardMilestone,
             ]
@@ -6367,6 +6630,7 @@
             state.droneDoublesTotal = typeof data.droneDoublesTotal === 'number' ? Math.max(0, Math.floor(data.droneDoublesTotal)) : 0
             state.dailyTasksClaimed = typeof data.dailyTasksClaimed === 'number' ? Math.max(0, Math.floor(data.dailyTasksClaimed)) : 0
             state.dailyRewardsClaimed = typeof data.dailyRewardsClaimed === 'number' ? Math.max(0, Math.floor(data.dailyRewardsClaimed)) : 0
+            state.dailyRerollsUsedTotal = typeof data.dailyRerollsUsedTotal === 'number' ? Math.max(0, Math.floor(data.dailyRerollsUsedTotal)) : 0
             state.milkUntil = 0
             state.milkVisible = false
             state.milkLevel = 0
@@ -7137,17 +7401,12 @@
         function setHeaderPopoverOpen(wrap, toggle, panel, open) {
             wrap.classList.toggle('open', open)
             toggle.setAttribute('aria-expanded', String(open))
-            toggle.setAttribute('aria-label', `${toggle.id === 'help-toggle' ? 'Hinweise' : 'Patchnotes'} ${open ? 'schließen' : 'anzeigen'}`)
+            toggle.setAttribute('aria-label', `Patchnotes ${open ? 'schließen' : 'anzeigen'}`)
             panel.setAttribute('aria-hidden', String(!open))
         }
 
         function initHeaderPopovers() {
             const popovers = [
-                {
-                    wrap: $('help-wrap'),
-                    toggle: $('help-toggle'),
-                    panel: $('help-tooltip'),
-                },
                 {
                     wrap: $('patch-wrap'),
                     toggle: $('patch-toggle'),
@@ -7250,6 +7509,7 @@
             })
 
             $('settings-daily-reward-btn').addEventListener('click', claimDailyReward)
+            $('settings-daily-reroll-btn').addEventListener('click', rerollOpenDailyTasks)
             $('daily-task-list').addEventListener('click', (ev) => {
                 const btn = ev.target.closest('.daily-task-claim')
                 if (!btn) return
@@ -7538,6 +7798,7 @@
                     resumeOfflineProgress()
                 }
             })
+            window.addEventListener('resize', keepEventCookiesInBounds)
             window.addEventListener('pagehide', pauseOfflineProgress)
             window.addEventListener('beforeunload', pauseOfflineProgress)
         }
