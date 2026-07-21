@@ -1200,6 +1200,12 @@
         }
 
         .big-cookie {
+            --cookie-dough-light: #f2b85f;
+            --cookie-dough-mid: #c9782d;
+            --cookie-dough-dark: #8f481e;
+            --cookie-chip: #512713;
+            --cookie-chip-light: #84502d;
+            --cookie-glow: rgba(167, 91, 28, 0.48);
             width: 100%;
             height: 100%;
             border: none;
@@ -1214,6 +1220,136 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        .cookie-art {
+            position: relative;
+            display: block;
+            width: 7.45rem;
+            height: 7.45rem;
+            border-radius: 51% 49% 47% 53% / 48% 52% 49% 51%;
+            border: 0.28rem solid var(--cookie-dough-dark);
+            background:
+                radial-gradient(circle at 27% 25%, var(--cookie-chip-light) 0 0.18rem, var(--cookie-chip) 0.2rem 0.46rem, transparent 0.49rem),
+                radial-gradient(circle at 67% 22%, var(--cookie-chip-light) 0 0.13rem, var(--cookie-chip) 0.15rem 0.39rem, transparent 0.42rem),
+                radial-gradient(circle at 76% 55%, var(--cookie-chip-light) 0 0.17rem, var(--cookie-chip) 0.19rem 0.48rem, transparent 0.51rem),
+                radial-gradient(circle at 54% 75%, var(--cookie-chip-light) 0 0.14rem, var(--cookie-chip) 0.16rem 0.41rem, transparent 0.44rem),
+                radial-gradient(circle at 24% 68%, var(--cookie-chip-light) 0 0.12rem, var(--cookie-chip) 0.14rem 0.37rem, transparent 0.4rem),
+                radial-gradient(circle at 48% 45%, var(--cookie-chip-light) 0 0.19rem, var(--cookie-chip) 0.21rem 0.52rem, transparent 0.55rem),
+                radial-gradient(circle at 42% 34%, var(--cookie-dough-light) 0%, var(--cookie-dough-mid) 57%, var(--cookie-dough-dark) 100%);
+            box-shadow:
+                inset 0.7rem 0.85rem 1rem rgba(255, 239, 181, 0.26),
+                inset -0.75rem -0.9rem 1.15rem rgba(76, 30, 10, 0.3),
+                0 0.42rem 0 rgba(91, 42, 14, 0.34),
+                0 0.75rem 1.25rem rgba(56, 27, 11, 0.34),
+                0 0 1.4rem var(--cookie-glow);
+            transform: rotate(-3deg);
+            transition: filter 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
+        }
+
+        .cookie-art::before {
+            content: '';
+            position: absolute;
+            inset: 0.35rem;
+            border-radius: inherit;
+            background:
+                radial-gradient(circle at 23% 20%, rgba(255, 255, 255, 0.4), transparent 17%),
+                radial-gradient(circle at 35% 58%, rgba(255, 232, 165, 0.16) 0 0.13rem, transparent 0.16rem),
+                radial-gradient(circle at 69% 39%, rgba(86, 37, 13, 0.16) 0 0.11rem, transparent 0.14rem);
+            pointer-events: none;
+        }
+
+        .cookie-art::after {
+            content: '';
+            position: absolute;
+            inset: -0.12rem;
+            border-radius: inherit;
+            border-top: 0.12rem solid rgba(255, 243, 197, 0.38);
+            border-left: 0.08rem solid rgba(255, 234, 169, 0.22);
+            pointer-events: none;
+        }
+
+        .big-cookie:hover .cookie-art {
+            transform: rotate(1deg) scale(1.025);
+            filter: brightness(1.06);
+        }
+
+        .big-cookie:active .cookie-art {
+            transform: rotate(-1deg) scale(0.97);
+        }
+
+        .big-cookie.has-cookie-recipe::after {
+            content: attr(data-recipe-badge);
+            position: absolute;
+            right: -0.15rem;
+            bottom: 0.3rem;
+            font-size: 2.15rem;
+            line-height: 1;
+            filter: drop-shadow(0 2px 3px rgba(36, 18, 8, 0.4));
+            pointer-events: none;
+        }
+
+        .big-cookie.cookie-double-chocolate {
+            --cookie-dough-light: #9a5530;
+            --cookie-dough-mid: #68331d;
+            --cookie-dough-dark: #35170e;
+            --cookie-chip: #1b0b07;
+            --cookie-chip-light: #c17b4f;
+            --cookie-glow: rgba(89, 38, 21, 0.72);
+        }
+
+        .big-cookie.cookie-white-chocolate {
+            --cookie-dough-light: #fff8dc;
+            --cookie-dough-mid: #e7cc98;
+            --cookie-dough-dark: #b78c51;
+            --cookie-chip: #fffdf0;
+            --cookie-chip-light: #ffffff;
+            --cookie-glow: rgba(255, 239, 183, 0.9);
+        }
+
+        .big-cookie.cookie-red-velvet {
+            --cookie-dough-light: #d84b59;
+            --cookie-dough-mid: #941f36;
+            --cookie-dough-dark: #551021;
+            --cookie-chip: #fff0dc;
+            --cookie-chip-light: #ffffff;
+            --cookie-glow: rgba(213, 42, 72, 0.78);
+        }
+
+        .big-cookie.cookie-caramel-crunch {
+            --cookie-dough-light: #ffd071;
+            --cookie-dough-mid: #d88923;
+            --cookie-dough-dark: #8f4b12;
+            --cookie-chip: #73340e;
+            --cookie-chip-light: #ffdf85;
+            --cookie-glow: rgba(246, 161, 42, 0.86);
+        }
+
+        .big-cookie.cookie-galaxy {
+            --cookie-dough-light: #5de4f0;
+            --cookie-dough-mid: #6651cf;
+            --cookie-dough-dark: #28145f;
+            --cookie-chip: #fff4a8;
+            --cookie-chip-light: #ffffff;
+            --cookie-glow: rgba(110, 82, 255, 0.98);
+        }
+
+        .big-cookie.cookie-galaxy .cookie-art {
+            animation: galaxy-cookie-glow 2.4s ease-in-out infinite alternate;
+        }
+
+        .big-cookie.cookie-galaxy .cookie-art::before {
+            background:
+                radial-gradient(circle at 18% 27%, #fff 0 0.09rem, transparent 0.12rem),
+                radial-gradient(circle at 78% 32%, #8ff7ff 0 0.1rem, transparent 0.13rem),
+                radial-gradient(circle at 34% 77%, #ffc8ff 0 0.08rem, transparent 0.11rem),
+                radial-gradient(ellipse at 48% 48%, rgba(225, 118, 255, 0.3), transparent 53%);
+        }
+
+        @keyframes galaxy-cookie-glow {
+            from { box-shadow: inset 0.7rem 0.85rem 1rem rgba(175, 248, 255, 0.2), inset -0.75rem -0.9rem 1.15rem rgba(24, 9, 72, 0.42), 0 0.42rem 0 rgba(35, 15, 90, 0.42), 0 0 1.35rem rgba(77, 216, 255, 0.72); }
+            to { box-shadow: inset 0.7rem 0.85rem 1rem rgba(223, 181, 255, 0.28), inset -0.75rem -0.9rem 1.15rem rgba(24, 9, 72, 0.42), 0 0.42rem 0 rgba(35, 15, 90, 0.42), 0 0 2rem rgba(190, 77, 255, 0.92); }
         }
 
         .big-cookie:not(:hover):not(:active) {
@@ -1370,6 +1506,22 @@
             touch-action: manipulation;
             transition: filter 0.12s ease, box-shadow 0.12s ease;
         }
+
+        .milk-cookie::after {
+            content: attr(data-milk-badge);
+            position: absolute;
+            right: -0.45rem;
+            bottom: -0.35rem;
+            font-size: 1.05rem;
+            line-height: 1;
+            filter: drop-shadow(0 1px 2px rgba(35, 21, 18, 0.42));
+        }
+
+        .milk-cookie.milk-strawberry { background: linear-gradient(180deg, #fff2f6, #f29ab7); box-shadow: 0 0 20px rgba(235, 83, 139, 0.72); }
+        .milk-cookie.milk-banana { background: linear-gradient(180deg, #fffbd7, #f0d653); box-shadow: 0 0 20px rgba(243, 204, 51, 0.72); }
+        .milk-cookie.milk-blueberry { background: linear-gradient(180deg, #f0efff, #7771cf); box-shadow: 0 0 20px rgba(100, 91, 207, 0.78); }
+        .milk-cookie.milk-caramel { background: linear-gradient(180deg, #fff0ce, #b97838); box-shadow: 0 0 20px rgba(177, 104, 43, 0.78); }
+        .milk-cookie.milk-cosmic { background: linear-gradient(150deg, #adf3ff, #7168e8 55%, #431b79); box-shadow: 0 0 22px rgba(121, 112, 255, 0.88), 0 0 34px rgba(198, 83, 255, 0.42); }
 
         .milk-cookie:hover {
             filter: brightness(1.05);
@@ -1698,6 +1850,16 @@
             cursor: not-allowed;
         }
 
+        .upgrade-row.permanent-row {
+            border-color: rgba(125, 83, 214, 0.48);
+            background: linear-gradient(135deg, var(--shop-row-bg), rgba(134, 92, 220, 0.12));
+        }
+
+        .upgrade-row.permanent-row .owned {
+            color: #7952c7;
+            font-weight: 800;
+        }
+
         .upgrade-row .icon {
             display: flex;
             align-items: center;
@@ -2022,6 +2184,17 @@
                 <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
                 <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
+                        <li><strong>2026-07-21</strong>
+                            <ul>
+                                <li>Fünf permanente Keksrezepte mit stapelbaren Ertragsboni hinzugefügt</li>
+                                <li>Permanente Upgrades ab Stufe 2 sind jetzt deutlich teurere Mid- und Endgame-Ziele</li>
+                                <li>Keksrezepte besitzen jetzt eine vollständig gezeichnete Optik statt einfacher Emoji-Farbfilter</li>
+                                <li>Fünf permanente Milchsorten verstärken Milch-Events und färben die Milch neu</li>
+                                <li>Permanente Laden-Upgrades bleiben nach einem Prestige-Reset erhalten</li>
+                                <li>Große Zahlen werden jetzt weit über No hinaus kompakt dargestellt</li>
+                                <li>Spielzustand und lokale Saves wurden gegen einfache Konsolen-Manipulation gehärtet</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-20</strong>
                             <ul>
                                 <li>Milch-Effekt startet erst nach dem Anklicken der seltenen Milchtüte</li>
@@ -2292,7 +2465,9 @@
                     <div class="effects-layer" id="effects-layer" aria-hidden="true"></div>
                     <div class="play-center">
                         <div class="cookie-tap-zone">
-                            <button type="button" class="big-cookie" id="big-cookie" aria-label="Keks klicken">🍪</button>
+                            <button type="button" class="big-cookie" id="big-cookie" aria-label="Keks klicken">
+                                <span class="cookie-art" aria-hidden="true"></span>
+                            </button>
                         </div>
                     </div>
                     <p class="tap-hint">Klicke den Keks</p>
@@ -2331,7 +2506,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.21.2'
+        const APP_VERSION = '2026.07.21.4'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2482,6 +2657,64 @@
                 baseCost: 360000,
                 costMult: 2.22,
                 max: 12,
+            },
+        ]
+
+        const PERMANENT_UPGRADES = [
+            {
+                id: 'doubleChocolateCookie', category: 'cookie', name: 'Doppelter Schokoladen-Keks',
+                icon: 'fa-solid fa-cookie-bite', desc: 'Permanent +10% auf alle Cookie-Erträge',
+                baseCost: 10000000, max: 1, bonus: 0.10, visualClass: 'cookie-double-chocolate', badge: '🍫',
+            },
+            {
+                id: 'whiteChocolateCookie', category: 'cookie', name: 'Weiße-Schokolade-Keks',
+                icon: 'fa-solid fa-cookie-bite', desc: 'Permanent +18% auf alle Cookie-Erträge',
+                baseCost: 5000000000, max: 1, bonus: 0.18, visualClass: 'cookie-white-chocolate', badge: '🤍',
+            },
+            {
+                id: 'redVelvetCookie', category: 'cookie', name: 'Red-Velvet-Keks',
+                icon: 'fa-solid fa-cookie-bite', desc: 'Permanent +30% auf alle Cookie-Erträge',
+                baseCost: 2500000000000, max: 1, bonus: 0.30, visualClass: 'cookie-red-velvet', badge: '❤️',
+            },
+            {
+                id: 'caramelCrunchCookie', category: 'cookie', name: 'Karamell-Crunch-Keks',
+                icon: 'fa-solid fa-cookie-bite', desc: 'Permanent +50% auf alle Cookie-Erträge',
+                baseCost: 1500000000000000, max: 1, bonus: 0.50, visualClass: 'cookie-caramel-crunch', badge: '🍯',
+            },
+            {
+                id: 'galaxyCookie', category: 'cookie', name: 'Galaxie-Keks',
+                icon: 'fa-solid fa-cookie-bite', desc: 'Permanent +80% auf alle Cookie-Erträge',
+                baseCost: 1000000000000000000, max: 1, bonus: 0.80, visualClass: 'cookie-galaxy', badge: '🌌',
+            },
+            {
+                id: 'strawberryMilk', category: 'milk', name: 'Erdbeermilch',
+                icon: 'fa-solid fa-glass-water', desc: 'Permanent +25% Stärke für Milch-Events',
+                baseCost: 50000000, max: 1, bonus: 0.25, visualClass: 'milk-strawberry', badge: '🍓',
+                palette: ['255, 215, 226', '248, 151, 181', '207, 70, 117', '255, 190, 211', '230, 104, 151'],
+            },
+            {
+                id: 'bananaMilk', category: 'milk', name: 'Bananenmilch',
+                icon: 'fa-solid fa-glass-water', desc: 'Permanent +45% Stärke für Milch-Events',
+                baseCost: 25000000000, max: 1, bonus: 0.45, visualClass: 'milk-banana', badge: '🍌',
+                palette: ['255, 249, 190', '250, 224, 104', '217, 176, 45', '255, 241, 151', '239, 201, 70'],
+            },
+            {
+                id: 'blueberryMilk', category: 'milk', name: 'Blaubeermilch',
+                icon: 'fa-solid fa-glass-water', desc: 'Permanent +70% Stärke für Milch-Events',
+                baseCost: 15000000000000, max: 1, bonus: 0.70, visualClass: 'milk-blueberry', badge: '🫐',
+                palette: ['218, 220, 255', '143, 137, 229', '74, 63, 160', '187, 187, 255', '105, 92, 203'],
+            },
+            {
+                id: 'caramelMilk', category: 'milk', name: 'Karamellmilch',
+                icon: 'fa-solid fa-glass-water', desc: 'Permanent +100% Stärke für Milch-Events',
+                baseCost: 10000000000000000, max: 1, bonus: 1.00, visualClass: 'milk-caramel', badge: '🍮',
+                palette: ['247, 220, 171', '210, 155, 83', '139, 82, 35', '236, 190, 120', '177, 111, 52'],
+            },
+            {
+                id: 'cosmicMilk', category: 'milk', name: 'Kosmische Milch',
+                icon: 'fa-solid fa-glass-water', desc: 'Permanent +150% Stärke für Milch-Events',
+                baseCost: 7500000000000000000, max: 1, bonus: 1.50, visualClass: 'milk-cosmic', badge: '✨',
+                palette: ['177, 244, 255', '111, 132, 242', '67, 27, 121', '139, 233, 255', '190, 91, 242'],
             },
         ]
 
@@ -3838,6 +4071,7 @@
             producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
             clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
             specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
+            permanentUpgrades: Object.fromEntries(PERMANENT_UPGRADES.map((u) => [u.id, 0])),
             buyAmount: 1,
             lastSave: Date.now(),
             frenzyUntil: 0,
@@ -3903,6 +4137,34 @@
 
         function specialUpgradeCost(item, owned) {
             return Math.max(1, Math.floor(item.baseCost * Math.pow(item.costMult, owned) * shopCostDiscount()))
+        }
+
+        function permanentUpgradeLevel(id) {
+            return state.permanentUpgrades[id] || 0
+        }
+
+        function permanentUpgradeCost(item) {
+            return Math.max(1, Math.floor(item.baseCost * shopCostDiscount()))
+        }
+
+        function permanentBonusFor(category) {
+            return PERMANENT_UPGRADES
+                .filter((item) => item.category === category && permanentUpgradeLevel(item.id) > 0)
+                .reduce((sum, item) => sum + item.bonus, 0)
+        }
+
+        function activePermanentVariant(category) {
+            const variants = PERMANENT_UPGRADES
+                .filter((item) => item.category === category && permanentUpgradeLevel(item.id) > 0)
+            return variants[variants.length - 1] || null
+        }
+
+        function permanentCookieIncomeMult() {
+            return 1 + permanentBonusFor('cookie')
+        }
+
+        function permanentMilkEventMult() {
+            return 1 + permanentBonusFor('milk')
         }
 
         function cosmicOrbitMult() {
@@ -4191,10 +4453,11 @@
             }
             if (now < state.milkUntil) {
                 const duration = MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900
+                const milkVariant = activePermanentVariant('milk')
                 effects.push({
                     kind: 'milk',
-                    icon: '🥛',
-                    name: 'Kakao-Flut',
+                    icon: milkVariant?.badge || '🥛',
+                    name: milkVariant ? `${milkVariant.name}-Flut` : 'Kakao-Flut',
                     until: state.milkUntil,
                     duration,
                     mult: milkEventBonusMult(),
@@ -4235,7 +4498,8 @@
         function milkEventBonusMult() {
             if (!isMilkActive()) return 1
             const resonance = prestigeUpgradeLevel('milkResonance')
-            return 1 + (DIAMOND_MULT - 1) * 4 + state.milkLevel * (3.5 + resonance * 0.15) + resonance * 0.1
+            const base = 1 + (DIAMOND_MULT - 1) * 4 + state.milkLevel * (3.5 + resonance * 0.15) + resonance * 0.1
+            return base * permanentMilkEventMult()
         }
 
         function splitterArchivBonus(cost) {
@@ -4272,7 +4536,9 @@
         }
 
         function offlineIncomeMult() {
-            return (1 + prestigeUpgradeLevel('echoVault') * 0.15) * (1 + prestigeUpgradeLevel('abyssStorage') * 0.08)
+            return (1 + prestigeUpgradeLevel('echoVault') * 0.15)
+                * (1 + prestigeUpgradeLevel('abyssStorage') * 0.08)
+                * permanentCookieIncomeMult()
         }
 
         function offlineCapMs() {
@@ -4509,7 +4775,7 @@
             if (now < state.diamondUntil) {
                 mult *= DIAMOND_MULT * frenzyPowerMult()
             }
-            return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult()
+            return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult() * permanentCookieIncomeMult()
         }
 
         function calcCps() {
@@ -4604,13 +4870,29 @@
 
             const active = isMilkActive()
             const level = Math.max(0, Math.min(1, state.milkLevel))
-            const cocoaLevel = Math.min(1, level * 1.45)
-            const blend = (from, to) => Math.round(from + (to - from) * cocoaLevel)
-            const top = `rgba(${blend(255, 179)}, ${blend(255, 111)}, ${blend(249, 66)}, 0.95)`
-            const mid = `rgba(${blend(250, 122)}, ${blend(244, 64)}, ${blend(224, 32)}, 0.95)`
-            const bottom = `rgba(${blend(229, 65)}, ${blend(211, 31)}, ${blend(181, 15)}, 0.98)`
-            const waveFront = `rgba(${blend(255, 198)}, ${blend(253, 130)}, ${blend(242, 80)}, 0.97)`
-            const waveBack = `rgba(${blend(255, 126)}, ${blend(255, 67)}, ${blend(255, 35)}, 0.76)`
+            const milkVariant = activePermanentVariant('milk')
+            let top
+            let mid
+            let bottom
+            let waveFront
+            let waveBack
+
+            if (milkVariant?.palette) {
+                const [topRgb, midRgb, bottomRgb, frontRgb, backRgb] = milkVariant.palette
+                top = `rgba(${topRgb}, 0.96)`
+                mid = `rgba(${midRgb}, 0.96)`
+                bottom = `rgba(${bottomRgb}, 0.98)`
+                waveFront = `rgba(${frontRgb}, 0.98)`
+                waveBack = `rgba(${backRgb}, 0.78)`
+            } else {
+                const cocoaLevel = Math.min(1, level * 1.45)
+                const blend = (from, to) => Math.round(from + (to - from) * cocoaLevel)
+                top = `rgba(${blend(255, 179)}, ${blend(255, 111)}, ${blend(249, 66)}, 0.95)`
+                mid = `rgba(${blend(250, 122)}, ${blend(244, 64)}, ${blend(224, 32)}, 0.95)`
+                bottom = `rgba(${blend(229, 65)}, ${blend(211, 31)}, ${blend(181, 15)}, 0.98)`
+                waveFront = `rgba(${blend(255, 198)}, ${blend(253, 130)}, ${blend(242, 80)}, 0.97)`
+                waveBack = `rgba(${blend(255, 126)}, ${blend(255, 67)}, ${blend(255, 35)}, 0.76)`
+            }
 
             layer.classList.toggle('visible', active)
             fill.style.height = `${8 + level * 62}%`
@@ -4618,6 +4900,37 @@
             fill.style.filter = `saturate(${1 + level * 0.08}) brightness(${1 - level * 0.05})`
             fill.style.setProperty('--milk-wave-front', waveFront)
             fill.style.setProperty('--milk-wave-back', waveBack)
+        }
+
+        function renderPermanentVisuals() {
+            const cookie = $('big-cookie')
+            const milkCookie = $('milk-cookie')
+            const cookieVariant = activePermanentVariant('cookie')
+            const milkVariant = activePermanentVariant('milk')
+            const visualClasses = PERMANENT_UPGRADES.map((item) => item.visualClass)
+
+            if (cookie) {
+                cookie.classList.remove(...visualClasses)
+                cookie.classList.toggle('has-cookie-recipe', Boolean(cookieVariant))
+                if (cookieVariant) cookie.classList.add(cookieVariant.visualClass)
+                cookie.dataset.recipeBadge = cookieVariant?.badge || ''
+                cookie.setAttribute('aria-label', `${cookieVariant?.name || 'Keks'} klicken`)
+                cookie.title = cookieVariant
+                    ? `${cookieVariant.name} – permanenter Ertrag x${formatStatNum(permanentCookieIncomeMult())}`
+                    : 'Keks klicken'
+            }
+
+            if (milkCookie) {
+                milkCookie.classList.remove(...visualClasses)
+                if (milkVariant) milkCookie.classList.add(milkVariant.visualClass)
+                milkCookie.dataset.milkBadge = milkVariant?.badge || ''
+                milkCookie.setAttribute('aria-label', milkVariant?.name || 'Milchtüte')
+                milkCookie.title = milkVariant
+                    ? `${milkVariant.name} – Milch-Event x${formatStatNum(permanentMilkEventMult())}`
+                    : 'Milchtüte'
+            }
+
+            renderMilkVisual()
         }
 
         function updateFrenzyVisuals() {
@@ -4720,6 +5033,22 @@
             }
             root.appendChild(buyControls)
 
+            const permanentCookieTitle = document.createElement('h2')
+            permanentCookieTitle.className = 'shop-section-title'
+            permanentCookieTitle.textContent = 'Permanente Keksrezepte'
+            root.appendChild(permanentCookieTitle)
+            for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'cookie')) {
+                root.appendChild(createUpgradeRow(item, 'permanent'))
+            }
+
+            const permanentMilkTitle = document.createElement('h2')
+            permanentMilkTitle.className = 'shop-section-title'
+            permanentMilkTitle.textContent = 'Permanente Milchsorten'
+            root.appendChild(permanentMilkTitle)
+            for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'milk')) {
+                root.appendChild(createUpgradeRow(item, 'permanent'))
+            }
+
             const prodTitle = document.createElement('h2')
             prodTitle.className = 'shop-section-title'
             prodTitle.textContent = 'Produktion'
@@ -4818,6 +5147,10 @@
                 owned = specialUpgradeLevel(item.id)
                 buyCount = resolveBuyCount(kind, item, owned)
                 cost = totalUpgradeCost(kind, item, owned, buyCount)
+            } else if (kind === 'permanent') {
+                owned = permanentUpgradeLevel(item.id)
+                buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
             } else {
                 owned = prestigeUpgradeLevel(item.id)
                 cost = prestigeUpgradeCost(item, owned)
@@ -4825,12 +5158,14 @@
 
             const btn = document.createElement('button')
             btn.type = 'button'
-            btn.className = 'upgrade-row' + (kind === 'prestige' ? ' prestige-row' : '')
+            btn.className = 'upgrade-row'
+                + (kind === 'prestige' ? ' prestige-row' : '')
+                + (kind === 'permanent' ? ' permanent-row' : '')
             btn.dataset.kind = kind
             btn.dataset.id = item.id
             btn.disabled = kind === 'prestige'
                 ? state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
-                : kind === 'special'
+                : kind === 'special' || kind === 'permanent'
                     ? buyCount < 1 || !canAfford(cost)
                     : !canAfford(cost)
 
@@ -4845,8 +5180,10 @@
                             : item.desc}</div>
                 </span>
                 <span class="meta">
-                    <div class="cost">${formatNum(cost)}</div>
-                    <div class="owned">${kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`}</div>
+                    <div class="cost">${kind === 'permanent' && owned > 0 ? 'Gekauft' : formatNum(cost)}</div>
+                    <div class="owned">${kind === 'permanent'
+                        ? (owned > 0 ? 'Permanent: Aktiv' : 'Permanent: 0/1')
+                        : kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`}</div>
                 </span>
             `
 
@@ -4864,6 +5201,9 @@
             const rows = $('shop-root').querySelectorAll('.upgrade-row')
             renderShopMeta()
             let i = 0
+            for (const item of PERMANENT_UPGRADES) {
+                updateRow(rows[i++], item, 'permanent')
+            }
             for (const p of PRODUCERS) {
                 updateRow(rows[i++], p, 'producer')
             }
@@ -4963,14 +5303,21 @@
                 const buyCount = resolveBuyCount(kind, item, owned)
                 cost = totalUpgradeCost(kind, item, owned, buyCount)
                 btn.disabled = buyCount < 1 || !canAfford(cost)
+            } else if (kind === 'permanent') {
+                owned = permanentUpgradeLevel(item.id)
+                const buyCount = resolveBuyCount(kind, item, owned)
+                cost = totalUpgradeCost(kind, item, owned, buyCount)
+                btn.disabled = buyCount < 1 || !canAfford(cost)
             } else {
                 owned = prestigeUpgradeLevel(item.id)
                 cost = prestigeUpgradeCost(item, owned)
                 btn.disabled = state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
             }
 
-            btn.querySelector('.cost').textContent = formatNum(cost)
-            btn.querySelector('.owned').textContent = kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
+            btn.querySelector('.cost').textContent = kind === 'permanent' && owned > 0 ? 'Gekauft' : formatNum(cost)
+            btn.querySelector('.owned').textContent = kind === 'permanent'
+                ? (owned > 0 ? 'Permanent: Aktiv' : 'Permanent: 0/1')
+                : kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
         }
 
         function resolveBuyCount(kind, item, ownedStart) {
@@ -4980,7 +5327,7 @@
             }
 
             const selected = Number(state.buyAmount)
-            if (kind === 'special') {
+            if (kind === 'special' || kind === 'permanent') {
                 return Math.max(0, Math.min(selected, item.max - ownedStart))
             }
             return Math.max(1, selected)
@@ -4993,7 +5340,9 @@
             while (count < maxCount) {
                 const cost = kind === 'special'
                     ? specialUpgradeCost(item, owned)
-                    : upgradeCost(item.baseCost, owned)
+                    : kind === 'permanent'
+                        ? permanentUpgradeCost(item)
+                        : upgradeCost(item.baseCost, owned)
 
                 if (totalCost + cost > state.cookies) {
                     break
@@ -5013,22 +5362,32 @@
             for (let i = 0; i < count; i++) {
                 total += kind === 'special'
                     ? specialUpgradeCost(item, owned)
-                    : upgradeCost(item.baseCost, owned)
+                    : kind === 'permanent'
+                        ? permanentUpgradeCost(item)
+                        : upgradeCost(item.baseCost, owned)
                 owned++
             }
             return total
         }
 
         function buyUpgrade(kind, id) {
-            const list = kind === 'producer' ? PRODUCERS : kind === 'click' ? CLICKS : SPECIAL_UPGRADES
+            const list = kind === 'producer'
+                ? PRODUCERS
+                : kind === 'click'
+                    ? CLICKS
+                    : kind === 'permanent'
+                        ? PERMANENT_UPGRADES
+                        : SPECIAL_UPGRADES
             const item = list.find((x) => x.id === id)
             if (!item) return
 
             const owned = kind === 'producer'
                 ? state.producers[id]
-                : kind === 'click'
+                    : kind === 'click'
                     ? state.clicks[id]
-                    : specialUpgradeLevel(id)
+                    : kind === 'permanent'
+                        ? permanentUpgradeLevel(id)
+                        : specialUpgradeLevel(id)
 
             const purchaseCount = resolveBuyCount(kind, item, owned)
             if (purchaseCount <= 0) {
@@ -5045,12 +5404,16 @@
             while (bought < purchaseCount) {
                 const cost = kind === 'special'
                     ? specialUpgradeCost(item, currentOwned)
-                    : upgradeCost(item.baseCost, currentOwned)
+                    : kind === 'permanent'
+                        ? permanentUpgradeCost(item)
+                        : upgradeCost(item.baseCost, currentOwned)
 
                 if (kind === 'producer') {
                     state.producers[id]++
                 } else if (kind === 'click') {
                     state.clicks[id]++
+                } else if (kind === 'permanent') {
+                    state.permanentUpgrades[id] = currentOwned + 1
                 } else {
                     state.specialUpgrades[id] = currentOwned + 1
                 }
@@ -5068,6 +5431,7 @@
             evaluateAchievements()
             renderHeader()
             renderShop()
+            if (kind === 'permanent') renderPermanentVisuals()
             save()
             return
         }
@@ -5729,6 +6093,7 @@
                 producers: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
                 clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
                 specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
+                permanentUpgrades: Object.fromEntries(PERMANENT_UPGRADES.map((u) => [u.id, 0])),
                 buyAmount: 1,
                 lastSave: Date.now(),
                 frenzyUntil: 0,
@@ -5792,6 +6157,7 @@
             renderThemeToggle()
             renderEffectSettings()
             renderDailyPanel()
+            renderPermanentVisuals()
             save()
         }
 
@@ -5802,6 +6168,7 @@
                 producers: { ...state.producers },
                 clicks: { ...state.clicks },
                 specialUpgrades: { ...state.specialUpgrades },
+                permanentUpgrades: { ...state.permanentUpgrades },
                 buyAmount: state.buyAmount,
                 achievements: { ...state.achievements },
                 lastSave: state.lastSave,
@@ -5952,6 +6319,7 @@
             validateOwned(data.producers, PRODUCERS, () => 1000000000)
             validateOwned(data.clicks, CLICKS, () => 1000000000)
             validateOwned(data.specialUpgrades, SPECIAL_UPGRADES, (item) => item.max)
+            validateOwned(data.permanentUpgrades, PERMANENT_UPGRADES, (item) => item.max)
             validateOwned(data.prestige?.upgrades, PRESTIGE_UPGRADES, (item) => item.max)
 
             const counters = [
@@ -6042,6 +6410,12 @@
                 const n = data.specialUpgrades?.[s.id]
                 state.specialUpgrades[s.id] = typeof n === 'number'
                     ? Math.max(0, Math.min(s.max, Math.floor(n)))
+                    : 0
+            }
+            for (const item of PERMANENT_UPGRADES) {
+                const n = data.permanentUpgrades?.[item.id]
+                state.permanentUpgrades[item.id] = typeof n === 'number'
+                    ? Math.max(0, Math.min(item.max, Math.floor(n)))
                     : 0
             }
             for (const achievement of ACHIEVEMENTS) {
@@ -6752,6 +7126,7 @@
                 renderThemeToggle()
                 renderEffectSettings()
                 renderDailyPanel()
+                renderPermanentVisuals()
                 save()
                 setSettingsHint('Spielstand erfolgreich importiert.')
             } catch (_) {
@@ -7115,6 +7490,7 @@
             renderEffectSettings()
             renderActiveEffects()
             renderDailyPanel()
+            renderPermanentVisuals()
             flushOfflineProgressToast()
             if (rejectedLocalSave) showSecurityToast()
             initShopControls()
