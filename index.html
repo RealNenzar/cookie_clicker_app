@@ -2325,8 +2325,13 @@
     </div>
 
     <script>
+        (() => {
+        'use strict'
+
         const SAVE_KEY = 'ls_cookie_clicker_v2'
-        const APP_VERSION = '2026.07.20.16'
+        const LOCAL_SAVE_PREFIX = 'CCL1'
+        const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
+        const APP_VERSION = '2026.07.21.2'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2347,6 +2352,11 @@
         const SHARD_BASE_THRESHOLD = 8000000
         const SHARD_GROWTH = 1.48
         const BUY_AMOUNTS = [1, 10, 50, 100, 'max']
+        const NUMBER_UNITS = [
+            'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No',
+            'Dc', 'Ud', 'Dd', 'Td', 'Qad', 'Qid', 'Sxd', 'Spd', 'Od', 'Nd',
+            'Vg', 'Uvg', 'Dvg', 'Tvg', 'Qavg', 'Qivg', 'Sxvg', 'Spvg', 'Ovg', 'Nvg', 'Tg',
+        ]
         const MILK_BASE_INTERVAL_MS = 1500000
         const MILK_DURATION_BASE_MS = 30000
         const MILK_MAX_RISE_PER_SECOND = 0.018
@@ -3875,6 +3885,7 @@
         let bonusAdminUnlocked = false
         let redeemedBonusCodesCount = 0
         let lastDailyRenderAt = 0
+        let rejectedLocalSave = false
 
         const $ = (id) => document.getElementById(id)
 
@@ -4424,15 +4435,45 @@
         }
 
         function formatNum(n) {
-            if (n < 1000) return Math.floor(n).toString()
-            const units = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No']
-            let u = -1
-            let v = n
-            while (v >= 1000 && u < units.length - 1) {
-                v /= 1000
-                u++
+            if (!Number.isFinite(n)) {
+                if (n === Infinity) return '∞'
+                if (n === -Infinity) return '-∞'
+                return '0'
             }
-            return (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)) + units[u]
+
+            const absolute = Math.abs(n)
+            if (absolute < 1000) return Math.floor(n).toString()
+
+            let group = Math.floor(Math.log10(absolute) / 3)
+            let value = absolute / Math.pow(1000, group)
+            let decimals = value >= 100 ? 0 : value >= 10 ? 1 : 2
+            let rounded = Number(value.toFixed(decimals))
+
+            // Verhindert Anzeigen wie 1000K kurz vor dem nächsten Zahlenbereich.
+            if (rounded >= 1000) {
+                group += 1
+                value = absolute / Math.pow(1000, group)
+                decimals = value >= 100 ? 0 : value >= 10 ? 1 : 2
+                rounded = Number(value.toFixed(decimals))
+            }
+
+            const unitIndex = group - 1
+            const unit = unitIndex < NUMBER_UNITS.length
+                ? NUMBER_UNITS[unitIndex]
+                : extendedNumberUnit(unitIndex - NUMBER_UNITS.length)
+            const sign = n < 0 ? '-' : ''
+            return `${sign}${rounded.toFixed(decimals)}${unit}`
+        }
+
+        function extendedNumberUnit(index) {
+            // Nach Tg folgen AA, AB, ...; das deckt den gesamten Number-Bereich ab.
+            let value = index + 26
+            let unit = ''
+            do {
+                unit = String.fromCharCode(65 + (value % 26)) + unit
+                value = Math.floor(value / 26) - 1
+            } while (value >= 0)
+            return unit
         }
 
         function formatStatNum(n) {
@@ -5154,6 +5195,21 @@
             pendingOfflineProgressToast = null
         }
 
+        function showSecurityToast() {
+            const root = $('achievement-toast-stack')
+            if (!root) return
+            const toast = document.createElement('div')
+            toast.className = 'achievement-toast'
+            const icon = document.createElement('span')
+            icon.className = 'achievement-toast-icon'
+            icon.textContent = '🛡️'
+            const message = document.createElement('span')
+            message.textContent = 'Ein manipulierter oder beschädigter Spielstand wurde verworfen.'
+            toast.append(icon, message)
+            root.appendChild(toast)
+            setTimeout(() => toast.remove(), 5000)
+        }
+
         function evaluateAchievements() {
             let changed = false
             const newlyUnlocked = []
@@ -5464,7 +5520,7 @@
         }
 
         function onCookieMouseDown(ev) {
-            if (ev.button !== 0) return
+            if (!ev.isTrusted || ev.button !== 0) return
             onTapCookie(ev)
         }
 
@@ -5592,7 +5648,8 @@
             renderMilkVisual()
         }
 
-        function startMilkEvent() {
+        function startMilkEvent(ev) {
+            if (ev && !ev.isTrusted) return
             if (!state.milkVisible) return
             hideMilkCookie()
             const now = Date.now()
@@ -5611,7 +5668,8 @@
             renderHeader()
         }
 
-        function startFrenzy() {
+        function startFrenzy(ev) {
+            if (ev && !ev.isTrusted) return
             if (!state.goldenVisible) return
             hideGoldenCookie()
             const now = Date.now()
@@ -5621,7 +5679,8 @@
             renderHeader()
         }
 
-        function startDiamondRush() {
+        function startDiamondRush(ev) {
+            if (ev && !ev.isTrusted) return
             if (!state.diamondVisible) return
             hideDiamondCookie()
             const now = Date.now()
@@ -5779,7 +5838,7 @@
         function save() {
             const payload = createSavePayload()
             try {
-                localStorage.setItem(SAVE_KEY, JSON.stringify(payload))
+                localStorage.setItem(SAVE_KEY, serializeLocalSave(payload))
             } catch (_) { /* quota / private mode */ }
         }
 
@@ -5826,10 +5885,94 @@
             return parsed
         }
 
-        function applyLoadedData(data) {
-            if (typeof data.cookies !== 'number') {
+        function serializeLocalSave(payload) {
+            const body = base64EncodeUtf8(JSON.stringify(payload))
+            const signature = fnv1a32(`${LOCAL_SAVE_PREFIX}.${body}.${LOCAL_SAVE_SALT}`)
+            return `${LOCAL_SAVE_PREFIX}.${body}.${signature}`
+        }
+
+        function deserializeLocalSave(raw) {
+            const value = String(raw || '').trim()
+
+            // Einmalige Migration alter, noch ungeschützter Spielstände.
+            if (value.startsWith('{')) {
+                return { data: JSON.parse(value), migrated: true }
+            }
+
+            const parts = value.split('.')
+            if (parts.length !== 3 || parts[0] !== LOCAL_SAVE_PREFIX) {
+                throw new Error('Ungültiges lokales Save-Format')
+            }
+
+            const body = parts[1]
+            const expectedSignature = fnv1a32(`${LOCAL_SAVE_PREFIX}.${body}.${LOCAL_SAVE_SALT}`)
+            if (parts[2] !== expectedSignature) {
+                throw new Error('Lokaler Spielstand wurde manipuliert')
+            }
+
+            const data = JSON.parse(base64DecodeUtf8(body))
+            if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                throw new Error('Ungültiger lokaler Spielstand')
+            }
+            return { data, migrated: false }
+        }
+
+        function isFiniteNonNegative(value) {
+            return typeof value === 'number' && Number.isFinite(value) && value >= 0
+        }
+
+        function assertValidSaveData(data) {
+            if (!data || typeof data !== 'object' || Array.isArray(data)) {
                 throw new Error('Ungültiger Spielstand')
             }
+            if (!isFiniteNonNegative(data.cookies)) {
+                throw new Error('Ungültiger Cookie-Wert')
+            }
+            if (data.lifetimeCookies !== undefined && !isFiniteNonNegative(data.lifetimeCookies)) {
+                throw new Error('Ungültiger Lebenszeit-Wert')
+            }
+            if (data.lastSave !== undefined && !isFiniteNonNegative(data.lastSave)) {
+                throw new Error('Ungültiger Speicherzeitpunkt')
+            }
+
+            const validateOwned = (collection, definitions, maxFor) => {
+                if (collection !== undefined && (!collection || typeof collection !== 'object' || Array.isArray(collection))) {
+                    throw new Error('Ungültige Upgrade-Daten')
+                }
+                for (const item of definitions) {
+                    const value = collection?.[item.id]
+                    if (value === undefined) continue
+                    const max = maxFor(item)
+                    if (!Number.isSafeInteger(value) || value < 0 || value > max) {
+                        throw new Error(`Ungültiger Upgrade-Wert: ${item.id}`)
+                    }
+                }
+            }
+
+            validateOwned(data.producers, PRODUCERS, () => 1000000000)
+            validateOwned(data.clicks, CLICKS, () => 1000000000)
+            validateOwned(data.specialUpgrades, SPECIAL_UPGRADES, (item) => item.max)
+            validateOwned(data.prestige?.upgrades, PRESTIGE_UPGRADES, (item) => item.max)
+
+            const counters = [
+                data.milkCookiesFallen, data.milkEventsTriggered, data.randomEventsTriggered,
+                data.manualClicksTotal, data.criticalClicksTotal, data.droneCritsTotal,
+                data.droneDoublesTotal, data.dailyTasksClaimed, data.dailyRewardsClaimed,
+                data.prestige?.level, data.prestige?.shards, data.prestige?.runShards,
+                data.prestige?.totalShardsEarned, data.prestige?.shardMilestone,
+            ]
+            if (counters.some((value) => value !== undefined && (!Number.isSafeInteger(value) || value < 0))) {
+                throw new Error('Ungültiger Zähler im Spielstand')
+            }
+
+            const multipliers = [data.bonusAllMult, data.bonusEventRateMult]
+            if (multipliers.some((value) => value !== undefined && (!Number.isFinite(value) || value < 1))) {
+                throw new Error('Ungültiger Bonus im Spielstand')
+            }
+        }
+
+        function applyLoadedData(data) {
+            assertValidSaveData(data)
 
             state.cookies = data.cookies
             state.lifetimeCookies = typeof data.lifetimeCookies === 'number' && data.lifetimeCookies >= 0 ? data.lifetimeCookies : data.cookies
@@ -5921,10 +6064,13 @@
                 localStorage.removeItem('ls_cookie_clicker_v1')
                 const raw = localStorage.getItem(SAVE_KEY)
                 if (!raw) return
-                const data = JSON.parse(raw)
-                applyLoadedData(data)
+                const loaded = deserializeLocalSave(raw)
+                applyLoadedData(loaded.data)
+                if (loaded.migrated) save()
             } catch (_) {
                 Object.assign(state, defaultState())
+                rejectedLocalSave = true
+                try { localStorage.removeItem(SAVE_KEY) } catch (_) { /* private mode */ }
             }
         }
 
@@ -6970,6 +7116,7 @@
             renderActiveEffects()
             renderDailyPanel()
             flushOfflineProgressToast()
+            if (rejectedLocalSave) showSecurityToast()
             initShopControls()
             initHeaderPopovers()
             initSettingsMenu()
@@ -7020,6 +7167,7 @@
         }
 
         init()
+        })()
     </script>
 </body>
 </html>
