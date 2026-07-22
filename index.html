@@ -2002,6 +2002,31 @@
             color: var(--shop-name-color);
         }
 
+        .achievement-filter-btn {
+            width: 100%;
+            margin: 0 0 0.75rem;
+            padding: 0.55rem 0.7rem;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.7rem;
+            background: var(--shop-card-bg);
+            color: var(--shop-name-color);
+            font-weight: 700;
+            font-size: 0.72rem;
+            cursor: pointer;
+        }
+
+        .achievement-filter-btn.active {
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
+        }
+
+        .achievements-empty {
+            padding: 1rem;
+            text-align: center;
+            color: var(--shop-desc-color);
+            font-size: 0.75rem;
+        }
+
         .achievements-list {
             display: flex;
             flex-direction: column;
@@ -2245,15 +2270,21 @@
                     <ul>
                         <li><strong>2026-07-22</strong>
                             <ul>
-                                <li>Versionsupdate 2026.07.22.11: Timeskip-Keks und Warp-Effekt fertiggestellt</li>
-                                <li>Timeskip-Kekse erscheinen wieder selten in einem zufälligen Abstand von etwa 36–54 Minuten</li>
+                                <li>Versionsupdate 2026.07.22.14: Abgeschlossene Erfolge können ein- und ausgeblendet werden</li>
+                                <li>Versionsupdate 2026.07.22.13: Zehn neue Spezial-Upgrades für Krits, Events, Drohnen, Milch und Synergien ergänzt</li>
+                                <li>Verpasste Kometen- und Timeskip-Events können jetzt einen Teil ihrer Belohnung speichern</li>
+                                <li>Goldrausch und Kometen können durch Upgrades kurz nachwirken</li>
+                                <li>Versionsupdate 2026.07.22.12: Neue Event-Spezial-Upgrades hinzugefügt</li>
+                                <li>Timeskip-Keks und Warp-Effekt fertiggestellt</li>
+                                <li>Timeskip-Keks als seltenes Spezial-Event ausbalanciert</li>
                                 <li>Der Warp-Effekt läuft ohne störendes Rein- und Rauszoomen mit Rotation, Licht und weicher Ausblendung</li>
                                 <li>Versionsupdate 2026.07.22.9: Mid- und Endgame erneut erweitert</li>
                                 <li>Splitter-Keks hinzugefügt: Nach vielen manuellen Klicks kann selten ein einsammelbarer Splitter erscheinen</li>
-                                <li>15.000–45.000 manuelle Klicks und 12 Stunden Mindestabstand begrenzen Splitter-Events auf höchstens zwei Chancen pro Tag</li>
+                                <li>Der Splitter-Keks ist besonders selten und gegen Speedclicker-Farming geschützt</li>
                                 <li>Ein erschienener Splitter-Keks bleibt sichtbar, bis er eingesammelt wird</li>
                                 <li>Kometen-Keks hinzugefügt: Seltener Sofortgewinn aus Produktion und Klickstärke</li>
                                 <li>Timeskip-Keks hinzugefügt: Spult zwei Stunden automatische Produktion mit Warp-Effekt vor</li>
+                                <li>Chrono-Kondensator, Kometen-Kollektor und Splitter-Prisma als neue Spezial-Upgrades ergänzt</li>
                                 <li>Weitere Produktions- und Klickverstärkungen samt fortlaufenden Synergien ergänzt</li>
                                 <li>7 neue Erfolge für Spezial-Events, Splitterfunde und Endgame-Upgrades ergänzt – insgesamt gibt es jetzt 172</li>
                                 <li>Offene tägliche Aufgaben können jetzt zweimal pro Tag neu gewürfelt werden</li>
@@ -2286,7 +2317,6 @@
                                 <li>Milch steigt auch bei Speedclickern kontrolliert und ohne sichtbaren Sprung</li>
                                 <li>Der Event-Bonus wächst jetzt deutlich mit dem erreichten Milchstand</li>
                                 <li>Mit steigendem Füllstand verwandelt sich die Milch zunehmend in dunklen Kakao</li>
-                                <li>Spawn-Intervall der Milchtüte nach dem Test wieder auf den Standardwert zurückgesetzt</li>
                                 <li>Klickverstärkungen besitzen jetzt aufeinander aufbauende Synergien</li>
                                 <li>Neue Einstellung zum Reduzieren von Partikel- und Hintergrundeffekten</li>
                                 <li>Drohnen-Klicks und ihre erzeugten Cookies können jetzt eingeblendet werden</li>
@@ -2322,7 +2352,7 @@
                         <li><strong>2026-07-18</strong>
                             <ul>
                                 <li>Prestige-System eingeführt und balanciert (Splitter, permanente Upgrades, Kosten/Skalierung angepasst)</li>
-                                <li>Diamant-Keks ergänzt (seltener Spawn, 3x Bonus, eigener Modus-Look)</li>
+                                <li>Diamant-Keks ergänzt (3x Bonus und eigener Modus-Look)</li>
                                 <li>Forschungscampus/Keks-Labor-Werte korrigiert (Progression/CPS-Reihenfolge)</li>
                                 <li>Neue Spezial-Upgrades: Krit-Chance, Krit-Multiplikator, Klick-Drohne</li>
                                 <li>Producer-Synergien hinzugefügt</li>
@@ -2601,7 +2631,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.22.11'
+        const APP_VERSION = '2026.07.22.14'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2784,6 +2814,43 @@
                 costMult: 2.22,
                 max: 12,
             },
+            {
+                id: 'chronoCondenser',
+                name: 'Chrono-Kondensator',
+                icon: 'fa-solid fa-hourglass-half',
+                desc: '+12% Ertrag aus Timeskip-Keksen pro Stufe',
+                baseCost: 85000000000,
+                costMult: 2.35,
+                max: 10,
+            },
+            {
+                id: 'cometCollector',
+                name: 'Kometen-Kollektor',
+                icon: 'fa-solid fa-meteor',
+                desc: '+15% Ertrag aus Kometen-Keksen pro Stufe',
+                baseCost: 420000000000,
+                costMult: 2.4,
+                max: 10,
+            },
+            {
+                id: 'shardPrism',
+                name: 'Splitter-Prisma',
+                icon: 'fa-solid fa-gem',
+                desc: '+1% Chance auf einen zweiten Event-Splitter pro Stufe',
+                baseCost: 2800000000000,
+                costMult: 2.55,
+                max: 10,
+            },
+            { id: 'criticalChain', name: 'Kritische Kettenreaktion', icon: 'fa-solid fa-bolt', desc: '+2% Chance je Stufe, dass ein manueller Krit erneut trifft', baseCost: 9000000, costMult: 2.2, max: 10 },
+            { id: 'goldenAfterglow', name: 'Goldene Nachwirkung', icon: 'fa-solid fa-sun', desc: 'Nach Goldrausch kurzzeitig +3% Einkommen pro Stufe', baseCost: 65000000, costMult: 2.25, max: 10 },
+            { id: 'milkHomogenizer', name: 'Milch-Homogenisator', icon: 'fa-solid fa-blender', desc: '+4% Stärke und gleichmäßigerer Anstieg der Milch pro Stufe', baseCost: 480000000, costMult: 2.3, max: 10 },
+            { id: 'droneSwarm', name: 'Drohnen-Schwarm', icon: 'fa-solid fa-robot', desc: '+5% Drohnenrate pro Stufe', baseCost: 3200000000, costMult: 2.32, max: 10 },
+            { id: 'diamondSetting', name: 'Diamant-Fassung', icon: 'fa-solid fa-gem', desc: '+5% Diamant-Effektdauer pro Stufe', baseCost: 18000000000, costMult: 2.36, max: 10 },
+            { id: 'cometTail', name: 'Kometenschweif', icon: 'fa-solid fa-meteor', desc: 'Kometen geben kurzzeitig +4% Einkommen pro Stufe', baseCost: 120000000000, costMult: 2.4, max: 10 },
+            { id: 'timeCore', name: 'Zeitkern', icon: 'fa-solid fa-clock', desc: 'Timeskips rechnen je Stufe 3% deiner aktuellen manuellen Klickrate hinzu', baseCost: 780000000000, costMult: 2.44, max: 10 },
+            { id: 'synergyCatalyst', name: 'Synergie-Katalysator', icon: 'fa-solid fa-link', desc: '+6% Stärke aller Shop-Synergien pro Stufe', baseCost: 5200000000000, costMult: 2.48, max: 10 },
+            { id: 'eventMemory', name: 'Ereignisspeicher', icon: 'fa-solid fa-box-archive', desc: 'Verpasste Kometen und Timeskips sichern 5% Belohnung pro Stufe', baseCost: 36000000000000, costMult: 2.52, max: 10 },
+            { id: 'cosmicAutoClicker', name: 'Kosmischer Autoklicker', icon: 'fa-solid fa-hand-sparkles', desc: 'Drohnen erzeugen zusätzlich 2% der Produktion pro Stufe', baseCost: 260000000000000, costMult: 2.58, max: 10 },
         ]
 
         const PERMANENT_UPGRADES = [
@@ -4426,6 +4493,8 @@
             lastSave: Date.now(),
             frenzyUntil: 0,
             diamondUntil: 0,
+            goldenAfterglowUntil: 0,
+            cometTailUntil: 0,
             milkUntil: 0,
             nextMilkAt: Date.now() + MILK_BASE_INTERVAL_MS,
             milkVisible: false,
@@ -4460,6 +4529,7 @@
             darkMode: DEFAULT_DARK_MODE,
             reducedEffects: false,
             showDroneClicks: false,
+            hideCompletedAchievements: false,
             bonusAllUntil: 0,
             bonusAllMult: 1,
             bonusEventRateUntil: 0,
@@ -4912,7 +4982,8 @@
         }
 
         function milkResonanceRiseStep() {
-            return 0.004 + prestigeUpgradeLevel('milkResonance') * 0.0005
+            return (0.004 + prestigeUpgradeLevel('milkResonance') * 0.0005)
+                * (1 + specialUpgradeLevel('milkHomogenizer') * 0.04)
         }
 
         function milkMaxRisePerSecond() {
@@ -4934,7 +5005,7 @@
             if (!isMilkActive()) return 1
             const resonance = prestigeUpgradeLevel('milkResonance')
             const base = 1 + (DIAMOND_MULT - 1) * 4 + state.milkLevel * (3.5 + resonance * 0.15) + resonance * 0.1
-            return base * permanentMilkEventMult()
+            return base * permanentMilkEventMult() * (1 + specialUpgradeLevel('milkHomogenizer') * 0.04)
         }
 
         function splitterArchivBonus(cost) {
@@ -5003,7 +5074,8 @@
         }
 
         function diamondDurationMult() {
-            return 1 + prestigeUpgradeLevel('diamondLure') * 0.1
+            return (1 + prestigeUpgradeLevel('diamondLure') * 0.1)
+                * (1 + specialUpgradeLevel('diamondSetting') * 0.05)
         }
 
         function nextShardThreshold(milestone) {
@@ -5058,6 +5130,7 @@
             if (level <= 0) return 0
             const overclockMult = 1 + specialUpgradeLevel('droneOverclock') * 0.14
             return level * (0.45 + (level - 1) * 0.08) * (1 + prestigeUpgradeLevel('hyperFocus') * 0.04) * overclockMult
+                * (1 + specialUpgradeLevel('droneSwarm') * 0.05)
         }
 
         function droneCritChance() {
@@ -5070,9 +5143,10 @@
 
         function producerSynergyMult(targetId) {
             let mult = 1
+            const catalyst = 1 + specialUpgradeLevel('synergyCatalyst') * 0.06
             for (const synergy of PRODUCER_SYNERGIES) {
                 if (synergy.to === targetId) {
-                    mult += state.producers[synergy.from] * synergy.bonusPerSource
+                    mult += state.producers[synergy.from] * synergy.bonusPerSource * catalyst
                 }
             }
             return mult
@@ -5085,6 +5159,7 @@
                     const from = PRODUCERS.find((p) => p.id === synergy.from)
                     if (!from) return ''
                     const bonus = state.producers[synergy.from] * synergy.bonusPerSource
+                        * (1 + specialUpgradeLevel('synergyCatalyst') * 0.06)
                     return `${from.name}: +${formatPct(bonus)}`
                 })
                 .filter(Boolean)
@@ -5097,9 +5172,10 @@
 
         function clickSynergyMult(targetId) {
             let mult = 1
+            const catalyst = 1 + specialUpgradeLevel('synergyCatalyst') * 0.06
             for (const synergy of CLICK_SYNERGIES) {
                 if (synergy.to === targetId) {
-                    mult += state.clicks[synergy.from] * synergy.bonusPerSource
+                    mult += state.clicks[synergy.from] * synergy.bonusPerSource * catalyst
                 }
             }
             return mult
@@ -5112,6 +5188,7 @@
                     const from = CLICKS.find((click) => click.id === synergy.from)
                     if (!from) return ''
                     const bonus = state.clicks[synergy.from] * synergy.bonusPerSource
+                        * (1 + specialUpgradeLevel('synergyCatalyst') * 0.06)
                     return `${from.name}: +${formatPct(bonus)}`
                 })
                 .filter(Boolean)
@@ -5209,6 +5286,12 @@
             }
             if (now < state.diamondUntil) {
                 mult *= DIAMOND_MULT * frenzyPowerMult()
+            }
+            if (now < state.goldenAfterglowUntil) {
+                mult *= 1 + specialUpgradeLevel('goldenAfterglow') * 0.03
+            }
+            if (now < state.cometTailUntil) {
+                mult *= 1 + specialUpgradeLevel('cometTail') * 0.04
             }
             return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult() * permanentCookieIncomeMult()
         }
@@ -5568,6 +5651,17 @@
             summary.id = 'achievements-summary'
             root.appendChild(summary)
 
+            const filterBtn = document.createElement('button')
+            filterBtn.type = 'button'
+            filterBtn.className = 'achievement-filter-btn'
+            filterBtn.id = 'achievement-filter-btn'
+            filterBtn.addEventListener('click', () => {
+                state.hideCompletedAchievements = !state.hideCompletedAchievements
+                renderAchievements()
+                save()
+            })
+            root.appendChild(filterBtn)
+
             const list = document.createElement('div')
             list.className = 'achievements-list'
             list.id = 'achievements-list'
@@ -5699,6 +5793,7 @@
         function renderAchievements() {
             const summary = $('achievements-summary')
             const list = $('achievements-list')
+            const filterBtn = $('achievement-filter-btn')
             if (!summary || !list) return
 
             summary.innerHTML = `
@@ -5706,9 +5801,20 @@
                 <div>Klick-Bonus: <strong>${formatPct(achievementBonus('tap'))}</strong> | Produktions-Bonus: <strong>${formatPct(achievementBonus('cps'))}</strong></div>
             `
 
+            if (filterBtn) {
+                filterBtn.classList.toggle('active', state.hideCompletedAchievements)
+                filterBtn.setAttribute('aria-pressed', String(state.hideCompletedAchievements))
+                filterBtn.textContent = state.hideCompletedAchievements
+                    ? 'Abgeschlossene einblenden'
+                    : 'Abgeschlossene ausblenden'
+            }
+
             list.innerHTML = ''
+            let visibleCount = 0
             for (const achievement of ACHIEVEMENTS) {
                 const unlocked = state.achievements[achievement.id] === true
+                if (unlocked && state.hideCompletedAchievements) continue
+                visibleCount++
                 const row = document.createElement('article')
                 row.className = 'achievement-row' + (unlocked ? ' unlocked' : '')
                 row.innerHTML = `
@@ -5723,6 +5829,12 @@
                     </span>
                 `
                 list.appendChild(row)
+            }
+            if (visibleCount === 0) {
+                const empty = document.createElement('div')
+                empty.className = 'achievements-empty'
+                empty.textContent = 'Alle Erfolge sind abgeschlossen.'
+                list.appendChild(empty)
             }
         }
 
@@ -5905,6 +6017,8 @@
             state.specialUpgrades = Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0]))
             state.frenzyUntil = 0
             state.diamondUntil = 0
+            state.goldenAfterglowUntil = 0
+            state.cometTailUntil = 0
             state.milkUntil = 0
             state.milkVisible = false
             state.milkLevel = 0
@@ -6358,7 +6472,9 @@
             trackDailyProgress('clicks', 1)
             const baseTap = calcTap()
             const didCrit = Math.random() < critChance()
-            const tap = didCrit ? baseTap * critMultiplier() : baseTap
+            let tap = didCrit ? baseTap * critMultiplier() : baseTap
+            const didChainCrit = didCrit && Math.random() < specialUpgradeLevel('criticalChain') * 0.02
+            if (didChainCrit) tap *= 2
             if (didCrit) state.criticalClicksTotal++
             playTapSound(tap)
             addCookies(tap, false)
@@ -6489,7 +6605,15 @@
             placeCometCookie()
             $('comet-cookie').classList.add('visible')
             setTimeout(() => {
-                if (state.cometVisible) hideCometCookie()
+                if (state.cometVisible) {
+                    const memoryLevel = specialUpgradeLevel('eventMemory')
+                    if (memoryLevel > 0) {
+                        const memoryReward = Math.max(250, calcCps() * 90 + calcTap() * 30) * cometRewardMult() * memoryLevel * 0.05
+                        grantDirectCookies(memoryReward)
+                        showEventRewardToast('📦', `Ereignisspeicher: +${formatNum(memoryReward)} Kekse`)
+                    }
+                    hideCometCookie()
+                }
             }, EVENT_VISIBLE_MS)
         }
 
@@ -6499,7 +6623,15 @@
             placeTimeSkipCookie()
             $('timeskip-cookie').classList.add('visible')
             setTimeout(() => {
-                if (state.timeSkipVisible) hideTimeSkipCookie()
+                if (state.timeSkipVisible) {
+                    const memoryLevel = specialUpgradeLevel('eventMemory')
+                    if (memoryLevel > 0) {
+                        const memoryReward = expectedAutomaticCookiesPerSecond() * TIMESKIP_SECONDS * timeSkipRewardMult() * memoryLevel * 0.05
+                        grantDirectCookies(memoryReward)
+                        showEventRewardToast('📦', `Ereignisspeicher: +${formatNum(memoryReward)} Kekse`)
+                    }
+                    hideTimeSkipCookie()
+                }
             }, EVENT_VISIBLE_MS * 1.2)
         }
 
@@ -6550,7 +6682,22 @@
                 * autoClicksPerSecond()
                 * (1 + droneCritChance() * (critMultiplier() - 1))
                 * (1 + droneDoubleChance())
-            return (producerRate + droneRate) * incomeMult()
+            const cosmicDroneRate = autoClicksPerSecond() > 0
+                ? producerRate * specialUpgradeLevel('cosmicAutoClicker') * 0.02
+                : 0
+            return (producerRate + droneRate + cosmicDroneRate) * incomeMult()
+        }
+
+        function timeSkipRewardMult() {
+            return 1 + specialUpgradeLevel('chronoCondenser') * 0.12
+        }
+
+        function cometRewardMult() {
+            return 1 + specialUpgradeLevel('cometCollector') * 0.15
+        }
+
+        function bonusShardChance() {
+            return Math.min(0.15, 0.05 + specialUpgradeLevel('shardPrism') * 0.01)
         }
 
         function playTimeWarpEffect() {
@@ -6580,7 +6727,7 @@
             if (ev && !ev.isTrusted) return
             if (!state.shardVisible) return
             hideShardCookie(true)
-            const reward = Math.random() < 0.05 ? 2 : 1
+            const reward = Math.random() < bonusShardChance() ? 2 : 1
             grantDirectShards(reward)
             state.shardEventsTriggered++
             state.randomEventsTriggered++
@@ -6596,9 +6743,10 @@
             if (ev && !ev.isTrusted) return
             if (!state.cometVisible) return
             hideCometCookie()
-            const reward = Math.max(250, calcCps() * 90 + calcTap() * 30)
+            const reward = Math.max(250, calcCps() * 90 + calcTap() * 30) * cometRewardMult()
             grantDirectCookies(reward)
             state.cometEventsTriggered++
+            state.cometTailUntil = Date.now() + 30000
             state.randomEventsTriggered++
             trackDailyProgress('events', 1)
             showEventRewardToast('☄️', `Kometen-Keks: +${formatNum(reward)} Kekse`)
@@ -6611,7 +6759,8 @@
             if (ev && !ev.isTrusted) return
             if (!state.timeSkipVisible) return
             hideTimeSkipCookie()
-            const reward = Math.max(1, expectedAutomaticCookiesPerSecond() * TIMESKIP_SECONDS)
+            const manualRate = calcTap() * manualClicksPerSecond() * specialUpgradeLevel('timeCore') * 0.03
+            const reward = Math.max(1, (expectedAutomaticCookiesPerSecond() + manualRate) * TIMESKIP_SECONDS) * timeSkipRewardMult()
             grantDirectCookies(reward)
             state.timeSkipEventsTriggered++
             state.randomEventsTriggered++
@@ -6648,6 +6797,7 @@
             if (!state.goldenVisible) return
             hideGoldenCookie()
             const now = Date.now()
+            state.goldenAfterglowUntil = 0
             state.frenzyUntil = now + frenzyDurationMs()
             state.randomEventsTriggered++
             trackDailyProgress('events', 1)
@@ -6684,6 +6834,9 @@
                 const expectedDoubleMult = 1 + droneDoubleChance()
                 droneEarned = elapsedSeconds * baseDroneTapPerSecond * expectedCritMult * expectedDoubleMult
             }
+            if (autoCps > 0) {
+                droneEarned += elapsedSeconds * producerCps * specialUpgradeLevel('cosmicAutoClicker') * 0.02
+            }
 
             const totalBaseEarned = producerEarned + droneEarned
             if (totalBaseEarned <= 0) return 0
@@ -6709,6 +6862,8 @@
                 lastSave: Date.now(),
                 frenzyUntil: 0,
                 diamondUntil: 0,
+                goldenAfterglowUntil: 0,
+                cometTailUntil: 0,
                 milkUntil: 0,
                 nextMilkAt: Date.now() + MILK_BASE_INTERVAL_MS,
                 milkVisible: false,
@@ -6742,6 +6897,7 @@
                 darkMode: DEFAULT_DARK_MODE,
                 reducedEffects: false,
                 showDroneClicks: false,
+                hideCompletedAchievements: false,
                 bonusAllUntil: 0,
                 bonusAllMult: 1,
                 bonusEventRateUntil: 0,
@@ -6802,6 +6958,7 @@
                 darkMode: state.darkMode,
                 reducedEffects: state.reducedEffects,
                 showDroneClicks: state.showDroneClicks,
+                hideCompletedAchievements: state.hideCompletedAchievements,
                 daily: state.daily,
                 bonusAllUntil: state.bonusAllUntil,
                 bonusAllMult: state.bonusAllMult,
@@ -6817,6 +6974,8 @@
                 shardCooldownUntil: state.shardCooldownUntil,
                 nextCometAt: state.nextCometAt,
                 nextTimeSkipAt: state.nextTimeSkipAt,
+                goldenAfterglowUntil: state.goldenAfterglowUntil,
+                cometTailUntil: state.cometTailUntil,
                 manualClicksTotal: state.manualClicksTotal,
                 criticalClicksTotal: state.criticalClicksTotal,
                 droneCritsTotal: state.droneCritsTotal,
@@ -6959,6 +7118,7 @@
                 data.milkCookiesFallen, data.milkEventsTriggered, data.randomEventsTriggered,
                 data.shardEventsTriggered, data.cometEventsTriggered, data.timeSkipEventsTriggered, data.nextShardClickAt,
                 data.shardCooldownUntil, data.nextCometAt, data.nextTimeSkipAt,
+                data.goldenAfterglowUntil, data.cometTailUntil,
                 data.manualClicksTotal, data.criticalClicksTotal, data.droneCritsTotal,
                 data.droneDoublesTotal, data.dailyTasksClaimed, data.dailyRewardsClaimed, data.dailyRerollsUsedTotal,
                 data.prestige?.level, data.prestige?.shards, data.prestige?.runShards,
@@ -6987,6 +7147,7 @@
             state.darkMode = data.darkMode === true
             state.reducedEffects = data.reducedEffects === true
             state.showDroneClicks = data.showDroneClicks === true
+            state.hideCompletedAchievements = data.hideCompletedAchievements === true
             state.daily = data.daily && typeof data.daily === 'object' ? data.daily : createEmptyDailyState()
             ensureDailyState()
             state.bonusAllUntil = typeof data.bonusAllUntil === 'number' ? Math.max(0, Math.floor(data.bonusAllUntil)) : 0
@@ -7008,6 +7169,8 @@
             state.nextTimeSkipAt = typeof data.nextTimeSkipAt === 'number'
                 ? Math.max(Date.now() + 1000, Math.min(Math.floor(data.nextTimeSkipAt), Date.now() + TIMESKIP_INTERVAL_MS))
                 : Date.now() + TIMESKIP_INTERVAL_MS
+            state.goldenAfterglowUntil = typeof data.goldenAfterglowUntil === 'number' ? Math.max(0, Math.floor(data.goldenAfterglowUntil)) : 0
+            state.cometTailUntil = typeof data.cometTailUntil === 'number' ? Math.max(0, Math.floor(data.cometTailUntil)) : 0
             state.criticalClicksTotal = typeof data.criticalClicksTotal === 'number' ? Math.max(0, Math.floor(data.criticalClicksTotal)) : 0
             state.droneCritsTotal = typeof data.droneCritsTotal === 'number' ? Math.max(0, Math.floor(data.droneCritsTotal)) : 0
             state.droneDoublesTotal = typeof data.droneDoublesTotal === 'number' ? Math.max(0, Math.floor(data.droneDoublesTotal)) : 0
@@ -8016,6 +8179,13 @@
                 save()
             }
             const didDecayManualRate = pruneManualTapRate(now)
+            if (state.frenzyUntil > 0 && now >= state.frenzyUntil) {
+                state.frenzyUntil = 0
+                if (specialUpgradeLevel('goldenAfterglow') > 0) {
+                    state.goldenAfterglowUntil = now + 15000
+                }
+                renderHeader()
+            }
             const cps = calcCps()
             if (cps > 0 && tickElapsedMs > 0) {
                 addCookies((cps * tickElapsedMs) / 1000, false)
@@ -8030,6 +8200,7 @@
                 let droneBatch = (calcTap() * autoCps * tickElapsedMs) / 1000
                 if (didDroneCrit) droneBatch *= critMultiplier()
                 if (didDroneDouble) droneBatch *= 2
+                droneBatch += (calcCps() * specialUpgradeLevel('cosmicAutoClicker') * 0.02 * tickElapsedMs) / 1000
                 const gainedDroneCookies = droneBatch * incomeMult()
                 addCookies(droneBatch, false)
                 maybeRenderDroneAutoTapVisual(autoCps, gainedDroneCookies, didDroneCrit, didDroneDouble)
