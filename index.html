@@ -1897,6 +1897,27 @@
             color: var(--achievement-unlocked-fg);
         }
 
+        .upgrade-row.milestone-row:not(.purchased) {
+            display: grid;
+            grid-template-columns: 2rem minmax(0, 1fr) auto;
+            align-items: center;
+        }
+
+        .upgrade-row.milestone-row:not(.purchased) .info {
+            align-self: center;
+        }
+
+        .upgrade-row.milestone-row:not(.purchased) .meta {
+            display: grid;
+            min-width: 4.5rem;
+            justify-items: end;
+            align-content: center;
+        }
+
+        .upgrade-row.milestone-row:not(.purchased) .owned {
+            display: none;
+        }
+
         .upgrade-row.permanent-row {
             border-color: rgba(125, 83, 214, 0.48);
             background: linear-gradient(135deg, var(--shop-row-bg), rgba(134, 92, 220, 0.12));
@@ -2331,6 +2352,11 @@
                 <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
                 <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
+                        <li><strong>2026-07-23</strong>
+                            <ul>
+                                <li><strong>Komfort:</strong> Noch nicht gekaufte Produzenten-Meilensteine sind kompakter und übersichtlicher dargestellt</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-22</strong>
                             <ul>
                                 <li><strong>Neue Inhalte:</strong> Vier Jahreszeiten mit eigenen Sammelfunden und dauerhaften Ertragsboni</li>
@@ -2642,7 +2668,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.22.23'
+        const APP_VERSION = '2026.07.23.2'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -5782,7 +5808,6 @@
             const milestoneRoot = document.createElement('div')
             milestoneRoot.id = 'milestone-upgrades-root'
             for (const milestone of PRODUCER_MILESTONES) {
-                const producer = PRODUCERS.find((item) => item.id === milestone.producerId)
                 const btn = document.createElement('button')
                 btn.type = 'button'
                 btn.className = 'upgrade-row milestone-row'
@@ -5790,7 +5815,7 @@
                 btn.innerHTML = `
                     <span class="icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
                     <span class="info"><div class="name">${milestone.name}</div><div class="desc">${milestone.desc}</div></span>
-                    <span class="meta"><div class="cost"></div><div class="owned">Benötigt ${milestone.threshold} ${producer.name}</div></span>
+                    <span class="meta"><div class="cost"></div><div class="owned"></div></span>
                 `
                 btn.addEventListener('click', () => buyMilestoneUpgrade(milestone.id))
                 milestoneRoot.appendChild(btn)
@@ -6008,9 +6033,8 @@
                 btn.disabled = purchased || !canAfford(milestone.cost)
                 btn.classList.toggle('purchased', purchased)
                 btn.querySelector('.cost').textContent = purchased ? 'Gekauft' : formatNum(milestone.cost)
-                btn.querySelector('.owned').textContent = purchased
-                    ? 'Produktion x2 aktiv'
-                    : `Freigeschaltet mit ${milestone.threshold} Gebäuden`
+                btn.querySelector('.desc').textContent = purchased ? milestone.desc : 'Produktion ×2'
+                btn.querySelector('.owned').textContent = purchased ? 'Produktion x2 aktiv' : ''
             }
             title.hidden = visibleCount === 0
         }
