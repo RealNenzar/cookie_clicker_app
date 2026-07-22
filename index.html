@@ -1712,6 +1712,114 @@
             display: block;
         }
 
+        .shard-cookie,
+        .comet-cookie {
+            display: none;
+            position: absolute;
+            width: 3.35rem;
+            height: 3.35rem;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.7rem;
+            cursor: pointer;
+            z-index: 12;
+            touch-action: manipulation;
+        }
+
+        .shard-cookie {
+            background: radial-gradient(circle at 35% 30%, #fff 0%, #8cecff 30%, #7754ff 67%, #29145e 100%);
+            box-shadow: 0 0 18px #82e9ff, 0 0 34px rgba(119, 84, 255, 0.75);
+            animation: diamond-wobble 0.8s ease-in-out infinite;
+        }
+
+        .comet-cookie {
+            background: radial-gradient(circle at 35% 30%, #fff7c2 0%, #ff9f43 38%, #db3b75 72%, #421353 100%);
+            box-shadow: 0 0 18px #ffba5c, 0 0 38px rgba(219, 59, 117, 0.7);
+            animation: golden-wobble 0.75s ease-in-out infinite;
+        }
+
+        .shard-cookie.visible,
+        .comet-cookie.visible {
+            display: block;
+        }
+
+        .timeskip-cookie {
+            display: none;
+            position: absolute;
+            width: 3.5rem;
+            height: 3.5rem;
+            border: 1px solid rgba(225, 252, 255, 0.9);
+            border-radius: 50%;
+            background: radial-gradient(circle at 50% 48%, #fff 0 8%, #72f1ff 15%, #5468ff 40%, #6016a8 68%, #12072f 100%);
+            box-shadow: 0 0 18px #71efff, 0 0 42px rgba(113, 98, 255, 0.9);
+            font-size: 1.75rem;
+            cursor: pointer;
+            z-index: 13;
+            animation: timeskip-pulse 0.9s ease-in-out infinite;
+            touch-action: manipulation;
+        }
+
+        .timeskip-cookie.visible { display: block; }
+
+        .time-warp {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0;
+            background: repeating-radial-gradient(circle at 50% 48%, transparent 0 22px, rgba(112, 240, 255, 0.34) 25px 28px, transparent 32px 48px);
+        }
+
+        .time-warp.active {
+            animation: time-warp-flash 1.8s cubic-bezier(0.2, 0.72, 0.25, 1) both;
+        }
+
+        .time-warp::before,
+        .time-warp::after {
+            content: '';
+            position: absolute;
+            inset: -45%;
+            background: conic-gradient(from 0deg, transparent, rgba(92, 233, 255, 0.5), transparent 16%, rgba(129, 86, 255, 0.42), transparent 34%);
+            animation: time-warp-spin 0.55s linear infinite;
+        }
+
+        .time-warp::after {
+            inset: -28%;
+            opacity: 0.72;
+            animation-direction: reverse;
+        }
+
+        @keyframes timeskip-pulse {
+            0%, 100% { transform: scale(1) rotate(-5deg); filter: brightness(1); }
+            50% { transform: scale(1.13) rotate(5deg); filter: brightness(1.25); }
+        }
+
+        @keyframes time-warp-spin { to { transform: rotate(360deg); } }
+
+        @keyframes time-warp-flash {
+            0% {
+                opacity: 0;
+                filter: blur(5px) brightness(0.95);
+            }
+            20% {
+                opacity: 1;
+                filter: blur(0) brightness(1.08);
+            }
+            55% {
+                opacity: 0.96;
+                filter: blur(0.5px) brightness(1.18);
+            }
+            76% {
+                opacity: 0.78;
+                filter: blur(3px) brightness(1.16);
+            }
+            100% {
+                opacity: 0;
+                filter: blur(14px) brightness(1.1);
+            }
+        }
+
         .app.milk-active .play-area {
             background: radial-gradient(circle at 50% 24%, rgba(255, 253, 245, 0.82) 0%, rgba(244, 229, 205, 0.54) 42%, rgba(180, 139, 98, 0.22) 100%);
         }
@@ -2137,6 +2245,17 @@
                     <ul>
                         <li><strong>2026-07-22</strong>
                             <ul>
+                                <li>Versionsupdate 2026.07.22.11: Timeskip-Keks und Warp-Effekt fertiggestellt</li>
+                                <li>Timeskip-Kekse erscheinen wieder selten in einem zufälligen Abstand von etwa 36–54 Minuten</li>
+                                <li>Der Warp-Effekt läuft ohne störendes Rein- und Rauszoomen mit Rotation, Licht und weicher Ausblendung</li>
+                                <li>Versionsupdate 2026.07.22.9: Mid- und Endgame erneut erweitert</li>
+                                <li>Splitter-Keks hinzugefügt: Nach vielen manuellen Klicks kann selten ein einsammelbarer Splitter erscheinen</li>
+                                <li>15.000–45.000 manuelle Klicks und 12 Stunden Mindestabstand begrenzen Splitter-Events auf höchstens zwei Chancen pro Tag</li>
+                                <li>Ein erschienener Splitter-Keks bleibt sichtbar, bis er eingesammelt wird</li>
+                                <li>Kometen-Keks hinzugefügt: Seltener Sofortgewinn aus Produktion und Klickstärke</li>
+                                <li>Timeskip-Keks hinzugefügt: Spult zwei Stunden automatische Produktion mit Warp-Effekt vor</li>
+                                <li>Weitere Produktions- und Klickverstärkungen samt fortlaufenden Synergien ergänzt</li>
+                                <li>7 neue Erfolge für Spezial-Events, Splitterfunde und Endgame-Upgrades ergänzt – insgesamt gibt es jetzt 172</li>
                                 <li>Offene tägliche Aufgaben können jetzt zweimal pro Tag neu gewürfelt werden</li>
                                 <li>Der permanente Schicksalswürfel erhöht die täglichen Versuche auf bis zu fünf</li>
                                 <li>Abgeschlossene Aufgaben und die tägliche Zufallsbelohnung bleiben beim Würfeln erhalten</li>
@@ -2446,6 +2565,10 @@
                     <button type="button" class="golden-cookie" id="golden-cookie" aria-label="Goldener Keks">⭐</button>
                     <button type="button" class="diamond-cookie" id="diamond-cookie" aria-label="Diamant-Keks">💎</button>
                     <button type="button" class="milk-cookie" id="milk-cookie" aria-label="Milchtüte">🥛</button>
+                    <button type="button" class="shard-cookie" id="shard-cookie" aria-label="Splitter-Keks">🔷</button>
+                    <button type="button" class="comet-cookie" id="comet-cookie" aria-label="Kometen-Keks">☄️</button>
+                    <button type="button" class="timeskip-cookie" id="timeskip-cookie" aria-label="Timeskip-Keks">⏳</button>
+                    <div class="time-warp" id="time-warp" aria-hidden="true"></div>
                 </div>
             </section>
 
@@ -2478,7 +2601,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.22.8'
+        const APP_VERSION = '2026.07.22.11'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -2509,6 +2632,12 @@
         const MILK_MAX_RISE_PER_SECOND = 0.018
         const EVENT_OVERLAP_CHANCE = 0.001
         const EVENT_VISIBLE_MS = 10000
+        const SHARD_EVENT_MIN_CLICKS = 15000
+        const SHARD_EVENT_CLICK_SPREAD = 30001
+        const SHARD_EVENT_COOLDOWN_MS = 12 * 60 * 60 * 1000
+        const COMET_INTERVAL_MS = 12 * 60 * 1000
+        const TIMESKIP_INTERVAL_MS = 45 * 60 * 1000
+        const TIMESKIP_SECONDS = 2 * 60 * 60
         const SHARE_SAVE_PREFIX = 'CCS1'
         const SHARE_SAVE_SALT = 'cc.export.2026.07.v1'
         const BONUS_CODES_STORAGE_KEY = 'cc_bonus_codes_used_v1'
@@ -2538,7 +2667,13 @@
             { id: 'lab', name: 'Keks-Labor', icon: 'fa-solid fa-flask', cps: 1200000, baseCost: 2470000000, desc: '+1.2M Kekse/Sek' },
             { id: 'orbital', name: 'Orbital-Ofen', icon: 'fa-solid fa-satellite', cps: 1350000, baseCost: 8730000000, desc: '+1.35M Kekse/Sek' },
             { id: 'quantum', name: 'Quanten-Mühle', icon: 'fa-solid fa-atom', cps: 9200000, baseCost: 42800000000, desc: '+9.2M Kekse/Sek' },
+            { id: 'antimatter', name: 'Antimaterie-Konditorei', icon: 'fa-solid fa-meteor', cps: 48000000, baseCost: 210000000000, desc: '+48M Kekse/Sek' },
             { id: 'singularity', name: 'Singularitäts-Bäcker', icon: 'fa-solid fa-star', cps: 520000000, baseCost: 1240000000000, desc: '+520M Kekse/Sek' },
+            { id: 'dimension', name: 'Dimensions-Backstube', icon: 'fa-solid fa-cubes-stacked', cps: 3400000000, baseCost: 7800000000000, desc: '+3.4B Kekse/Sek' },
+            { id: 'multiverse', name: 'Multiversums-Fabrik', icon: 'fa-solid fa-globe', cps: 24000000000, baseCost: 58000000000000, desc: '+24B Kekse/Sek' },
+            { id: 'eternity', name: 'Ewigkeits-Ofen', icon: 'fa-solid fa-infinity', cps: 180000000000, baseCost: 420000000000000, desc: '+180B Kekse/Sek' },
+            { id: 'omega', name: 'Omega-Backwerk', icon: 'fa-solid fa-dharmachakra', cps: 1350000000000, baseCost: 3200000000000000, desc: '+1.35T Kekse/Sek' },
+            { id: 'genesis', name: 'Genesis-Bäckerei', icon: 'fa-solid fa-seedling', cps: 10500000000000, baseCost: 26000000000000000, desc: '+10.5T Kekse/Sek' },
         ]
 
         const PRODUCER_SYNERGIES = [
@@ -2546,6 +2681,13 @@
             { from: 'campus', to: 'lab', bonusPerSource: 0.003 },
             { from: 'lab', to: 'orbital', bonusPerSource: 0.0025 },
             { from: 'orbital', to: 'quantum', bonusPerSource: 0.002 },
+            { from: 'quantum', to: 'antimatter', bonusPerSource: 0.0018 },
+            { from: 'antimatter', to: 'singularity', bonusPerSource: 0.0016 },
+            { from: 'singularity', to: 'dimension', bonusPerSource: 0.0014 },
+            { from: 'dimension', to: 'multiverse', bonusPerSource: 0.0012 },
+            { from: 'multiverse', to: 'eternity', bonusPerSource: 0.001 },
+            { from: 'eternity', to: 'omega', bonusPerSource: 0.0009 },
+            { from: 'omega', to: 'genesis', bonusPerSource: 0.0008 },
         ]
 
         const CLICKS = [
@@ -2559,7 +2701,13 @@
             { id: 'titanium', name: 'Titan-Klick', icon: 'fa-solid fa-hand', bonus: 52000, baseCost: 680000000, desc: '+52K pro Klick' },
             { id: 'plasma', name: 'Plasma-Schlag', icon: 'fa-solid fa-bolt', bonus: 310000, baseCost: 3190000000, desc: '+310K pro Klick' },
             { id: 'neutron', name: 'Neutron-Knöchel', icon: 'fa-solid fa-radiation', bonus: 1850000, baseCost: 19600000000, desc: '+1.85M pro Klick' },
+            { id: 'void', name: 'Leeren-Griff', icon: 'fa-solid fa-circle-notch', bonus: 12000000, baseCost: 160000000000, desc: '+12M pro Klick' },
+            { id: 'stellar', name: 'Sternen-Schlag', icon: 'fa-solid fa-sun', bonus: 38000000, baseCost: 520000000000, desc: '+38M pro Klick' },
             { id: 'cosmic', name: 'Kosmischer Klick', icon: 'fa-solid fa-hand-sparkles', bonus: 88000000, baseCost: 1180000000000, desc: '+88M pro Klick' },
+            { id: 'reality', name: 'Realitäts-Brecher', icon: 'fa-solid fa-wand-magic-sparkles', bonus: 620000000, baseCost: 7500000000000, desc: '+620M pro Klick' },
+            { id: 'infinity', name: 'Unendlichkeits-Berührung', icon: 'fa-solid fa-infinity', bonus: 4200000000, baseCost: 55000000000000, desc: '+4.2B pro Klick' },
+            { id: 'paradox', name: 'Paradoxon-Faust', icon: 'fa-solid fa-clock-rotate-left', bonus: 31000000000, baseCost: 430000000000000, desc: '+31B pro Klick' },
+            { id: 'creator', name: 'Schöpfer-Hand', icon: 'fa-solid fa-hand-sparkles', bonus: 245000000000, baseCost: 3600000000000000, desc: '+245B pro Klick' },
         ]
 
         const CLICK_SYNERGIES = [
@@ -2572,7 +2720,13 @@
             { from: 'laser', to: 'titanium', bonusPerSource: 0.003 },
             { from: 'titanium', to: 'plasma', bonusPerSource: 0.0025 },
             { from: 'plasma', to: 'neutron', bonusPerSource: 0.002 },
-            { from: 'neutron', to: 'cosmic', bonusPerSource: 0.0015 },
+            { from: 'neutron', to: 'void', bonusPerSource: 0.0018 },
+            { from: 'void', to: 'stellar', bonusPerSource: 0.0016 },
+            { from: 'stellar', to: 'cosmic', bonusPerSource: 0.0015 },
+            { from: 'cosmic', to: 'reality', bonusPerSource: 0.0013 },
+            { from: 'reality', to: 'infinity', bonusPerSource: 0.001 },
+            { from: 'infinity', to: 'paradox', bonusPerSource: 0.0009 },
+            { from: 'paradox', to: 'creator', bonusPerSource: 0.0008 },
         ]
 
         const SPECIAL_UPGRADES = [
@@ -4041,6 +4195,41 @@
                 desc: 'Erreiche 1 Trilliarde Lebenszeit-Kekse', reward: '+11% Produktion',
                 type: 'cps', value: 0.11, check: () => state.lifetimeCookies >= 1e21,
             },
+            {
+                id: 'firstShardEvent', name: 'Splitter im Teig',
+                desc: 'Sammle deinen ersten Splitter-Keks', reward: '+2% Klick-Stärke',
+                type: 'tap', value: 0.02, check: () => state.shardEventsTriggered >= 1,
+            },
+            {
+                id: 'shardEventHunter', name: 'Kristalljäger',
+                desc: 'Sammle 10 Splitter-Kekse', reward: '+5% Produktion',
+                type: 'cps', value: 0.05, check: () => state.shardEventsTriggered >= 10,
+            },
+            {
+                id: 'cometCatch', name: 'Sternschnuppenfänger',
+                desc: 'Sammle deinen ersten Kometen-Keks', reward: '+2% Produktion',
+                type: 'cps', value: 0.02, check: () => state.cometEventsTriggered >= 1,
+            },
+            {
+                id: 'cometFleet', name: 'Kometenflotte',
+                desc: 'Sammle 10 Kometen-Kekse', reward: '+5% Klick-Stärke',
+                type: 'tap', value: 0.05, check: () => state.cometEventsTriggered >= 10,
+            },
+            {
+                id: 'genesisEngine', name: 'Am Anfang war der Keks',
+                desc: 'Besitze eine Genesis-Bäckerei', reward: '+8% Produktion',
+                type: 'cps', value: 0.08, check: () => state.producers.genesis >= 1,
+            },
+            {
+                id: 'creatorTouch', name: 'Schöpfungsfunke',
+                desc: 'Besitze eine Schöpfer-Hand', reward: '+8% Klick-Stärke',
+                type: 'tap', value: 0.08, check: () => state.clicks.creator >= 1,
+            },
+            {
+                id: 'firstTimeSkip', name: 'Zwei Stunden später',
+                desc: 'Aktiviere deinen ersten Timeskip-Keks', reward: '+3% Produktion',
+                type: 'cps', value: 0.03, check: () => state.timeSkipEventsTriggered >= 1,
+            },
         ]
 
         const PRESTIGE_UPGRADES = [
@@ -4244,6 +4433,9 @@
             milkLastRiseAt: 0,
             milkCookiesFallen: 0,
             milkEventsTriggered: 0,
+            shardEventsTriggered: 0,
+            cometEventsTriggered: 0,
+            timeSkipEventsTriggered: 0,
             randomEventsTriggered: 0,
             manualClicksTotal: 0,
             criticalClicksTotal: 0,
@@ -4256,6 +4448,13 @@
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
             nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
+            shardVisible: false,
+            nextShardClickAt: SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD),
+            shardCooldownUntil: 0,
+            cometVisible: false,
+            nextCometAt: Date.now() + COMET_INTERVAL_MS,
+            timeSkipVisible: false,
+            nextTimeSkipAt: Date.now() + TIMESKIP_INTERVAL_MS,
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
@@ -5717,6 +5916,9 @@
             hideGoldenCookie()
             hideDiamondCookie()
             hideMilkCookie()
+            hideShardCookie(false)
+            hideCometCookie()
+            hideTimeSkipCookie()
 
             const starterCookies = prestigeUpgradeLevel('starterSpark') * 500
             if (starterCookies > 0) {
@@ -6148,6 +6350,11 @@
         function onTapCookie(ev) {
             trackManualTap()
             state.manualClicksTotal++
+            if (!state.shardVisible
+                && state.manualClicksTotal >= state.nextShardClickAt
+                && Date.now() >= state.shardCooldownUntil) {
+                showShardCookie()
+            }
             trackDailyProgress('clicks', 1)
             const baseTap = calcTap()
             const didCrit = Math.random() < critChance()
@@ -6200,12 +6407,27 @@
             placeEventCookie('milk-cookie', 18)
         }
 
+        function placeShardCookie() {
+            placeEventCookie('shard-cookie', 18)
+        }
+
+        function placeCometCookie() {
+            placeEventCookie('comet-cookie', 18)
+        }
+
+        function placeTimeSkipCookie() {
+            placeEventCookie('timeskip-cookie', 18)
+        }
+
         function keepEventCookiesInBounds() {
             const area = $('play-area')
             const cookies = [
                 { id: 'golden-cookie', pad: 16 },
                 { id: 'diamond-cookie', pad: 20 },
                 { id: 'milk-cookie', pad: 18 },
+                { id: 'shard-cookie', pad: 18 },
+                { id: 'comet-cookie', pad: 18 },
+                { id: 'timeskip-cookie', pad: 18 },
             ]
             for (const item of cookies) {
                 const btn = $(item.id)
@@ -6254,6 +6476,33 @@
             }, EVENT_VISIBLE_MS)
         }
 
+        function showShardCookie() {
+            if (state.shardVisible) return
+            state.shardVisible = true
+            placeShardCookie()
+            $('shard-cookie').classList.add('visible')
+        }
+
+        function showCometCookie() {
+            if (state.cometVisible) return
+            state.cometVisible = true
+            placeCometCookie()
+            $('comet-cookie').classList.add('visible')
+            setTimeout(() => {
+                if (state.cometVisible) hideCometCookie()
+            }, EVENT_VISIBLE_MS)
+        }
+
+        function showTimeSkipCookie() {
+            if (state.timeSkipVisible) return
+            state.timeSkipVisible = true
+            placeTimeSkipCookie()
+            $('timeskip-cookie').classList.add('visible')
+            setTimeout(() => {
+                if (state.timeSkipVisible) hideTimeSkipCookie()
+            }, EVENT_VISIBLE_MS * 1.2)
+        }
+
         function hideGoldenCookie() {
             state.goldenVisible = false
             $('golden-cookie').classList.remove('visible')
@@ -6271,6 +6520,107 @@
             $('milk-cookie').classList.remove('visible')
             state.nextMilkAt = Date.now() + milkIntervalMs()
             renderMilkVisual()
+        }
+
+        function hideShardCookie(collected) {
+            state.shardVisible = false
+            $('shard-cookie').classList.remove('visible')
+            const extraClicks = SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD)
+            state.nextShardClickAt = state.manualClicksTotal + extraClicks
+            state.shardCooldownUntil = Date.now() + SHARD_EVENT_COOLDOWN_MS
+            if (!collected) save()
+        }
+
+        function hideCometCookie() {
+            state.cometVisible = false
+            $('comet-cookie').classList.remove('visible')
+            state.nextCometAt = Date.now() + Math.floor(COMET_INTERVAL_MS / bonusEventRateMult())
+        }
+
+        function hideTimeSkipCookie() {
+            state.timeSkipVisible = false
+            $('timeskip-cookie').classList.remove('visible')
+            const intervalVariance = 0.8 + Math.random() * 0.4
+            state.nextTimeSkipAt = Date.now() + Math.floor(TIMESKIP_INTERVAL_MS * intervalVariance / bonusEventRateMult())
+        }
+
+        function expectedAutomaticCookiesPerSecond() {
+            const producerRate = calcCps()
+            const droneRate = calcTap()
+                * autoClicksPerSecond()
+                * (1 + droneCritChance() * (critMultiplier() - 1))
+                * (1 + droneDoubleChance())
+            return (producerRate + droneRate) * incomeMult()
+        }
+
+        function playTimeWarpEffect() {
+            const warp = $('time-warp')
+            warp.classList.remove('active')
+            void warp.offsetWidth
+            warp.classList.add('active')
+            setTimeout(() => warp.classList.remove('active'), 1950)
+        }
+
+        function showEventRewardToast(iconText, messageText) {
+            const root = $('achievement-toast-stack')
+            if (!root) return
+            const toast = document.createElement('div')
+            toast.className = 'achievement-toast'
+            const icon = document.createElement('span')
+            icon.className = 'achievement-toast-icon'
+            icon.textContent = iconText
+            const message = document.createElement('span')
+            message.textContent = messageText
+            toast.append(icon, message)
+            root.appendChild(toast)
+            setTimeout(() => toast.remove(), 4200)
+        }
+
+        function collectShardCookie(ev) {
+            if (ev && !ev.isTrusted) return
+            if (!state.shardVisible) return
+            hideShardCookie(true)
+            const reward = Math.random() < 0.05 ? 2 : 1
+            grantDirectShards(reward)
+            state.shardEventsTriggered++
+            state.randomEventsTriggered++
+            trackDailyProgress('events', 1)
+            showEventRewardToast('🔷', `Splitter-Keks: +${reward} Splitter`)
+            evaluateAchievements()
+            renderHeader()
+            renderPrestige()
+            save()
+        }
+
+        function collectCometCookie(ev) {
+            if (ev && !ev.isTrusted) return
+            if (!state.cometVisible) return
+            hideCometCookie()
+            const reward = Math.max(250, calcCps() * 90 + calcTap() * 30)
+            grantDirectCookies(reward)
+            state.cometEventsTriggered++
+            state.randomEventsTriggered++
+            trackDailyProgress('events', 1)
+            showEventRewardToast('☄️', `Kometen-Keks: +${formatNum(reward)} Kekse`)
+            evaluateAchievements()
+            renderHeader()
+            save()
+        }
+
+        function collectTimeSkipCookie(ev) {
+            if (ev && !ev.isTrusted) return
+            if (!state.timeSkipVisible) return
+            hideTimeSkipCookie()
+            const reward = Math.max(1, expectedAutomaticCookiesPerSecond() * TIMESKIP_SECONDS)
+            grantDirectCookies(reward)
+            state.timeSkipEventsTriggered++
+            state.randomEventsTriggered++
+            trackDailyProgress('events', 1)
+            playTimeWarpEffect()
+            showEventRewardToast('⏳', `2 Stunden vorgespult: +${formatNum(reward)} Kekse`)
+            evaluateAchievements()
+            renderHeader()
+            save()
         }
 
         function startMilkEvent(ev) {
@@ -6365,6 +6715,9 @@
                 milkLevel: 0,
                 milkCookiesFallen: 0,
                 milkEventsTriggered: 0,
+                shardEventsTriggered: 0,
+                cometEventsTriggered: 0,
+                timeSkipEventsTriggered: 0,
                 randomEventsTriggered: 0,
                 manualClicksTotal: 0,
                 criticalClicksTotal: 0,
@@ -6377,6 +6730,13 @@
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 diamondVisible: false,
                 nextDiamondAt: Date.now() + diamondIntervalMs(),
+                shardVisible: false,
+                nextShardClickAt: SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD),
+                shardCooldownUntil: 0,
+                cometVisible: false,
+                nextCometAt: Date.now() + COMET_INTERVAL_MS,
+                timeSkipVisible: false,
+                nextTimeSkipAt: Date.now() + TIMESKIP_INTERVAL_MS,
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
@@ -6411,6 +6771,9 @@
             hideGoldenCookie()
             hideDiamondCookie()
             hideMilkCookie()
+            $('shard-cookie').classList.remove('visible')
+            $('comet-cookie').classList.remove('visible')
+            $('timeskip-cookie').classList.remove('visible')
             renderHeader()
             renderShop()
             renderPrestige()
@@ -6446,7 +6809,14 @@
                 bonusEventRateMult: state.bonusEventRateMult,
                 milkCookiesFallen: state.milkCookiesFallen,
                 milkEventsTriggered: state.milkEventsTriggered,
+                shardEventsTriggered: state.shardEventsTriggered,
+                cometEventsTriggered: state.cometEventsTriggered,
+                timeSkipEventsTriggered: state.timeSkipEventsTriggered,
                 randomEventsTriggered: state.randomEventsTriggered,
+                nextShardClickAt: state.nextShardClickAt,
+                shardCooldownUntil: state.shardCooldownUntil,
+                nextCometAt: state.nextCometAt,
+                nextTimeSkipAt: state.nextTimeSkipAt,
                 manualClicksTotal: state.manualClicksTotal,
                 criticalClicksTotal: state.criticalClicksTotal,
                 droneCritsTotal: state.droneCritsTotal,
@@ -6587,6 +6957,8 @@
 
             const counters = [
                 data.milkCookiesFallen, data.milkEventsTriggered, data.randomEventsTriggered,
+                data.shardEventsTriggered, data.cometEventsTriggered, data.timeSkipEventsTriggered, data.nextShardClickAt,
+                data.shardCooldownUntil, data.nextCometAt, data.nextTimeSkipAt,
                 data.manualClicksTotal, data.criticalClicksTotal, data.droneCritsTotal,
                 data.droneDoublesTotal, data.dailyTasksClaimed, data.dailyRewardsClaimed, data.dailyRerollsUsedTotal,
                 data.prestige?.level, data.prestige?.shards, data.prestige?.runShards,
@@ -6623,8 +6995,19 @@
             state.bonusEventRateMult = typeof data.bonusEventRateMult === 'number' ? Math.max(1, data.bonusEventRateMult) : 1
             state.milkCookiesFallen = typeof data.milkCookiesFallen === 'number' ? Math.max(0, Math.floor(data.milkCookiesFallen)) : 0
             state.milkEventsTriggered = typeof data.milkEventsTriggered === 'number' ? Math.max(0, Math.floor(data.milkEventsTriggered)) : 0
+            state.shardEventsTriggered = typeof data.shardEventsTriggered === 'number' ? Math.max(0, Math.floor(data.shardEventsTriggered)) : 0
+            state.cometEventsTriggered = typeof data.cometEventsTriggered === 'number' ? Math.max(0, Math.floor(data.cometEventsTriggered)) : 0
+            state.timeSkipEventsTriggered = typeof data.timeSkipEventsTriggered === 'number' ? Math.max(0, Math.floor(data.timeSkipEventsTriggered)) : 0
             state.randomEventsTriggered = typeof data.randomEventsTriggered === 'number' ? Math.max(0, Math.floor(data.randomEventsTriggered)) : 0
             state.manualClicksTotal = typeof data.manualClicksTotal === 'number' ? Math.max(0, Math.floor(data.manualClicksTotal)) : 0
+            state.nextShardClickAt = typeof data.nextShardClickAt === 'number'
+                ? Math.max(state.manualClicksTotal + 1, Math.floor(data.nextShardClickAt))
+                : state.manualClicksTotal + SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD)
+            state.shardCooldownUntil = typeof data.shardCooldownUntil === 'number' ? Math.max(0, Math.floor(data.shardCooldownUntil)) : 0
+            state.nextCometAt = typeof data.nextCometAt === 'number' ? Math.max(Date.now() + 1000, Math.floor(data.nextCometAt)) : Date.now() + COMET_INTERVAL_MS
+            state.nextTimeSkipAt = typeof data.nextTimeSkipAt === 'number'
+                ? Math.max(Date.now() + 1000, Math.min(Math.floor(data.nextTimeSkipAt), Date.now() + TIMESKIP_INTERVAL_MS))
+                : Date.now() + TIMESKIP_INTERVAL_MS
             state.criticalClicksTotal = typeof data.criticalClicksTotal === 'number' ? Math.max(0, Math.floor(data.criticalClicksTotal)) : 0
             state.droneCritsTotal = typeof data.droneCritsTotal === 'number' ? Math.max(0, Math.floor(data.droneCritsTotal)) : 0
             state.droneDoublesTotal = typeof data.droneDoublesTotal === 'number' ? Math.max(0, Math.floor(data.droneDoublesTotal)) : 0
@@ -7673,6 +8056,12 @@
             if (!state.milkVisible && now >= state.nextMilkAt) {
                 showMilkCookie()
             }
+            if (!state.cometVisible && now >= state.nextCometAt) {
+                showCometCookie()
+            }
+            if (!state.timeSkipVisible && now >= state.nextTimeSkipAt) {
+                showTimeSkipCookie()
+            }
 
             if (now >= state.frenzyUntil && now >= state.diamondUntil && ($('app').classList.contains('frenzy-active') || $('app').classList.contains('diamond-active'))) {
                 renderHeader()
@@ -7766,6 +8155,9 @@
             $('golden-cookie').addEventListener('click', startFrenzy)
             $('diamond-cookie').addEventListener('click', startDiamondRush)
             $('milk-cookie').addEventListener('click', startMilkEvent)
+            $('shard-cookie').addEventListener('click', collectShardCookie)
+            $('comet-cookie').addEventListener('click', collectCometCookie)
+            $('timeskip-cookie').addEventListener('click', collectTimeSkipCookie)
             $('volume-slider').addEventListener('input', (ev) => {
                 state.audioVolume = Math.min(1, Math.max(0, Number(ev.target.value) / 100))
                 renderAudioControls()
