@@ -212,7 +212,7 @@
             background: var(--achievement-unlocked-bg);
             color: var(--achievement-unlocked-fg);
             box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
-            animation: achievement-toast-in 3.4s ease both;
+            animation: achievement-toast-in var(--toast-duration, 3.4s) ease both;
         }
 
         .achievement-toast-icon {
@@ -838,13 +838,6 @@
             z-index: 20;
         }
 
-        .achievements-wrap {
-            position: absolute;
-            top: 3.95rem;
-            right: 0.9rem;
-            z-index: 6;
-        }
-
         .patch-toggle {
             border: 1px solid var(--ctrl-border);
             background: var(--theme-btn-bg);
@@ -915,35 +908,6 @@
             opacity: 1;
             transform: translateX(0);
             pointer-events: auto;
-        }
-
-        .achievements-toggle {
-            border: 1px solid var(--ctrl-border);
-            background: var(--theme-btn-bg);
-            color: var(--theme-btn-fg);
-            width: 2rem;
-            height: 2rem;
-            border-radius: 999px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.95rem;
-            font-weight: 800;
-            box-shadow: 0 2px 8px var(--theme-btn-shadow);
-            transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
-        }
-
-        .achievements-toggle:hover,
-        .achievements-toggle:focus-visible {
-            transform: scale(1.06);
-            background: var(--ctrl-bg-hover);
-            outline: none;
-        }
-
-        .achievements-toggle.active {
-            background: var(--tab-active-bg);
-            color: var(--tab-active-fg);
         }
 
         .cookie-total {
@@ -1093,6 +1057,22 @@
             padding: 1rem;
             position: relative;
             overflow: hidden;
+        }
+
+        .app.season-spring .play-area {
+            background: radial-gradient(circle at 15% 15%, rgba(255, 126, 177, 0.12), transparent 34%);
+        }
+
+        .app.season-summer .play-area {
+            background: radial-gradient(circle at 85% 12%, rgba(255, 193, 61, 0.14), transparent 36%);
+        }
+
+        .app.season-halloween .play-area {
+            background: radial-gradient(circle at 85% 18%, rgba(224, 104, 26, 0.15), transparent 38%);
+        }
+
+        .app.season-winter .play-area {
+            background: radial-gradient(circle at 18% 12%, rgba(117, 207, 255, 0.15), transparent 38%);
         }
 
         .play-center {
@@ -1839,6 +1819,14 @@
             padding: 0.75rem 1rem 5rem;
         }
 
+        #panel-stats #stats-root {
+            padding-bottom: 0.75rem;
+        }
+
+        #panel-stats #achievements-root {
+            padding-top: 0;
+        }
+
         .shop-section-title {
             font-size: 0.7rem;
             font-weight: 700;
@@ -1890,6 +1878,23 @@
         .upgrade-row:disabled {
             opacity: 0.45;
             cursor: not-allowed;
+        }
+
+        .upgrade-row[hidden] {
+            display: none;
+        }
+
+        .upgrade-row.milestone-row.purchased {
+            border-color: var(--achievement-unlocked-border);
+            background: var(--achievement-unlocked-bg);
+        }
+
+        .upgrade-row.milestone-row.purchased .name,
+        .upgrade-row.milestone-row.purchased .desc,
+        .upgrade-row.milestone-row.purchased .cost,
+        .upgrade-row.milestone-row.purchased .owned,
+        .upgrade-row.milestone-row.purchased .icon {
+            color: var(--achievement-unlocked-fg);
         }
 
         .upgrade-row.permanent-row {
@@ -2000,6 +2005,64 @@
 
         .achievement-summary strong {
             color: var(--shop-name-color);
+        }
+
+        .stats-dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .stats-card {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.75rem;
+            padding: 0.7rem;
+            background: var(--shop-card-bg);
+            min-width: 0;
+        }
+
+        .stats-card.wide {
+            grid-column: 1 / -1;
+        }
+
+        .stats-card-title {
+            margin-bottom: 0.5rem;
+            color: var(--shop-cost-color);
+            font-size: 0.65rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .stats-list {
+            display: grid;
+            gap: 0.34rem;
+        }
+
+        .stats-list-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.65rem;
+            color: var(--shop-desc-color);
+            font-size: 0.7rem;
+        }
+
+        .stats-list-row strong {
+            color: var(--shop-name-color);
+            text-align: right;
+        }
+
+        .stats-producer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem 0.8rem;
+        }
+
+        @media (max-width: 420px) {
+            .stats-dashboard,
+            .stats-producer-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .achievement-filter-btn {
@@ -2270,101 +2333,60 @@
                     <ul>
                         <li><strong>2026-07-22</strong>
                             <ul>
-                                <li>Versionsupdate 2026.07.22.14: Abgeschlossene Erfolge können ein- und ausgeblendet werden</li>
-                                <li>Versionsupdate 2026.07.22.13: Zehn neue Spezial-Upgrades für Krits, Events, Drohnen, Milch und Synergien ergänzt</li>
-                                <li>Verpasste Kometen- und Timeskip-Events können jetzt einen Teil ihrer Belohnung speichern</li>
-                                <li>Goldrausch und Kometen können durch Upgrades kurz nachwirken</li>
-                                <li>Versionsupdate 2026.07.22.12: Neue Event-Spezial-Upgrades hinzugefügt</li>
-                                <li>Timeskip-Keks und Warp-Effekt fertiggestellt</li>
-                                <li>Timeskip-Keks als seltenes Spezial-Event ausbalanciert</li>
-                                <li>Der Warp-Effekt läuft ohne störendes Rein- und Rauszoomen mit Rotation, Licht und weicher Ausblendung</li>
-                                <li>Versionsupdate 2026.07.22.9: Mid- und Endgame erneut erweitert</li>
-                                <li>Splitter-Keks hinzugefügt: Nach vielen manuellen Klicks kann selten ein einsammelbarer Splitter erscheinen</li>
-                                <li>Der Splitter-Keks ist besonders selten und gegen Speedclicker-Farming geschützt</li>
-                                <li>Ein erschienener Splitter-Keks bleibt sichtbar, bis er eingesammelt wird</li>
-                                <li>Kometen-Keks hinzugefügt: Seltener Sofortgewinn aus Produktion und Klickstärke</li>
-                                <li>Timeskip-Keks hinzugefügt: Spult zwei Stunden automatische Produktion mit Warp-Effekt vor</li>
-                                <li>Chrono-Kondensator, Kometen-Kollektor und Splitter-Prisma als neue Spezial-Upgrades ergänzt</li>
-                                <li>Weitere Produktions- und Klickverstärkungen samt fortlaufenden Synergien ergänzt</li>
-                                <li>7 neue Erfolge für Spezial-Events, Splitterfunde und Endgame-Upgrades ergänzt – insgesamt gibt es jetzt 172</li>
-                                <li>Offene tägliche Aufgaben können jetzt zweimal pro Tag neu gewürfelt werden</li>
-                                <li>Der permanente Schicksalswürfel erhöht die täglichen Versuche auf bis zu fünf</li>
-                                <li>Abgeschlossene Aufgaben und die tägliche Zufallsbelohnung bleiben beim Würfeln erhalten</li>
-                                <li>Effektanzeigen und Klickanimationen bleiben auch bei sehr schnellem Klicken flüssig</li>
-                                <li>Im normalen Effektmodus werden wieder alle Klick- und Hintergrundanimationen angezeigt</li>
-                                <li>Die Cookie-Zahlen erscheinen wieder zuverlässig bei jedem Klick</li>
-                                <li>16 neue Langzeit-Erfolge hinzugefügt – insgesamt gibt es jetzt 145</li>
-                                <li>20 weitere Endgame-Erfolge hinzugefügt – insgesamt gibt es jetzt 165</li>
-                                <li>Erfolgskarten bleiben mit Belohnung und Status vollständig im sichtbaren Bereich</li>
-                                <li>Der nicht mehr benötigte Hilfe-Button wurde entfernt</li>
+                                <li><strong>Neue Inhalte:</strong> Vier Jahreszeiten mit eigenen Sammelfunden und dauerhaften Ertragsboni</li>
+                                <li><strong>Neue Inhalte:</strong> Zuckerstücke, Gebäudelevel und Produzenten-Meilensteine erweitern den Laden</li>
+                                <li><strong>Spezial-Events:</strong> Splitter-, Kometen- und Timeskip-Keks mit eigenen Belohnungen hinzugefügt</li>
+                                <li><strong>Goldkeks:</strong> Goldrausch, Glückskeks, Klickrausch und Kekssturm sorgen für unterschiedliche Effekte</li>
+                                <li><strong>Upgrades:</strong> Neue Verbesserungen für Krits, Events, Drohnen, Milch, Synergien und Event-Belohnungen</li>
+                                <li><strong>Statistik:</strong> Ausführliche Spielwerte und Erfolge befinden sich jetzt gemeinsam in der Statistik</li>
+                                <li><strong>Komfort:</strong> Vollständig ausgebaute Laden-Upgrades und abgeschlossene Erfolge können ausgeblendet werden</li>
+                                <li><strong>Tägliches:</strong> Offene Aufgaben können neu gewürfelt werden; der Schicksalswürfel erhöht die verfügbaren Versuche</li>
+                                <li><strong>Balancing:</strong> Eventkekse erscheinen mit größeren Zufallsabständen und nicht mehr gleichzeitig</li>
+                                <li><strong>Erfolge:</strong> Neue Ziele für Langzeitspieler, Spezial-Events und das Endgame – insgesamt 172 Erfolge</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-21</strong>
                             <ul>
-                                <li>Fünf permanente Keksrezepte mit stapelbaren Ertragsboni hinzugefügt</li>
-                                <li>Permanente Upgrades ab Stufe 2 sind jetzt deutlich teurere Mid- und Endgame-Ziele</li>
-                                <li>Keksrezepte besitzen jetzt eine vollständig gezeichnete Optik statt einfacher Emoji-Farbfilter</li>
-                                <li>Fünf permanente Milchsorten verstärken Milch-Events und färben die Milch neu</li>
-                                <li>Permanente Laden-Upgrades bleiben nach einem Prestige-Reset erhalten</li>
-                                <li>Große Zahlen werden jetzt weit über No hinaus kompakt dargestellt</li>
-                                <li>Spielzustand und lokale Saves wurden gegen einfache Konsolen-Manipulation gehärtet</li>
+                                <li><strong>Permanente Upgrades:</strong> Fünf Keksrezepte mit stapelbaren Ertragsboni hinzugefügt</li>
+                                <li><strong>Milch:</strong> Fünf Milchsorten verstärken Milch-Events und verändern deren Farbe</li>
+                                <li><strong>Prestige:</strong> Permanente Laden-Upgrades bleiben nach einem Prestige-Reset erhalten</li>
+                                <li><strong>Balancing:</strong> Höhere Stufen permanenter Upgrades sind neue Mid- und Endgame-Ziele</li>
+                                <li><strong>Anzeige:</strong> Sehr große Cookie-Zahlen werden weiterhin kompakt dargestellt</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-20</strong>
                             <ul>
-                                <li>Milch-Effekt startet erst nach dem Anklicken der seltenen Milchtüte</li>
-                                <li>Milchoptik mit zwei fließenden Wellen, Bläschen und weichem Anstieg überarbeitet</li>
-                                <li>Milch steigt auch bei Speedclickern kontrolliert und ohne sichtbaren Sprung</li>
-                                <li>Der Event-Bonus wächst jetzt deutlich mit dem erreichten Milchstand</li>
-                                <li>Mit steigendem Füllstand verwandelt sich die Milch zunehmend in dunklen Kakao</li>
-                                <li>Klickverstärkungen besitzen jetzt aufeinander aufbauende Synergien</li>
-                                <li>Neue Einstellung zum Reduzieren von Partikel- und Hintergrundeffekten</li>
-                                <li>Drohnen-Klicks und ihre erzeugten Cookies können jetzt eingeblendet werden</li>
-                                <li>Aktive Spezial-Events zeigen jetzt Restzeit und aktuellen Multiplikator an</li>
-                                <li>Neue Erfolgsmeldungen informieren sofort über freigeschaltete Erfolge</li>
-                                <li>Klick-Drohnen können durch neue Upgrades kritisch treffen und doppelt klicken</li>
-                                <li>Drei tägliche Aufgaben und eine tägliche Zufallsbelohnung hinzugefügt</li>
-                                <li>Geschenk-Symbole zeigen jetzt abholbereite tägliche Belohnungen an</li>
-                                <li>„Alles zurücksetzen“ löscht jetzt auch den lokalen Verlauf eingelöster Bonus-Codes</li>
-                                <li>49 neue Erfolge für Early- und Midgame hinzugefügt – insgesamt gibt es jetzt 79</li>
-                                <li>30 weitere Mid- und Endgame-Erfolge hinzugefügt – insgesamt gibt es jetzt 109</li>
-                                <li>Hilfe und Patchnotes öffnen jetzt per Klick und erscheinen scrollbar neben ihren Buttons</li>
-                                <li>20 neue schwere Endgame-Erfolge ohne Prestige-Voraussetzungen hinzugefügt – insgesamt gibt es jetzt 129</li>
-                                <li>Produktion läuft auch bei minimierter oder ausgeblendeter FiveM-Handy-App weiter; pausierte Timer werden automatisch nachgetragen</li>
+                                <li><strong>Tägliches:</strong> Drei tägliche Aufgaben und eine tägliche Zufallsbelohnung hinzugefügt</li>
+                                <li><strong>Milch-Event:</strong> Der Milchstand erhöht die Belohnung und verwandelt die Milch schrittweise in Kakao</li>
+                                <li><strong>Drohnen:</strong> Neue Upgrades ermöglichen kritische Treffer und Doppelklicks</li>
+                                <li><strong>Synergien:</strong> Klickverstärkungen bauen nun aufeinander auf</li>
+                                <li><strong>Effektanzeige:</strong> Aktive Spezial-Events zeigen Restzeit und Multiplikator</li>
+                                <li><strong>Einstellungen:</strong> Partikel- und Hintergrundeffekte lassen sich reduzieren; Drohnen-Klicks können eingeblendet werden</li>
+                                <li><strong>Erfolge:</strong> Zahlreiche neue Ziele für Early-, Mid- und Endgame hinzugefügt</li>
+                                <li><strong>Offline-Produktion:</strong> Die während einer minimierten App entstandene Produktion wird beim Zurückkehren gutgeschrieben</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-19</strong>
                             <ul>
-                                <li>Bonus-Codes können jetzt pro Code nur einmal eingelöst werden</li>
-                                <li>Einlösen von Bonus-Codes funktioniert zuverlässiger, auch direkt nach dem Erstellen</li>
-                                <li>Neuer Button in den Einstellungen zum schnellen Aktualisieren der Seite</li>
-                                <li>Splitter aus Bonus-Codes bleiben jetzt auch nach dem Neuladen erhalten</li>
-                                <li>Patchnotes-Tooltip für lange Listen verbessert: scrollbar mit sichtbarer Leiste beim Hover</li>
-                                <li>Prestige um neue Upgrades erweitert und mehrere neue Erfolge ergänzt</li>
-                                <li>Milchtüten-Event hinzugefügt: Cookies fallen während des Effekts in Milch, Füllstand und Farbe steigen sichtbar mit</li>
-                                <li>Shop-Kaufmodus um Max erweitert und die Kaufleiste im Laden beim Scrollen fixiert</li>
-                                <li>Prestige-Reset bereinigt jetzt auch Spezial-Upgrades und weitere Run-Werte sauber</li>
-                                <li>Max-Kaufmodus repariert: nicht kaufbare Upgrades bleiben jetzt korrekt deaktiviert</li>
-                                <li>Spezial-Cookies (Gold, Diamant, Milchtüte) verschwinden jetzt sofort beim Anklicken</li>
-                                <li>Spezial-Cookie-Effekte stapeln beim mehrfachen Klicken nicht mehr in der Dauer</li>
+                                <li><strong>Milch-Event:</strong> Eine seltene Milchtüte lässt Cookies in ansteigende Milch fallen</li>
+                                <li><strong>Prestige:</strong> Neue Prestige-Upgrades und passende Erfolge hinzugefügt</li>
+                                <li><strong>Laden:</strong> Der neue Max-Kaufmodus kauft die größtmögliche Menge</li>
+                                <li><strong>Bonus-Codes:</strong> Jeder Code kann einmal eingelöst werden</li>
+                                <li><strong>Einstellungen:</strong> Neuer Button zum schnellen Aktualisieren der App</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-18</strong>
                             <ul>
-                                <li>Prestige-System eingeführt und balanciert (Splitter, permanente Upgrades, Kosten/Skalierung angepasst)</li>
-                                <li>Diamant-Keks ergänzt (3x Bonus und eigener Modus-Look)</li>
-                                <li>Forschungscampus/Keks-Labor-Werte korrigiert (Progression/CPS-Reihenfolge)</li>
-                                <li>Neue Spezial-Upgrades: Krit-Chance, Krit-Multiplikator, Klick-Drohne</li>
-                                <li>Producer-Synergien hinzugefügt</li>
-                                <li>Achievement-System stark erweitert (frühe bis schwere Endgame-Ziele)</li>
-                                <li>Eigene Erfolge-Ansicht ergänzt, inkl. Pokal-Button im Header und besserem Kontrast</li>
-                                <li>Shop-Kaufmodus verbessert: x1/x10/x50/x100 mit korrekter Gesamtpreis-Anzeige</li>
-                                <li>UI-Polish: Prestige-Aufsteigen-Button beim Hover beruhigt</li>
+                                <li><strong>Prestige:</strong> Prestige-System mit Splittern und dauerhaften Upgrades eingeführt</li>
+                                <li><strong>Spezial-Event:</strong> Diamant-Keks mit dreifachem Ertrag und eigener Optik hinzugefügt</li>
+                                <li><strong>Upgrades:</strong> Krit-Chance, Krit-Multiplikator, Klick-Drohne und Produzenten-Synergien ergänzt</li>
+                                <li><strong>Erfolge:</strong> Eigene Erfolge-Ansicht und zahlreiche Ziele bis ins Endgame hinzugefügt</li>
+                                <li><strong>Laden:</strong> Kaufmengen x1, x10, x50 und x100 hinzugefügt</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-17</strong>
                             <ul>
-                                <li>Dark Mode erweitert (Toggle, persistentes Theme, bessere Shop-Kontraste)</li>
+                                <li><strong>Darstellung:</strong> Nachtmodus mit angepassten Farben und verbessertem Laden-Kontrast hinzugefügt</li>
                             </ul>
                         </li>
                     </ul>
@@ -2539,11 +2561,6 @@
                     </div>
                 </div>
             </div>
-            <div class="achievements-wrap">
-                <button type="button" class="achievements-toggle" id="achievements-toggle" aria-label="Erfolge anzeigen" aria-pressed="false">
-                    <i class="fa-solid fa-trophy" aria-hidden="true"></i>
-                </button>
-            </div>
             <div class="cookie-total">
                 <span class="label">Kekse</span>
                 <span id="total-display">0</span>
@@ -2551,14 +2568,6 @@
             <div class="stats-row">
                 <span>pro Klick <strong id="tap-display">1</strong></span>
                 <span>pro Sek <strong id="cps-display">0</strong></span>
-            </div>
-            <div class="stats-row">
-                <span>Klickrate <strong id="self-clickrate-display">0/s</strong></span>
-                <span>Drohnenrate <strong id="drone-clickrate-display">0/s</strong></span>
-            </div>
-            <div class="stats-row">
-                <span>Splitter <strong id="shards-display">0</strong></span>
-                <span>Krit <strong id="crit-display">4% / x2.0</strong></span>
             </div>
         </header>
 
@@ -2610,7 +2619,8 @@
                 <div class="shop" id="prestige-root"></div>
             </section>
 
-            <section class="panel" id="panel-achievements" aria-label="Erfolge">
+            <section class="panel" id="panel-stats" aria-label="Statistiken">
+                <div class="shop" id="stats-root"></div>
                 <div class="shop" id="achievements-root"></div>
             </section>
         </div>
@@ -2621,6 +2631,7 @@
             <button type="button" class="tab-btn active" data-tab="play">Keks</button>
             <button type="button" class="tab-btn" data-tab="shop">Laden</button>
             <button type="button" class="tab-btn" data-tab="prestige">Prestige</button>
+            <button type="button" class="tab-btn" data-tab="stats">Statistik</button>
         </nav>
     </div>
 
@@ -2631,19 +2642,22 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.22.14'
+        const APP_VERSION = '2026.07.22.23'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
         const COST_MULT = 1.15
         const OFFLINE_CAP_MS = 4 * 60 * 60 * 1000
-        const GOLDEN_INTERVAL_MS = 150000
-        const DIAMOND_INTERVAL_MS = 420000
+        const GOLDEN_INTERVAL_MS = 4 * 60 * 1000
+        const DIAMOND_INTERVAL_MS = 12 * 60 * 1000
         const FRENZY_MS = 10000
         const FRENZY_MULT = 2
+        const CLICK_FRENZY_MS = 12000
+        const CLICK_FRENZY_MULT = 7
         const DIAMOND_MULT = 3
         const TICK_MS = 100
         const BACKGROUND_GAP_MS = 750
+        const OFFLINE_TOAST_MIN_MS = 5000
         const AUTOSAVE_MS = 15000
         const CLICK_RATE_WINDOW_MS = 1000
         const DEFAULT_VOLUME = 0.7
@@ -2657,17 +2671,23 @@
             'Dc', 'Ud', 'Dd', 'Td', 'Qad', 'Qid', 'Sxd', 'Spd', 'Od', 'Nd',
             'Vg', 'Uvg', 'Dvg', 'Tvg', 'Qavg', 'Qivg', 'Sxvg', 'Spvg', 'Ovg', 'Nvg', 'Tg',
         ]
-        const MILK_BASE_INTERVAL_MS = 1500000
+        const MILK_BASE_INTERVAL_MS = 30 * 60 * 1000
         const MILK_DURATION_BASE_MS = 30000
         const MILK_MAX_RISE_PER_SECOND = 0.018
-        const EVENT_OVERLAP_CHANCE = 0.001
         const EVENT_VISIBLE_MS = 10000
+        const EVENT_GLOBAL_COOLDOWN_MS = 30 * 1000
+        const EVENT_RETRY_MIN_MS = 45 * 1000
+        const EVENT_RETRY_SPREAD_MS = 45 * 1000
         const SHARD_EVENT_MIN_CLICKS = 15000
         const SHARD_EVENT_CLICK_SPREAD = 30001
         const SHARD_EVENT_COOLDOWN_MS = 12 * 60 * 60 * 1000
-        const COMET_INTERVAL_MS = 12 * 60 * 1000
-        const TIMESKIP_INTERVAL_MS = 45 * 60 * 1000
+        const COMET_INTERVAL_MS = 24 * 60 * 1000
+        const TIMESKIP_INTERVAL_MS = 60 * 60 * 1000
         const TIMESKIP_SECONDS = 2 * 60 * 60
+        const SUGAR_LUMP_GROW_MS = 6 * 60 * 60 * 1000
+        const SUGAR_LUMP_OFFLINE_CAP = 14
+        const PRODUCER_LEVEL_MAX = 10
+        const PRODUCER_LEVEL_BONUS = 0.05
         const SHARE_SAVE_PREFIX = 'CCS1'
         const SHARE_SAVE_SALT = 'cc.export.2026.07.v1'
         const BONUS_CODES_STORAGE_KEY = 'cc_bonus_codes_used_v1'
@@ -2853,6 +2873,18 @@
             { id: 'cosmicAutoClicker', name: 'Kosmischer Autoklicker', icon: 'fa-solid fa-hand-sparkles', desc: 'Drohnen erzeugen zusätzlich 2% der Produktion pro Stufe', baseCost: 260000000000000, costMult: 2.58, max: 10 },
         ]
 
+        const PRODUCER_MILESTONE_THRESHOLDS = [10, 25, 50, 100]
+        const PRODUCER_MILESTONES = PRODUCERS.flatMap((producer) =>
+            PRODUCER_MILESTONE_THRESHOLDS.map((threshold, tier) => ({
+                id: `${producer.id}-${threshold}`,
+                producerId: producer.id,
+                threshold,
+                tier,
+                name: `${producer.name}: Stufe ${tier + 1}`,
+                desc: `Verdoppelt die Produktion von ${producer.name}`,
+                cost: Math.max(1, Math.floor(producer.baseCost * threshold * threshold * 0.4 * (tier + 1))),
+            })))
+
         const PERMANENT_UPGRADES = [
             {
                 id: 'doubleChocolateCookie', category: 'cookie', name: 'Doppelter Schokoladen-Keks',
@@ -2915,6 +2947,46 @@
                 baseCost: 250000000000, costMult: 1000, max: 3,
             },
         ]
+
+        const SEASONS = [
+            {
+                id: 'spring', name: 'Frühlingsfest', icon: '🌷', months: [2, 3, 4],
+                finds: [
+                    { id: 'spring-blossom', name: 'Zuckerblüte', icon: '🌸' },
+                    { id: 'spring-egg', name: 'Marmoriertes Keksei', icon: '🥚' },
+                    { id: 'spring-bunny', name: 'Marzipanhase', icon: '🐇' },
+                    { id: 'spring-honey', name: 'Blütenhonig', icon: '🍯' },
+                ],
+            },
+            {
+                id: 'summer', name: 'Sommerbäckerei', icon: '☀️', months: [5, 6, 7, 8],
+                finds: [
+                    { id: 'summer-berry', name: 'Sonnenbeere', icon: '🍓' },
+                    { id: 'summer-ice', name: 'Keks-Eis', icon: '🍦' },
+                    { id: 'summer-lemon', name: 'Zitronenglasur', icon: '🍋' },
+                    { id: 'summer-shell', name: 'Zuckermuschel', icon: '🐚' },
+                ],
+            },
+            {
+                id: 'halloween', name: 'Schaurige Backnacht', icon: '🎃', months: [9, 10],
+                finds: [
+                    { id: 'halloween-pumpkin', name: 'Kürbiskeks', icon: '🎃' },
+                    { id: 'halloween-ghost', name: 'Geisterzucker', icon: '👻' },
+                    { id: 'halloween-bat', name: 'Schokofledermaus', icon: '🦇' },
+                    { id: 'halloween-cauldron', name: 'Kakaokessel', icon: '🧪' },
+                ],
+            },
+            {
+                id: 'winter', name: 'Winterbäckerei', icon: '❄️', months: [11, 0, 1],
+                finds: [
+                    { id: 'winter-star', name: 'Zimtstern', icon: '⭐' },
+                    { id: 'winter-cane', name: 'Zuckerstange', icon: '🍬' },
+                    { id: 'winter-gift', name: 'Keksgeschenk', icon: '🎁' },
+                    { id: 'winter-cocoa', name: 'Festtagskakao', icon: '☕' },
+                ],
+            },
+        ]
+        const SEASONAL_FINDS = SEASONS.flatMap((season) => season.finds)
 
         const ACHIEVEMENTS = [
             {
@@ -4489,9 +4561,17 @@
             clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
             specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
             permanentUpgrades: Object.fromEntries(PERMANENT_UPGRADES.map((u) => [u.id, 0])),
+            milestoneUpgrades: Object.fromEntries(PRODUCER_MILESTONES.map((u) => [u.id, false])),
+            producerLevels: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
+            sugarLumps: 0,
+            sugarLumpsTotal: 0,
+            nextSugarLumpAt: Date.now() + SUGAR_LUMP_GROW_MS,
+            seasonalFinds: Object.fromEntries(SEASONAL_FINDS.map((item) => [item.id, false])),
+            goldenEffectCounts: { frenzy: 0, lucky: 0, clickFrenzy: 0, storm: 0 },
             buyAmount: 1,
             lastSave: Date.now(),
             frenzyUntil: 0,
+            clickFrenzyUntil: 0,
             diamondUntil: 0,
             goldenAfterglowUntil: 0,
             cometTailUntil: 0,
@@ -4514,22 +4594,29 @@
             dailyRewardsClaimed: 0,
             dailyRerollsUsedTotal: 0,
             goldenVisible: false,
+            nextEventAllowedAt: 0,
+            goldenExpiresAt: 0,
             nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
             diamondVisible: false,
+            diamondExpiresAt: 0,
             nextDiamondAt: Date.now() + DIAMOND_INTERVAL_MS,
             shardVisible: false,
             nextShardClickAt: SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD),
             shardCooldownUntil: 0,
             cometVisible: false,
+            cometExpiresAt: 0,
             nextCometAt: Date.now() + COMET_INTERVAL_MS,
             timeSkipVisible: false,
+            timeSkipExpiresAt: 0,
             nextTimeSkipAt: Date.now() + TIMESKIP_INTERVAL_MS,
+            milkCookieExpiresAt: 0,
             audioVolume: DEFAULT_VOLUME,
             audioMuted: false,
             darkMode: DEFAULT_DARK_MODE,
             reducedEffects: false,
             showDroneClicks: false,
             hideCompletedAchievements: false,
+            hideMaxedShopUpgrades: false,
             bonusAllUntil: 0,
             bonusAllMult: 1,
             bonusEventRateUntil: 0,
@@ -4550,6 +4637,9 @@
         let bonusAdminUnlocked = false
         let redeemedBonusCodesCount = 0
         let lastDailyRenderAt = 0
+        let lastStatsRenderAt = 0
+        let lastSugarWorkshopSignature = ''
+        let lastSeasonId = ''
         let rejectedLocalSave = false
 
         const $ = (id) => document.getElementById(id)
@@ -4935,6 +5025,16 @@
                     mult: frenzyPowerMult(),
                 })
             }
+            if (now < state.clickFrenzyUntil) {
+                effects.push({
+                    kind: 'click-frenzy',
+                    icon: '👆',
+                    name: 'Klickrausch',
+                    until: state.clickFrenzyUntil,
+                    duration: CLICK_FRENZY_MS,
+                    mult: CLICK_FRENZY_MULT,
+                })
+            }
             if (now < state.diamondUntil) {
                 const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
                 effects.push({
@@ -5054,13 +5154,13 @@
         function goldenIntervalMs() {
             const reduce = 0.06 * prestigeUpgradeLevel('goldenSignal')
             const base = GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce) * prestigeMagnetMult()
-            return Math.max(10000, Math.floor(base / bonusEventRateMult()))
+            return randomizedEventInterval(Math.max(120000, Math.floor(base / bonusEventRateMult())))
         }
 
         function milkIntervalMs() {
             const resonanceFade = Math.max(0.82, 1 - prestigeUpgradeLevel('milkResonance') * 0.01)
             const base = MILK_BASE_INTERVAL_MS * prestigeMagnetMult() * resonanceFade
-            return Math.max(240000, Math.floor(base / bonusEventRateMult()))
+            return randomizedEventInterval(Math.max(600000, Math.floor(base / bonusEventRateMult())))
         }
 
         function frenzyDurationMs() {
@@ -5070,7 +5170,19 @@
         function diamondIntervalMs() {
             const reduce = 0.08 * prestigeUpgradeLevel('diamondLure')
             const base = DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce) * prestigeMagnetMult()
-            return Math.max(45000, Math.floor(base / bonusEventRateMult()))
+            return randomizedEventInterval(Math.max(300000, Math.floor(base / bonusEventRateMult())))
+        }
+
+        function randomizedEventInterval(baseMs) {
+            return Math.floor(baseMs * (0.85 + Math.random() * 0.3))
+        }
+
+        function cometIntervalMs() {
+            return randomizedEventInterval(Math.max(480000, Math.floor(COMET_INTERVAL_MS / bonusEventRateMult())))
+        }
+
+        function timeSkipIntervalMs() {
+            return randomizedEventInterval(Math.max(900000, Math.floor(TIMESKIP_INTERVAL_MS / bonusEventRateMult())))
         }
 
         function diamondDurationMult() {
@@ -5096,6 +5208,78 @@
 
         function totalClickUpgradesOwned() {
             return Object.values(state.clicks).reduce((sum, owned) => sum + owned, 0)
+        }
+
+        function currentSeason(date = new Date()) {
+            const month = date.getMonth()
+            return SEASONS.find((season) => season.months.includes(month)) || SEASONS[1]
+        }
+
+        function renderSeasonVisuals() {
+            const app = $('app')
+            const season = currentSeason()
+            for (const item of SEASONS) app.classList.remove(`season-${item.id}`)
+            app.classList.add(`season-${season.id}`)
+            lastSeasonId = season.id
+        }
+
+        function seasonalFindCount(season = null) {
+            const finds = season ? season.finds : SEASONAL_FINDS
+            return finds.reduce((count, item) => count + (state.seasonalFinds[item.id] ? 1 : 0), 0)
+        }
+
+        function seasonalCollectionMult() {
+            return 1 + seasonalFindCount() * 0.02
+        }
+
+        function maybeAwardSeasonalFind() {
+            if (Math.random() >= 0.2) return null
+            const season = currentSeason()
+            const missing = season.finds.filter((item) => !state.seasonalFinds[item.id])
+            if (missing.length === 0) return null
+            const find = missing[Math.floor(Math.random() * missing.length)]
+            state.seasonalFinds[find.id] = true
+            showEventRewardToast(find.icon, `${season.name}: ${find.name} gefunden – dauerhaft +2% Ertrag`)
+            return find
+        }
+
+        function milestoneUpgradeLevel(producerId) {
+            return PRODUCER_MILESTONES.reduce((level, milestone) =>
+                level + (milestone.producerId === producerId && state.milestoneUpgrades[milestone.id] ? 1 : 0), 0)
+        }
+
+        function producerMilestoneMult(producerId) {
+            return Math.pow(2, milestoneUpgradeLevel(producerId))
+        }
+
+        function producerLevelMult(producerId) {
+            return 1 + (state.producerLevels[producerId] || 0) * PRODUCER_LEVEL_BONUS
+        }
+
+        function producerLevelCost(producerId) {
+            return Math.min(PRODUCER_LEVEL_MAX, (state.producerLevels[producerId] || 0) + 1)
+        }
+
+        function harvestReadySugarLumps(now = Date.now()) {
+            if (!Number.isFinite(state.nextSugarLumpAt) || state.nextSugarLumpAt <= 0) {
+                state.nextSugarLumpAt = now + SUGAR_LUMP_GROW_MS
+                return 0
+            }
+            if (now < state.nextSugarLumpAt) return 0
+            const elapsedHarvests = 1 + Math.floor((now - state.nextSugarLumpAt) / SUGAR_LUMP_GROW_MS)
+            const harvested = Math.min(SUGAR_LUMP_OFFLINE_CAP, elapsedHarvests)
+            state.sugarLumps += harvested
+            state.sugarLumpsTotal += harvested
+            state.nextSugarLumpAt += elapsedHarvests * SUGAR_LUMP_GROW_MS
+            return harvested
+        }
+
+        function sugarLumpRemainingText(now = Date.now()) {
+            return formatDurationCompact(Math.max(0, state.nextSugarLumpAt - now))
+        }
+
+        function clickEventMult() {
+            return Date.now() < state.clickFrenzyUntil ? CLICK_FRENZY_MULT : 1
         }
 
         function achievementBonus(type) {
@@ -5293,13 +5477,17 @@
             if (now < state.cometTailUntil) {
                 mult *= 1 + specialUpgradeLevel('cometTail') * 0.04
             }
-            return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult() * permanentCookieIncomeMult()
+            return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult() * permanentCookieIncomeMult() * seasonalCollectionMult()
         }
 
         function calcCps() {
             let cps = 0
             for (const p of PRODUCERS) {
-                cps += p.cps * state.producers[p.id] * producerSynergyMult(p.id)
+                cps += p.cps
+                    * state.producers[p.id]
+                    * producerSynergyMult(p.id)
+                    * producerMilestoneMult(p.id)
+                    * producerLevelMult(p.id)
             }
             return cps * producerBonusMult() * cosmicOrbitMult() * cosmicTragheitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('cps'))
         }
@@ -5462,26 +5650,11 @@
 
         function renderHeader() {
             $('total-display').textContent = formatNum(state.cookies)
-            $('tap-display').textContent = formatStatNum(calcTap() * incomeMult())
+            $('tap-display').textContent = formatStatNum(calcTap() * incomeMult() * clickEventMult())
             $('cps-display').textContent = formatStatNum(calcCps() * incomeMult())
-            $('self-clickrate-display').textContent = `${formatStatNum(manualClicksPerSecond())}/s`
-            $('drone-clickrate-display').textContent = `${formatStatNum(autoClicksPerSecond())}/s`
-            $('shards-display').textContent = formatNum(state.prestige.shards + state.prestige.runShards)
             const prestigeNode = $('prestige-level-display')
             if (prestigeNode) {
                 prestigeNode.textContent = String(state.prestige.level)
-            }
-            const critNode = $('crit-display')
-            if (critNode) {
-                critNode.textContent = `${Math.round(critChance() * 100)}% / x${critMultiplier().toFixed(1)}`
-            }
-            const achievementsNode = $('achievements-display')
-            if (achievementsNode) {
-                achievementsNode.textContent = `${unlockedAchievementsCount()}/${ACHIEVEMENTS.length}`
-            }
-            const achievementsToggle = $('achievements-toggle')
-            if (achievementsToggle) {
-                achievementsToggle.setAttribute('title', `Erfolge: ${unlockedAchievementsCount()}/${ACHIEVEMENTS.length}`)
             }
             updateFrenzyVisuals()
             renderBonusStatus()
@@ -5551,8 +5724,21 @@
             }
             root.appendChild(buyControls)
 
+            const maxedFilterBtn = document.createElement('button')
+            maxedFilterBtn.type = 'button'
+            maxedFilterBtn.className = 'achievement-filter-btn'
+            maxedFilterBtn.id = 'shop-maxed-filter-btn'
+            maxedFilterBtn.addEventListener('click', () => {
+                state.hideMaxedShopUpgrades = !state.hideMaxedShopUpgrades
+                lastSugarWorkshopSignature = ''
+                renderShop()
+                save()
+            })
+            root.appendChild(maxedFilterBtn)
+
             const permanentCookieTitle = document.createElement('h2')
             permanentCookieTitle.className = 'shop-section-title'
+            permanentCookieTitle.dataset.shopSectionTitle = 'permanent-cookie'
             permanentCookieTitle.textContent = 'Permanente Keksrezepte'
             root.appendChild(permanentCookieTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'cookie')) {
@@ -5561,6 +5747,7 @@
 
             const permanentMilkTitle = document.createElement('h2')
             permanentMilkTitle.className = 'shop-section-title'
+            permanentMilkTitle.dataset.shopSectionTitle = 'permanent-milk'
             permanentMilkTitle.textContent = 'Permanente Milchsorten'
             root.appendChild(permanentMilkTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'milk')) {
@@ -5569,6 +5756,7 @@
 
             const permanentDailyTitle = document.createElement('h2')
             permanentDailyTitle.className = 'shop-section-title'
+            permanentDailyTitle.dataset.shopSectionTitle = 'permanent-daily'
             permanentDailyTitle.textContent = 'Permanente Tages-Upgrades'
             root.appendChild(permanentDailyTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'daily')) {
@@ -5577,6 +5765,7 @@
 
             const prodTitle = document.createElement('h2')
             prodTitle.className = 'shop-section-title'
+            prodTitle.dataset.shopSectionTitle = 'producer'
             prodTitle.textContent = 'Produktion'
             root.appendChild(prodTitle)
 
@@ -5584,8 +5773,43 @@
                 root.appendChild(createUpgradeRow(p, 'producer'))
             }
 
+            const milestoneTitle = document.createElement('h2')
+            milestoneTitle.className = 'shop-section-title'
+            milestoneTitle.id = 'milestone-upgrades-title'
+            milestoneTitle.textContent = 'Produzenten-Meilensteine'
+            root.appendChild(milestoneTitle)
+
+            const milestoneRoot = document.createElement('div')
+            milestoneRoot.id = 'milestone-upgrades-root'
+            for (const milestone of PRODUCER_MILESTONES) {
+                const producer = PRODUCERS.find((item) => item.id === milestone.producerId)
+                const btn = document.createElement('button')
+                btn.type = 'button'
+                btn.className = 'upgrade-row milestone-row'
+                btn.dataset.milestoneId = milestone.id
+                btn.innerHTML = `
+                    <span class="icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
+                    <span class="info"><div class="name">${milestone.name}</div><div class="desc">${milestone.desc}</div></span>
+                    <span class="meta"><div class="cost"></div><div class="owned">Benötigt ${milestone.threshold} ${producer.name}</div></span>
+                `
+                btn.addEventListener('click', () => buyMilestoneUpgrade(milestone.id))
+                milestoneRoot.appendChild(btn)
+            }
+            root.appendChild(milestoneRoot)
+
+            const sugarTitle = document.createElement('h2')
+            sugarTitle.className = 'shop-section-title'
+            sugarTitle.id = 'sugar-workshop-title'
+            sugarTitle.textContent = 'Zuckerstück-Werkstatt'
+            root.appendChild(sugarTitle)
+
+            const sugarRoot = document.createElement('div')
+            sugarRoot.id = 'sugar-workshop-root'
+            root.appendChild(sugarRoot)
+
             const clickTitle = document.createElement('h2')
             clickTitle.className = 'shop-section-title'
+            clickTitle.dataset.shopSectionTitle = 'click'
             clickTitle.textContent = 'Klick-Verstärkung'
             root.appendChild(clickTitle)
 
@@ -5595,6 +5819,7 @@
 
             const specialTitle = document.createElement('h2')
             specialTitle.className = 'shop-section-title'
+            specialTitle.dataset.shopSectionTitle = 'special'
             specialTitle.textContent = 'Spezial-Upgrades'
             root.appendChild(specialTitle)
 
@@ -5700,6 +5925,7 @@
                 + (kind === 'permanent' ? ' permanent-row' : '')
             btn.dataset.kind = kind
             btn.dataset.id = item.id
+            btn.dataset.shopSection = kind === 'permanent' ? `permanent-${item.category}` : kind
             btn.disabled = kind === 'prestige'
                 ? state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
                 : kind === 'special' || kind === 'permanent'
@@ -5735,7 +5961,7 @@
         }
 
         function renderShop() {
-            const rows = $('shop-root').querySelectorAll('.upgrade-row')
+            const rows = $('shop-root').querySelectorAll('.upgrade-row[data-kind]')
             renderShopMeta()
             let i = 0
             for (const item of PERMANENT_UPGRADES) {
@@ -5750,6 +5976,79 @@
             for (const s of SPECIAL_UPGRADES) {
                 updateRow(rows[i++], s, 'special')
             }
+            renderMilestoneUpgrades()
+            renderSugarWorkshop()
+            renderShopSectionVisibility()
+        }
+
+        function renderShopSectionVisibility() {
+            const root = $('shop-root')
+            if (!root) return
+            root.querySelectorAll('[data-shop-section-title]').forEach((title) => {
+                const section = title.dataset.shopSectionTitle
+                const hasVisibleRows = [...root.querySelectorAll(`[data-shop-section="${section}"]`)]
+                    .some((row) => !row.hidden)
+                title.hidden = !hasVisibleRows
+            })
+        }
+
+        function renderMilestoneUpgrades() {
+            const root = $('milestone-upgrades-root')
+            const title = $('milestone-upgrades-title')
+            if (!root || !title) return
+            let visibleCount = 0
+            for (const milestone of PRODUCER_MILESTONES) {
+                const btn = root.querySelector(`[data-milestone-id="${milestone.id}"]`)
+                const unlocked = state.producers[milestone.producerId] >= milestone.threshold
+                const purchased = state.milestoneUpgrades[milestone.id] === true
+                const visible = (unlocked || purchased) && (!purchased || !state.hideMaxedShopUpgrades)
+                btn.hidden = !visible
+                if (!visible) continue
+                visibleCount++
+                btn.disabled = purchased || !canAfford(milestone.cost)
+                btn.classList.toggle('purchased', purchased)
+                btn.querySelector('.cost').textContent = purchased ? 'Gekauft' : formatNum(milestone.cost)
+                btn.querySelector('.owned').textContent = purchased
+                    ? 'Produktion x2 aktiv'
+                    : `Freigeschaltet mit ${milestone.threshold} Gebäuden`
+            }
+            title.hidden = visibleCount === 0
+        }
+
+        function renderSugarWorkshop(force = false) {
+            const root = $('sugar-workshop-root')
+            if (!root) return
+            const title = $('sugar-workshop-title')
+            if (title) title.textContent = `Zuckerstück-Werkstatt · ${formatNum(state.sugarLumps)} verfügbar`
+            const eligible = PRODUCERS.filter((producer) => state.producers[producer.id] > 0 || state.producerLevels[producer.id] > 0)
+            const visible = eligible.filter((producer) => !state.hideMaxedShopUpgrades || state.producerLevels[producer.id] < PRODUCER_LEVEL_MAX)
+            const signature = `${state.hideMaxedShopUpgrades}|${state.sugarLumps}|${visible.map((producer) => `${producer.id}:${state.producerLevels[producer.id]}:${state.producers[producer.id]}`).join('|')}`
+            if (!force && signature === lastSugarWorkshopSignature) return
+            lastSugarWorkshopSignature = signature
+
+            if (visible.length === 0) {
+                if (title) title.hidden = state.hideMaxedShopUpgrades && eligible.length > 0
+                root.innerHTML = eligible.length > 0
+                    ? ''
+                    : `<div class="achievement-summary">Kaufe zuerst einen Produzenten, um ihn dauerhaft mit Zuckerstücken zu leveln.</div>`
+                return
+            }
+            if (title) title.hidden = false
+
+            root.innerHTML = visible.map((producer) => {
+                const level = state.producerLevels[producer.id] || 0
+                const maxed = level >= PRODUCER_LEVEL_MAX
+                const cost = producerLevelCost(producer.id)
+                return `<button type="button" class="upgrade-row sugar-level-row" data-producer-level-id="${producer.id}" ${maxed || state.sugarLumps < cost ? 'disabled' : ''}>
+                    <span class="icon">🧁</span>
+                    <span class="info"><div class="name">${producer.name} · Level ${level}</div><div class="desc">Dauerhaft +${Math.round(PRODUCER_LEVEL_BONUS * 100)}% Grundproduktion pro Level</div></span>
+                    <span class="meta"><div class="cost">${maxed ? 'Maximal' : `${cost} Zuckerstück${cost === 1 ? '' : 'e'}`}</div><div class="owned">x${producerLevelMult(producer.id).toFixed(2)}</div></span>
+                </button>`
+            }).join('')
+
+            root.querySelectorAll('[data-producer-level-id]').forEach((btn) => {
+                btn.addEventListener('click', () => buyProducerLevel(btn.dataset.producerLevelId))
+            })
         }
 
         function renderShopMeta() {
@@ -5758,6 +6057,14 @@
                 controls.querySelectorAll('.buy-amount-btn').forEach((btn) => {
                     btn.classList.toggle('active', btn.dataset.amount === String(state.buyAmount))
                 })
+            }
+            const maxedFilterBtn = $('shop-maxed-filter-btn')
+            if (maxedFilterBtn) {
+                maxedFilterBtn.classList.toggle('active', state.hideMaxedShopUpgrades)
+                maxedFilterBtn.setAttribute('aria-pressed', String(state.hideMaxedShopUpgrades))
+                maxedFilterBtn.textContent = state.hideMaxedShopUpgrades
+                    ? 'Vollständig ausgebaute Upgrades einblenden'
+                    : 'Vollständig ausgebaute Upgrades ausblenden'
             }
         }
 
@@ -5769,14 +6076,10 @@
             $('prestige-level-info').innerHTML = `<div><strong>Prestige-Stufe:</strong> ${state.prestige.level}</div>`
 
             $('prestige-grid').innerHTML = `
-                <div>Splitter gesamt: <strong>${formatNum(totalShards)}</strong></div>
-                <div>Ausgebbar: <strong>${formatNum(state.prestige.shards)}</strong></div>
+                <div>Für Aufstieg verfügbar: <strong>${formatNum(totalShards)}</strong></div>
                 <div>Run-Splitter: <strong>${formatNum(state.prestige.runShards)}</strong></div>
-                <div>Gesamt Splitter: <strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
-                <div>Lebenszeit-Kekse: <strong>${formatNum(state.lifetimeCookies)}</strong></div>
                 <div>Nächster Splitter in: <strong>${formatNum(neededForNextShard)}</strong></div>
                 <div>Globaler Prestige-Bonus: <strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
-                <div>Prestige-Kosten: <strong>${formatNum(prestigeCost)} Splitter</strong></div>
             `
 
             const ascendBtn = $('prestige-ascend-btn')
@@ -5838,6 +6141,100 @@
             }
         }
 
+        function renderStats() {
+            const root = $('stats-root')
+            if (!root) return
+
+            const manualCritRate = state.manualClicksTotal > 0
+                ? state.criticalClicksTotal / state.manualClicksTotal
+                : 0
+            const season = currentSeason()
+            const producerRows = PRODUCERS.map((producer) => `
+                <div class="stats-list-row">
+                    <span>${producer.name}</span>
+                    <strong>${formatNum(state.producers[producer.id])} · L${state.producerLevels[producer.id]} · x${formatStatNum(producerMilestoneMult(producer.id) * producerLevelMult(producer.id))}</strong>
+                </div>
+            `).join('')
+
+            root.innerHTML = `
+                <h2 class="shop-section-title">Statistik</h2>
+                <div class="stats-dashboard">
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">Kekse</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Aktuell</span><strong>${formatNum(state.cookies)}</strong></div>
+                            <div class="stats-list-row"><span>Lebenszeit</span><strong>${formatNum(state.lifetimeCookies)}</strong></div>
+                            <div class="stats-list-row"><span>Pro Sekunde</span><strong>${formatStatNum(calcCps() * incomeMult())}</strong></div>
+                            <div class="stats-list-row"><span>Pro Klick</span><strong>${formatStatNum(calcTap() * incomeMult() * clickEventMult())}</strong></div>
+                            <div class="stats-list-row"><span>Aktiver Multiplikator</span><strong>x${formatStatNum(incomeMult())}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">Klicks</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Manuell gesamt</span><strong>${formatNum(state.manualClicksTotal)}</strong></div>
+                            <div class="stats-list-row"><span>Aktuelle Klickrate</span><strong>${formatStatNum(manualClicksPerSecond())}/s</strong></div>
+                            <div class="stats-list-row"><span>Kritische Klicks</span><strong>${formatNum(state.criticalClicksTotal)}</strong></div>
+                            <div class="stats-list-row"><span>Effektive Krit-Rate</span><strong>${formatPct(manualCritRate)}</strong></div>
+                            <div class="stats-list-row"><span>Krit-Chance</span><strong>${Math.round(critChance() * 100)}%</strong></div>
+                            <div class="stats-list-row"><span>Krit-Multiplikator</span><strong>x${critMultiplier().toFixed(1)}</strong></div>
+                            <div class="stats-list-row"><span>Drohnenrate</span><strong>${formatStatNum(autoClicksPerSecond())}/s</strong></div>
+                            <div class="stats-list-row"><span>Klick-Upgrades</span><strong>${formatNum(totalClickUpgradesOwned())}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">Spezialereignisse</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Alle Ereignisse</span><strong>${formatNum(state.randomEventsTriggered)}</strong></div>
+                            <div class="stats-list-row"><span>Milch</span><strong>${formatNum(state.milkEventsTriggered)}</strong></div>
+                            <div class="stats-list-row"><span>Splitter</span><strong>${formatNum(state.shardEventsTriggered)}</strong></div>
+                            <div class="stats-list-row"><span>Kometen</span><strong>${formatNum(state.cometEventsTriggered)}</strong></div>
+                            <div class="stats-list-row"><span>Timeskips</span><strong>${formatNum(state.timeSkipEventsTriggered)}</strong></div>
+                            <div class="stats-list-row"><span>Goldrausch</span><strong>${formatNum(state.goldenEffectCounts.frenzy)}</strong></div>
+                            <div class="stats-list-row"><span>Glückskekse</span><strong>${formatNum(state.goldenEffectCounts.lucky)}</strong></div>
+                            <div class="stats-list-row"><span>Klickrausch</span><strong>${formatNum(state.goldenEffectCounts.clickFrenzy)}</strong></div>
+                            <div class="stats-list-row"><span>Keksstürme</span><strong>${formatNum(state.goldenEffectCounts.storm)}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">Fortschritt</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Erfolge</span><strong>${unlockedAchievementsCount()} / ${ACHIEVEMENTS.length}</strong></div>
+                            <div class="stats-list-row"><span>Prestige-Stufe</span><strong>${state.prestige.level}</strong></div>
+                            <div class="stats-list-row"><span>Splitter ausgebbar</span><strong>${formatNum(state.prestige.shards)}</strong></div>
+                            <div class="stats-list-row"><span>Run-Splitter</span><strong>${formatNum(state.prestige.runShards)}</strong></div>
+                            <div class="stats-list-row"><span>Splitter insgesamt verdient</span><strong>${formatNum(state.prestige.totalShardsEarned)}</strong></div>
+                            <div class="stats-list-row"><span>Prestige-Bonus</span><strong>${formatPct(prestigeLevelIncomeMult() - 1)}</strong></div>
+                            <div class="stats-list-row"><span>Tägliche Aufgaben</span><strong>${formatNum(state.dailyTasksClaimed)}</strong></div>
+                            <div class="stats-list-row"><span>Tagesbelohnungen</span><strong>${formatNum(state.dailyRewardsClaimed)}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">Zuckerstücke</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Verfügbar</span><strong>${formatNum(state.sugarLumps)}</strong></div>
+                            <div class="stats-list-row"><span>Insgesamt geerntet</span><strong>${formatNum(state.sugarLumpsTotal)}</strong></div>
+                            <div class="stats-list-row"><span>Nächstes Stück</span><strong>${sugarLumpRemainingText()}</strong></div>
+                            <div class="stats-list-row"><span>Gebäudelevel gesamt</span><strong>${formatNum(Object.values(state.producerLevels).reduce((sum, level) => sum + level, 0))}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">${season.icon} ${season.name}</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Aktuelle Sammlung</span><strong>${seasonalFindCount(season)} / ${season.finds.length}</strong></div>
+                            <div class="stats-list-row"><span>Alle Saisonfunde</span><strong>${seasonalFindCount()} / ${SEASONAL_FINDS.length}</strong></div>
+                            <div class="stats-list-row"><span>Dauerbonus</span><strong>${formatPct(seasonalCollectionMult() - 1)}</strong></div>
+                            <div class="stats-list-row"><span>Gefunden</span><strong>${season.finds.filter((item) => state.seasonalFinds[item.id]).map((item) => item.icon).join(' ') || '–'}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card wide">
+                        <h3 class="stats-card-title">Produktion · ${formatNum(totalProducerOwned())} Gebäude</h3>
+                        <div class="stats-producer-grid">${producerRows}</div>
+                    </section>
+                </div>
+            `
+        }
+
         function updateRow(btn, item, kind) {
             let owned = 0
             let cost = 0
@@ -5869,7 +6266,9 @@
                 btn.disabled = state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
             }
 
-            btn.querySelector('.cost').textContent = kind === 'permanent' && owned >= item.max ? 'Maximal' : formatNum(cost)
+            const maxed = (kind === 'permanent' || kind === 'special') && owned >= item.max
+            btn.hidden = state.hideMaxedShopUpgrades && maxed
+            btn.querySelector('.cost').textContent = maxed ? 'Maximal' : formatNum(cost)
             btn.querySelector('.owned').textContent = kind === 'permanent'
                 ? `Permanent: ${owned}/${item.max}`
                 : kind === 'prestige' || kind === 'special' ? `Stufe: ${owned}/${item.max}` : `Besitz: ${owned}`
@@ -5923,6 +6322,36 @@
                 owned++
             }
             return total
+        }
+
+        function buyMilestoneUpgrade(id) {
+            const milestone = PRODUCER_MILESTONES.find((item) => item.id === id)
+            if (!milestone || state.milestoneUpgrades[id]) return
+            if (state.producers[milestone.producerId] < milestone.threshold) return
+            if (!canAfford(milestone.cost)) return
+            state.cookies -= milestone.cost
+            state.milestoneUpgrades[id] = true
+            renderHeader()
+            renderShop()
+            renderStats()
+            save()
+        }
+
+        function buyProducerLevel(producerId) {
+            const producer = PRODUCERS.find((item) => item.id === producerId)
+            if (!producer) return
+            const level = state.producerLevels[producerId] || 0
+            if (level >= PRODUCER_LEVEL_MAX) return
+            if (state.producers[producerId] <= 0 && level <= 0) return
+            const cost = producerLevelCost(producerId)
+            if (state.sugarLumps < cost) return
+            state.sugarLumps -= cost
+            state.producerLevels[producerId] = level + 1
+            lastSugarWorkshopSignature = ''
+            renderHeader()
+            renderShop()
+            renderStats()
+            save()
         }
 
         function buyUpgrade(kind, id) {
@@ -6015,7 +6444,9 @@
             state.producers = Object.fromEntries(PRODUCERS.map((p) => [p.id, 0]))
             state.clicks = Object.fromEntries(CLICKS.map((c) => [c.id, 0]))
             state.specialUpgrades = Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0]))
+            state.milestoneUpgrades = Object.fromEntries(PRODUCER_MILESTONES.map((u) => [u.id, false]))
             state.frenzyUntil = 0
+            state.clickFrenzyUntil = 0
             state.diamondUntil = 0
             state.goldenAfterglowUntil = 0
             state.cometTailUntil = 0
@@ -6071,42 +6502,68 @@
             save()
         }
 
-        function showAchievementToast(achievement) {
-            const root = $('achievement-toast-stack')
-            if (!root || !achievement) return
+        const notificationToastQueue = []
+        let notificationToastActive = false
 
-            const toast = document.createElement('div')
-            toast.className = 'achievement-toast'
-            toast.innerHTML = `<span class="achievement-toast-icon">🏆</span>
-                <div><strong>${achievement.name}</strong><span>${achievement.reward}</span></div>`
-            root.appendChild(toast)
-            while (root.children.length > 3) {
-                root.firstElementChild.remove()
-            }
-            setTimeout(() => toast.remove(), 3500)
-        }
-
-        function showOfflineProgressToast(earned, elapsedMs) {
-            if (!Number.isFinite(earned) || earned <= 0) return
+        function showNextNotificationToast() {
+            if (notificationToastActive || notificationToastQueue.length === 0) return
             const root = $('achievement-toast-stack')
             if (!root) return
 
+            const notification = notificationToastQueue.shift()
             const toast = document.createElement('div')
             toast.className = 'achievement-toast'
-            toast.innerHTML = `<span class="achievement-toast-icon">🌙</span>
-                <div><strong>Offline produziert: +${formatNum(earned)} Kekse</strong><span>Zeitraum: ${formatDurationCompact(elapsedMs)}</span></div>`
-            root.appendChild(toast)
-            while (root.children.length > 3) {
-                root.firstElementChild.remove()
+            toast.style.setProperty('--toast-duration', `${notification.duration}ms`)
+
+            const icon = document.createElement('span')
+            icon.className = 'achievement-toast-icon'
+            icon.textContent = notification.icon
+
+            const content = document.createElement('div')
+            const title = document.createElement('strong')
+            title.textContent = notification.title
+            content.appendChild(title)
+            if (notification.detail) {
+                const detail = document.createElement('span')
+                detail.textContent = notification.detail
+                content.appendChild(detail)
             }
-            setTimeout(() => toast.remove(), 3500)
+
+            toast.append(icon, content)
+            root.replaceChildren(toast)
+            notificationToastActive = true
+            setTimeout(() => {
+                toast.remove()
+                notificationToastActive = false
+                showNextNotificationToast()
+            }, notification.duration)
+        }
+
+        function queueNotificationToast(icon, title, detail = '', duration = 3500) {
+            notificationToastQueue.push({ icon, title, detail, duration })
+            showNextNotificationToast()
+        }
+
+        function showAchievementToast(achievement) {
+            if (!achievement) return
+            queueNotificationToast('🏆', achievement.name, achievement.reward)
+        }
+
+        function showOfflineProgressToast(earned, elapsedMs) {
+            if (!Number.isFinite(earned) || earned <= 0 || elapsedMs < OFFLINE_TOAST_MIN_MS) return
+            queueNotificationToast(
+                '🌙',
+                `Offline produziert: +${formatNum(earned)} Kekse`,
+                `Zeitraum: ${formatDurationCompact(elapsedMs)}`,
+            )
         }
 
         let offlineResumePending = false
+        let offlineResumeInProgress = false
         let pendingOfflineProgressToast = null
 
         function queueOfflineProgressToast(earned, elapsedMs) {
-            if (!Number.isFinite(earned) || earned <= 0) return
+            if (!Number.isFinite(earned) || earned <= 0 || elapsedMs < OFFLINE_TOAST_MIN_MS) return
             pendingOfflineProgressToast = {
                 earned,
                 elapsedMs,
@@ -6120,18 +6577,7 @@
         }
 
         function showSecurityToast() {
-            const root = $('achievement-toast-stack')
-            if (!root) return
-            const toast = document.createElement('div')
-            toast.className = 'achievement-toast'
-            const icon = document.createElement('span')
-            icon.className = 'achievement-toast-icon'
-            icon.textContent = '🛡️'
-            const message = document.createElement('span')
-            message.textContent = 'Ein manipulierter oder beschädigter Spielstand wurde verworfen.'
-            toast.append(icon, message)
-            root.appendChild(toast)
-            setTimeout(() => toast.remove(), 5000)
+            queueNotificationToast('🛡️', 'Ein manipulierter oder beschädigter Spielstand wurde verworfen.', '', 5000)
         }
 
         function evaluateAchievements() {
@@ -6155,8 +6601,9 @@
                 if (shopPanel && shopPanel.classList.contains('active')) {
                     renderShop()
                 }
-                const achievementsPanel = $('panel-achievements')
-                if (achievementsPanel && achievementsPanel.classList.contains('active')) {
+                const statsPanel = $('panel-stats')
+                if (statsPanel && statsPanel.classList.contains('active')) {
+                    renderStats()
                     renderAchievements()
                 }
             }
@@ -6472,7 +6919,7 @@
             trackDailyProgress('clicks', 1)
             const baseTap = calcTap()
             const didCrit = Math.random() < critChance()
-            let tap = didCrit ? baseTap * critMultiplier() : baseTap
+            let tap = (didCrit ? baseTap * critMultiplier() : baseTap) * clickEventMult()
             const didChainCrit = didCrit && Math.random() < specialUpgradeLevel('criticalChain') * 0.02
             if (didChainCrit) tap *= 2
             if (didCrit) state.criticalClicksTotal++
@@ -6559,41 +7006,107 @@
             }
         }
 
+        function scheduleEventExpiry(expiresAt) {
+            const delay = Math.max(0, expiresAt - Date.now()) + 25
+            setTimeout(() => expireVisibleEventCookies(Date.now()), delay)
+        }
+
+        function anyEventCookieVisible() {
+            return state.goldenVisible
+                || state.diamondVisible
+                || state.milkVisible
+                || state.shardVisible
+                || state.cometVisible
+                || state.timeSkipVisible
+        }
+
+        function deferDueEvent(kind) {
+            const retryAt = Date.now() + EVENT_RETRY_MIN_MS + Math.floor(Math.random() * EVENT_RETRY_SPREAD_MS)
+            if (kind === 'golden') state.nextGoldenAt = retryAt
+            else if (kind === 'diamond') state.nextDiamondAt = retryAt
+            else if (kind === 'milk') state.nextMilkAt = retryAt
+            else if (kind === 'comet') state.nextCometAt = retryAt
+            else if (kind === 'timeskip') state.nextTimeSkipAt = retryAt
+        }
+
+        function startEventCooldown() {
+            state.nextEventAllowedAt = Math.max(state.nextEventAllowedAt || 0, Date.now() + EVENT_GLOBAL_COOLDOWN_MS)
+        }
+
+        function canShowEventCookie(kind) {
+            if (!anyEventCookieVisible() && Date.now() >= (state.nextEventAllowedAt || 0)) return true
+            if (kind !== 'shard') deferDueEvent(kind)
+            return false
+        }
+
+        function expireCometCookie() {
+            if (!state.cometVisible) return
+            const memoryLevel = specialUpgradeLevel('eventMemory')
+            if (memoryLevel > 0) {
+                const memoryReward = Math.max(250, calcCps() * 90 + calcTap() * 30) * cometRewardMult() * memoryLevel * 0.05
+                grantDirectCookies(memoryReward)
+                showEventRewardToast('📦', `Ereignisspeicher: +${formatNum(memoryReward)} Kekse`)
+            }
+            hideCometCookie()
+        }
+
+        function expireTimeSkipCookie() {
+            if (!state.timeSkipVisible) return
+            const memoryLevel = specialUpgradeLevel('eventMemory')
+            if (memoryLevel > 0) {
+                const memoryReward = expectedAutomaticCookiesPerSecond() * TIMESKIP_SECONDS * timeSkipRewardMult() * memoryLevel * 0.05
+                grantDirectCookies(memoryReward)
+                showEventRewardToast('📦', `Ereignisspeicher: +${formatNum(memoryReward)} Kekse`)
+            }
+            hideTimeSkipCookie()
+        }
+
+        function expireVisibleEventCookies(now = Date.now()) {
+            if (state.goldenVisible && state.goldenExpiresAt > 0 && now >= state.goldenExpiresAt) hideGoldenCookie()
+            if (state.diamondVisible && state.diamondExpiresAt > 0 && now >= state.diamondExpiresAt) hideDiamondCookie()
+            if (state.milkVisible && state.milkCookieExpiresAt > 0 && now >= state.milkCookieExpiresAt) hideMilkCookie()
+            if (state.cometVisible && state.cometExpiresAt > 0 && now >= state.cometExpiresAt) expireCometCookie()
+            if (state.timeSkipVisible && state.timeSkipExpiresAt > 0 && now >= state.timeSkipExpiresAt) expireTimeSkipCookie()
+        }
+
         function showGoldenCookie() {
             if (state.goldenVisible) return
-            if (state.diamondVisible && Math.random() > EVENT_OVERLAP_CHANCE) return
+            if (!canShowEventCookie('golden')) return
             state.goldenVisible = true
+            state.goldenExpiresAt = Date.now() + EVENT_VISIBLE_MS
             placeGoldenCookie()
             $('golden-cookie').classList.add('visible')
-            setTimeout(() => {
-                if (state.goldenVisible) hideGoldenCookie()
-            }, EVENT_VISIBLE_MS)
+            scheduleEventExpiry(state.goldenExpiresAt)
         }
 
         function showDiamondCookie() {
             if (state.diamondVisible) return
-            if (state.goldenVisible && Math.random() > EVENT_OVERLAP_CHANCE) return
+            if (!canShowEventCookie('diamond')) return
             state.diamondVisible = true
+            state.diamondExpiresAt = Date.now() + EVENT_VISIBLE_MS
             placeDiamondCookie()
             $('diamond-cookie').classList.add('visible')
-            setTimeout(() => {
-                if (state.diamondVisible) hideDiamondCookie()
-            }, EVENT_VISIBLE_MS)
+            scheduleEventExpiry(state.diamondExpiresAt)
         }
 
         function showMilkCookie() {
-            if (state.milkVisible || isMilkActive()) return
+            if (state.milkVisible) return
+            if (isMilkActive()) {
+                deferDueEvent('milk')
+                return
+            }
+            if (!canShowEventCookie('milk')) return
             state.milkVisible = true
+            state.milkCookieExpiresAt = Date.now() + EVENT_VISIBLE_MS
             placeMilkCookie()
             $('milk-cookie').classList.add('visible')
             renderMilkVisual()
-            setTimeout(() => {
-                if (state.milkVisible) hideMilkCookie()
-            }, EVENT_VISIBLE_MS)
+            scheduleEventExpiry(state.milkCookieExpiresAt)
         }
 
         function showShardCookie() {
             if (state.shardVisible) return
+            if (!canShowEventCookie('shard')) return
             state.shardVisible = true
             placeShardCookie()
             $('shard-cookie').classList.add('visible')
@@ -6601,56 +7114,46 @@
 
         function showCometCookie() {
             if (state.cometVisible) return
+            if (!canShowEventCookie('comet')) return
             state.cometVisible = true
+            state.cometExpiresAt = Date.now() + EVENT_VISIBLE_MS
             placeCometCookie()
             $('comet-cookie').classList.add('visible')
-            setTimeout(() => {
-                if (state.cometVisible) {
-                    const memoryLevel = specialUpgradeLevel('eventMemory')
-                    if (memoryLevel > 0) {
-                        const memoryReward = Math.max(250, calcCps() * 90 + calcTap() * 30) * cometRewardMult() * memoryLevel * 0.05
-                        grantDirectCookies(memoryReward)
-                        showEventRewardToast('📦', `Ereignisspeicher: +${formatNum(memoryReward)} Kekse`)
-                    }
-                    hideCometCookie()
-                }
-            }, EVENT_VISIBLE_MS)
+            scheduleEventExpiry(state.cometExpiresAt)
         }
 
         function showTimeSkipCookie() {
             if (state.timeSkipVisible) return
+            if (!canShowEventCookie('timeskip')) return
             state.timeSkipVisible = true
+            state.timeSkipExpiresAt = Date.now() + EVENT_VISIBLE_MS * 1.2
             placeTimeSkipCookie()
             $('timeskip-cookie').classList.add('visible')
-            setTimeout(() => {
-                if (state.timeSkipVisible) {
-                    const memoryLevel = specialUpgradeLevel('eventMemory')
-                    if (memoryLevel > 0) {
-                        const memoryReward = expectedAutomaticCookiesPerSecond() * TIMESKIP_SECONDS * timeSkipRewardMult() * memoryLevel * 0.05
-                        grantDirectCookies(memoryReward)
-                        showEventRewardToast('📦', `Ereignisspeicher: +${formatNum(memoryReward)} Kekse`)
-                    }
-                    hideTimeSkipCookie()
-                }
-            }, EVENT_VISIBLE_MS * 1.2)
+            scheduleEventExpiry(state.timeSkipExpiresAt)
         }
 
         function hideGoldenCookie() {
             state.goldenVisible = false
+            state.goldenExpiresAt = 0
             $('golden-cookie').classList.remove('visible')
             state.nextGoldenAt = Date.now() + goldenIntervalMs()
+            startEventCooldown()
         }
 
         function hideDiamondCookie() {
             state.diamondVisible = false
+            state.diamondExpiresAt = 0
             $('diamond-cookie').classList.remove('visible')
             state.nextDiamondAt = Date.now() + diamondIntervalMs()
+            startEventCooldown()
         }
 
         function hideMilkCookie() {
             state.milkVisible = false
+            state.milkCookieExpiresAt = 0
             $('milk-cookie').classList.remove('visible')
             state.nextMilkAt = Date.now() + milkIntervalMs()
+            startEventCooldown()
             renderMilkVisual()
         }
 
@@ -6660,20 +7163,24 @@
             const extraClicks = SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD)
             state.nextShardClickAt = state.manualClicksTotal + extraClicks
             state.shardCooldownUntil = Date.now() + SHARD_EVENT_COOLDOWN_MS
+            startEventCooldown()
             if (!collected) save()
         }
 
         function hideCometCookie() {
             state.cometVisible = false
+            state.cometExpiresAt = 0
             $('comet-cookie').classList.remove('visible')
-            state.nextCometAt = Date.now() + Math.floor(COMET_INTERVAL_MS / bonusEventRateMult())
+            state.nextCometAt = Date.now() + cometIntervalMs()
+            startEventCooldown()
         }
 
         function hideTimeSkipCookie() {
             state.timeSkipVisible = false
+            state.timeSkipExpiresAt = 0
             $('timeskip-cookie').classList.remove('visible')
-            const intervalVariance = 0.8 + Math.random() * 0.4
-            state.nextTimeSkipAt = Date.now() + Math.floor(TIMESKIP_INTERVAL_MS * intervalVariance / bonusEventRateMult())
+            state.nextTimeSkipAt = Date.now() + timeSkipIntervalMs()
+            startEventCooldown()
         }
 
         function expectedAutomaticCookiesPerSecond() {
@@ -6709,18 +7216,7 @@
         }
 
         function showEventRewardToast(iconText, messageText) {
-            const root = $('achievement-toast-stack')
-            if (!root) return
-            const toast = document.createElement('div')
-            toast.className = 'achievement-toast'
-            const icon = document.createElement('span')
-            icon.className = 'achievement-toast-icon'
-            icon.textContent = iconText
-            const message = document.createElement('span')
-            message.textContent = messageText
-            toast.append(icon, message)
-            root.appendChild(toast)
-            setTimeout(() => toast.remove(), 4200)
+            queueNotificationToast(iconText, messageText, '', 4200)
         }
 
         function collectShardCookie(ev) {
@@ -6792,16 +7288,45 @@
             renderHeader()
         }
 
-        function startFrenzy(ev) {
+        function collectGoldenCookie(ev) {
             if (ev && !ev.isTrusted) return
             if (!state.goldenVisible) return
             hideGoldenCookie()
             const now = Date.now()
-            state.goldenAfterglowUntil = 0
-            state.frenzyUntil = now + frenzyDurationMs()
+            const roll = Math.random()
+            let effect = 'frenzy'
+
+            if (roll < 0.4) {
+                state.goldenAfterglowUntil = 0
+                state.frenzyUntil = now + frenzyDurationMs()
+                showEventRewardToast('⭐', `Goldrausch: x${formatStatNum(frenzyPowerMult())} auf alle Erträge`)
+            } else if (roll < 0.68) {
+                effect = 'lucky'
+                const bankReward = Math.min(state.cookies * 0.15 + 13, calcCps() * 900 + calcTap() * 120 + 13)
+                const reward = Math.max(25, bankReward)
+                grantDirectCookies(reward)
+                showEventRewardToast('🍀', `Glückskeks: +${formatNum(reward)} Kekse`)
+            } else if (roll < 0.9) {
+                effect = 'clickFrenzy'
+                state.clickFrenzyUntil = now + CLICK_FRENZY_MS
+                showEventRewardToast('👆', `Klickrausch: x${CLICK_FRENZY_MULT} pro Klick`)
+            } else {
+                effect = 'storm'
+                const reward = Math.max(100, calcCps() * 180 + calcTap() * 80)
+                grantDirectCookies(reward)
+                showEventRewardToast('🍪', `Kekssturm: +${formatNum(reward)} Kekse`)
+                const pos = cookieCenterInPlayArea()
+                spawnJumpCookies(pos.x, pos.y, Math.max(1, calcTap() * 8))
+            }
+
+            state.goldenEffectCounts[effect] = (state.goldenEffectCounts[effect] || 0) + 1
             state.randomEventsTriggered++
             trackDailyProgress('events', 1)
+            maybeAwardSeasonalFind()
+            evaluateAchievements()
             renderHeader()
+            renderStats()
+            save()
         }
 
         function startDiamondRush(ev) {
@@ -6858,9 +7383,17 @@
                 clicks: Object.fromEntries(CLICKS.map((c) => [c.id, 0])),
                 specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
                 permanentUpgrades: Object.fromEntries(PERMANENT_UPGRADES.map((u) => [u.id, 0])),
+                milestoneUpgrades: Object.fromEntries(PRODUCER_MILESTONES.map((u) => [u.id, false])),
+                producerLevels: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
+                sugarLumps: 0,
+                sugarLumpsTotal: 0,
+                nextSugarLumpAt: Date.now() + SUGAR_LUMP_GROW_MS,
+                seasonalFinds: Object.fromEntries(SEASONAL_FINDS.map((item) => [item.id, false])),
+                goldenEffectCounts: { frenzy: 0, lucky: 0, clickFrenzy: 0, storm: 0 },
                 buyAmount: 1,
                 lastSave: Date.now(),
                 frenzyUntil: 0,
+                clickFrenzyUntil: 0,
                 diamondUntil: 0,
                 goldenAfterglowUntil: 0,
                 cometTailUntil: 0,
@@ -6882,22 +7415,29 @@
                 dailyRewardsClaimed: 0,
                 dailyRerollsUsedTotal: 0,
                 goldenVisible: false,
+                nextEventAllowedAt: 0,
+                goldenExpiresAt: 0,
                 nextGoldenAt: Date.now() + GOLDEN_INTERVAL_MS,
                 diamondVisible: false,
+                diamondExpiresAt: 0,
                 nextDiamondAt: Date.now() + diamondIntervalMs(),
                 shardVisible: false,
                 nextShardClickAt: SHARD_EVENT_MIN_CLICKS + Math.floor(Math.random() * SHARD_EVENT_CLICK_SPREAD),
                 shardCooldownUntil: 0,
                 cometVisible: false,
+                cometExpiresAt: 0,
                 nextCometAt: Date.now() + COMET_INTERVAL_MS,
                 timeSkipVisible: false,
+                timeSkipExpiresAt: 0,
                 nextTimeSkipAt: Date.now() + TIMESKIP_INTERVAL_MS,
+                milkCookieExpiresAt: 0,
                 audioVolume: DEFAULT_VOLUME,
                 audioMuted: false,
                 darkMode: DEFAULT_DARK_MODE,
                 reducedEffects: false,
                 showDroneClicks: false,
                 hideCompletedAchievements: false,
+                hideMaxedShopUpgrades: false,
                 bonusAllUntil: 0,
                 bonusAllMult: 1,
                 bonusEventRateUntil: 0,
@@ -6934,6 +7474,7 @@
             renderShop()
             renderPrestige()
             renderAchievements()
+            renderStats()
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
@@ -6950,6 +7491,13 @@
                 clicks: { ...state.clicks },
                 specialUpgrades: { ...state.specialUpgrades },
                 permanentUpgrades: { ...state.permanentUpgrades },
+                milestoneUpgrades: { ...state.milestoneUpgrades },
+                producerLevels: { ...state.producerLevels },
+                sugarLumps: state.sugarLumps,
+                sugarLumpsTotal: state.sugarLumpsTotal,
+                nextSugarLumpAt: state.nextSugarLumpAt,
+                seasonalFinds: { ...state.seasonalFinds },
+                goldenEffectCounts: { ...state.goldenEffectCounts },
                 buyAmount: state.buyAmount,
                 achievements: { ...state.achievements },
                 lastSave: state.lastSave,
@@ -6959,6 +7507,7 @@
                 reducedEffects: state.reducedEffects,
                 showDroneClicks: state.showDroneClicks,
                 hideCompletedAchievements: state.hideCompletedAchievements,
+                hideMaxedShopUpgrades: state.hideMaxedShopUpgrades,
                 daily: state.daily,
                 bonusAllUntil: state.bonusAllUntil,
                 bonusAllMult: state.bonusAllMult,
@@ -7112,7 +7661,23 @@
             validateOwned(data.clicks, CLICKS, () => 1000000000)
             validateOwned(data.specialUpgrades, SPECIAL_UPGRADES, (item) => item.max)
             validateOwned(data.permanentUpgrades, PERMANENT_UPGRADES, (item) => item.max)
+            validateOwned(data.producerLevels, PRODUCERS, () => PRODUCER_LEVEL_MAX)
             validateOwned(data.prestige?.upgrades, PRESTIGE_UPGRADES, (item) => item.max)
+
+            const validateBooleanMap = (collection, definitions) => {
+                if (collection === undefined) return
+                if (!collection || typeof collection !== 'object' || Array.isArray(collection)) {
+                    throw new Error('Ungültige Sammlungsdaten')
+                }
+                for (const item of definitions) {
+                    const value = collection[item.id]
+                    if (value !== undefined && typeof value !== 'boolean') {
+                        throw new Error(`Ungültiger Sammlungswert: ${item.id}`)
+                    }
+                }
+            }
+            validateBooleanMap(data.milestoneUpgrades, PRODUCER_MILESTONES)
+            validateBooleanMap(data.seasonalFinds, SEASONAL_FINDS)
 
             const counters = [
                 data.milkCookiesFallen, data.milkEventsTriggered, data.randomEventsTriggered,
@@ -7121,6 +7686,9 @@
                 data.goldenAfterglowUntil, data.cometTailUntil,
                 data.manualClicksTotal, data.criticalClicksTotal, data.droneCritsTotal,
                 data.droneDoublesTotal, data.dailyTasksClaimed, data.dailyRewardsClaimed, data.dailyRerollsUsedTotal,
+                data.sugarLumps, data.sugarLumpsTotal, data.nextSugarLumpAt,
+                data.goldenEffectCounts?.frenzy, data.goldenEffectCounts?.lucky,
+                data.goldenEffectCounts?.clickFrenzy, data.goldenEffectCounts?.storm,
                 data.prestige?.level, data.prestige?.shards, data.prestige?.runShards,
                 data.prestige?.totalShardsEarned, data.prestige?.shardMilestone,
             ]
@@ -7148,6 +7716,16 @@
             state.reducedEffects = data.reducedEffects === true
             state.showDroneClicks = data.showDroneClicks === true
             state.hideCompletedAchievements = data.hideCompletedAchievements === true
+            state.hideMaxedShopUpgrades = data.hideMaxedShopUpgrades === true
+            state.sugarLumps = typeof data.sugarLumps === 'number' ? Math.max(0, Math.floor(data.sugarLumps)) : 0
+            state.sugarLumpsTotal = typeof data.sugarLumpsTotal === 'number' ? Math.max(state.sugarLumps, Math.floor(data.sugarLumpsTotal)) : state.sugarLumps
+            state.nextSugarLumpAt = typeof data.nextSugarLumpAt === 'number'
+                ? Math.max(1, Math.floor(data.nextSugarLumpAt))
+                : Date.now() + SUGAR_LUMP_GROW_MS
+            for (const effect of ['frenzy', 'lucky', 'clickFrenzy', 'storm']) {
+                const count = data.goldenEffectCounts?.[effect]
+                state.goldenEffectCounts[effect] = typeof count === 'number' ? Math.max(0, Math.floor(count)) : 0
+            }
             state.daily = data.daily && typeof data.daily === 'object' ? data.daily : createEmptyDailyState()
             ensureDailyState()
             state.bonusAllUntil = typeof data.bonusAllUntil === 'number' ? Math.max(0, Math.floor(data.bonusAllUntil)) : 0
@@ -7178,8 +7756,23 @@
             state.dailyRewardsClaimed = typeof data.dailyRewardsClaimed === 'number' ? Math.max(0, Math.floor(data.dailyRewardsClaimed)) : 0
             state.dailyRerollsUsedTotal = typeof data.dailyRerollsUsedTotal === 'number' ? Math.max(0, Math.floor(data.dailyRerollsUsedTotal)) : 0
             state.milkUntil = 0
+            state.clickFrenzyUntil = 0
             state.milkVisible = false
+            state.milkCookieExpiresAt = 0
             state.milkLevel = 0
+            state.goldenVisible = false
+            state.nextEventAllowedAt = Date.now() + EVENT_GLOBAL_COOLDOWN_MS
+            state.goldenExpiresAt = 0
+            state.diamondVisible = false
+            state.diamondExpiresAt = 0
+            state.shardVisible = false
+            state.cometVisible = false
+            state.cometExpiresAt = 0
+            state.timeSkipVisible = false
+            state.timeSkipExpiresAt = 0
+            for (const id of ['golden-cookie', 'diamond-cookie', 'milk-cookie', 'shard-cookie', 'comet-cookie', 'timeskip-cookie']) {
+                $(id)?.classList.remove('visible')
+            }
             state.buyAmount = data.buyAmount === 'max' || BUY_AMOUNTS.includes(data.buyAmount)
                 ? data.buyAmount
                 : 1
@@ -7211,6 +7804,16 @@
             for (const p of PRODUCERS) {
                 const n = data.producers?.[p.id]
                 state.producers[p.id] = typeof n === 'number' && n >= 0 ? Math.floor(n) : 0
+                const level = data.producerLevels?.[p.id]
+                state.producerLevels[p.id] = typeof level === 'number'
+                    ? Math.max(0, Math.min(PRODUCER_LEVEL_MAX, Math.floor(level)))
+                    : 0
+            }
+            for (const milestone of PRODUCER_MILESTONES) {
+                state.milestoneUpgrades[milestone.id] = data.milestoneUpgrades?.[milestone.id] === true
+            }
+            for (const find of SEASONAL_FINDS) {
+                state.seasonalFinds[find.id] = data.seasonalFinds?.[find.id] === true
             }
             for (const c of CLICKS) {
                 const n = data.clicks?.[c.id]
@@ -7230,6 +7833,11 @@
             }
             for (const achievement of ACHIEVEMENTS) {
                 state.achievements[achievement.id] = data.achievements?.[achievement.id] === true
+            }
+
+            const harvestedSugar = harvestReadySugarLumps()
+            if (harvestedSugar > 0) {
+                showEventRewardToast('🧁', `${harvestedSugar} Zuckerstück${harvestedSugar === 1 ? '' : 'e'} gereift`)
             }
 
             processShardMilestones()
@@ -8138,7 +8746,7 @@
             updateBonusDurationVisibility()
         }
 
-        function refreshAfterOfflineProgress(earned, elapsedMs = 0) {
+        function refreshAfterOfflineProgress(earned, elapsedMs = 0, showToast = true) {
             if (earned <= 0) return
             evaluateAchievements()
             renderHeader()
@@ -8146,17 +8754,26 @@
             renderPrestige()
             renderAchievements()
             renderDailyPanel()
-            showOfflineProgressToast(earned, elapsedMs)
+            if (showToast) showOfflineProgressToast(earned, elapsedMs)
         }
 
         function resumeOfflineProgress() {
+            if (offlineResumeInProgress) return 0
             const now = Date.now()
             const previousProgressAt = Number.isFinite(state.lastSave) ? state.lastSave : now
             const elapsed = Math.min(Math.max(0, now - previousProgressAt), offlineCapMs())
-            const earned = applyOfflineEarnings()
-            refreshAfterOfflineProgress(earned, elapsed)
-            save()
-            return earned
+            offlineResumePending = false
+            if (elapsed <= 0) return 0
+
+            offlineResumeInProgress = true
+            try {
+                const earned = applyOfflineEarnings(now)
+                refreshAfterOfflineProgress(earned, elapsed, elapsed >= OFFLINE_TOAST_MIN_MS)
+                save()
+                return earned
+            } finally {
+                offlineResumeInProgress = false
+            }
         }
 
         function pauseOfflineProgress() {
@@ -8166,14 +8783,32 @@
 
         function gameTick() {
             const now = Date.now()
+            expireVisibleEventCookies(now)
+            if (document.visibilityState === 'hidden') return
+
             const elapsedSinceProgress = Math.max(0, now - state.lastSave)
-            if (elapsedSinceProgress >= BACKGROUND_GAP_MS) {
+            if (offlineResumePending) {
                 resumeOfflineProgress()
+                return
+            }
+            if (elapsedSinceProgress >= BACKGROUND_GAP_MS) {
+                const earned = applyOfflineEarnings(now)
+                refreshAfterOfflineProgress(earned, elapsedSinceProgress, false)
+                save()
                 return
             }
 
             const tickElapsedMs = Math.min(elapsedSinceProgress, BACKGROUND_GAP_MS)
             state.lastSave = now
+            if (currentSeason().id !== lastSeasonId) renderSeasonVisuals()
+            const harvestedSugar = harvestReadySugarLumps(now)
+            if (harvestedSugar > 0) {
+                lastSugarWorkshopSignature = ''
+                showEventRewardToast('🧁', `${harvestedSugar} Zuckerstück${harvestedSugar === 1 ? '' : 'e'} gereift`)
+                renderShop()
+                renderStats()
+                save()
+            }
             if (ensureDailyState()) {
                 renderDailyNotification()
                 save()
@@ -8184,6 +8819,10 @@
                 if (specialUpgradeLevel('goldenAfterglow') > 0) {
                     state.goldenAfterglowUntil = now + 15000
                 }
+                renderHeader()
+            }
+            if (state.clickFrenzyUntil > 0 && now >= state.clickFrenzyUntil) {
+                state.clickFrenzyUntil = 0
                 renderHeader()
             }
             const cps = calcCps()
@@ -8240,6 +8879,10 @@
 
             renderBonusStatus()
             renderActiveEffects(now)
+            if ($('panel-stats').classList.contains('active') && now - lastStatsRenderAt >= 1000) {
+                lastStatsRenderAt = now
+                renderStats()
+            }
             if ($('settings-daily-panel').classList.contains('visible') && now - lastDailyRenderAt >= 500) {
                 lastDailyRenderAt = now
                 renderDailyPanel()
@@ -8252,18 +8895,14 @@
                 $('panel-play').classList.toggle('active', tab === 'play')
                 $('panel-shop').classList.toggle('active', tab === 'shop')
                 $('panel-prestige').classList.toggle('active', tab === 'prestige')
-                $('panel-achievements').classList.toggle('active', tab === 'achievements')
-
-                const achievementsToggle = $('achievements-toggle')
-                if (achievementsToggle) {
-                    const active = tab === 'achievements'
-                    achievementsToggle.classList.toggle('active', active)
-                    achievementsToggle.setAttribute('aria-pressed', String(active))
-                }
+                $('panel-stats').classList.toggle('active', tab === 'stats')
 
                 if (tab === 'shop') renderShop()
                 if (tab === 'prestige') renderPrestige()
-                if (tab === 'achievements') renderAchievements()
+                if (tab === 'stats') {
+                    renderStats()
+                    renderAchievements()
+                }
             }
 
             document.querySelectorAll('.tab-btn').forEach((btn) => {
@@ -8271,14 +8910,6 @@
                     activateTab(btn.dataset.tab)
                 })
             })
-
-            const achievementsToggle = $('achievements-toggle')
-            if (achievementsToggle) {
-                achievementsToggle.addEventListener('click', () => {
-                    const currentlyOpen = $('panel-achievements').classList.contains('active')
-                    activateTab(currentlyOpen ? 'play' : 'achievements')
-                })
-            }
         }
 
         function initShopControls() {
@@ -8305,12 +8936,14 @@
             renderShop()
             renderPrestige()
             renderAchievements()
+            renderStats()
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
             renderActiveEffects()
             renderDailyPanel()
             renderPermanentVisuals()
+            renderSeasonVisuals()
             flushOfflineProgressToast()
             if (rejectedLocalSave) showSecurityToast()
             initShopControls()
@@ -8323,7 +8956,7 @@
                     ev.preventDefault()
                 }
             })
-            $('golden-cookie').addEventListener('click', startFrenzy)
+            $('golden-cookie').addEventListener('click', collectGoldenCookie)
             $('diamond-cookie').addEventListener('click', startDiamondRush)
             $('milk-cookie').addEventListener('click', startMilkEvent)
             $('shard-cookie').addEventListener('click', collectShardCookie)
