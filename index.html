@@ -1915,7 +1915,7 @@
         }
 
         .upgrade-row.milestone-row:not(.purchased) .owned {
-            display: none;
+            white-space: nowrap;
         }
 
         .upgrade-row.permanent-row {
@@ -2354,7 +2354,7 @@
                     <ul>
                         <li><strong>2026-07-23</strong>
                             <ul>
-                                <li><strong>Komfort:</strong> Noch nicht gekaufte Produzenten-Meilensteine sind kompakter und übersichtlicher dargestellt</li>
+                                <li><strong>Komfort:</strong> Offene Produzenten-Meilensteine sind kompakter und bleiben beim Ausblenden abgeschlossener Upgrades sichtbar</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-22</strong>
@@ -2668,7 +2668,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.23.2'
+        const APP_VERSION = '2026.07.23.3'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -6021,20 +6021,35 @@
             const root = $('milestone-upgrades-root')
             const title = $('milestone-upgrades-title')
             if (!root || !title) return
+
+            const nextPendingIds = new Set()
+            for (const producer of PRODUCERS) {
+                const nextPending = PRODUCER_MILESTONES.find((milestone) =>
+                    milestone.producerId === producer.id && state.milestoneUpgrades[milestone.id] !== true)
+                if (nextPending) nextPendingIds.add(nextPending.id)
+            }
+
             let visibleCount = 0
             for (const milestone of PRODUCER_MILESTONES) {
                 const btn = root.querySelector(`[data-milestone-id="${milestone.id}"]`)
-                const unlocked = state.producers[milestone.producerId] >= milestone.threshold
+                const owned = state.producers[milestone.producerId]
+                const unlocked = owned >= milestone.threshold
                 const purchased = state.milestoneUpgrades[milestone.id] === true
-                const visible = (unlocked || purchased) && (!purchased || !state.hideMaxedShopUpgrades)
+                const nextPending = nextPendingIds.has(milestone.id)
+                const visible = purchased
+                    ? !state.hideMaxedShopUpgrades
+                    : unlocked || (state.hideMaxedShopUpgrades && nextPending)
+
+                btn.classList.toggle('purchased', purchased)
                 btn.hidden = !visible
                 if (!visible) continue
                 visibleCount++
-                btn.disabled = purchased || !canAfford(milestone.cost)
-                btn.classList.toggle('purchased', purchased)
+                btn.disabled = purchased || !unlocked || !canAfford(milestone.cost)
                 btn.querySelector('.cost').textContent = purchased ? 'Gekauft' : formatNum(milestone.cost)
                 btn.querySelector('.desc').textContent = purchased ? milestone.desc : 'Produktion ×2'
-                btn.querySelector('.owned').textContent = purchased ? 'Produktion x2 aktiv' : ''
+                btn.querySelector('.owned').textContent = purchased
+                    ? 'Produktion x2 aktiv'
+                    : unlocked ? 'Bereit' : `${owned}/${milestone.threshold}`
             }
             title.hidden = visibleCount === 0
         }
