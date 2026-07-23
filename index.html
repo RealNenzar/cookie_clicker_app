@@ -865,10 +865,11 @@
 
         .patch-tooltip {
             position: absolute;
-            top: 0;
-            left: 2.45rem;
-            width: min(24rem, calc(100vw - 4.4rem));
-            max-height: min(60vh, 22rem);
+            top: 2.45rem;
+            left: 0;
+            width: min(24rem, calc(100vw - 1.8rem));
+            max-height: calc(100vh - 8.25rem - env(safe-area-inset-bottom, 0px));
+            max-height: calc(100dvh - 8.25rem - env(safe-area-inset-bottom, 0px));
             background: var(--tabs-bg);
             border: 1px solid var(--ctrl-border);
             border-radius: 0.7rem;
