@@ -1907,27 +1907,6 @@
             color: var(--achievement-unlocked-fg);
         }
 
-        .upgrade-row.milestone-row:not(.purchased) {
-            display: grid;
-            grid-template-columns: 2rem minmax(0, 1fr) auto;
-            align-items: center;
-        }
-
-        .upgrade-row.milestone-row:not(.purchased) .info {
-            align-self: center;
-        }
-
-        .upgrade-row.milestone-row:not(.purchased) .meta {
-            display: grid;
-            min-width: 4.5rem;
-            justify-items: end;
-            align-content: center;
-        }
-
-        .upgrade-row.milestone-row:not(.purchased) .owned {
-            white-space: nowrap;
-        }
-
         .upgrade-row.permanent-row {
             border-color: rgba(125, 83, 214, 0.48);
             background: linear-gradient(135deg, var(--shop-row-bg), rgba(134, 92, 220, 0.12));
@@ -2427,7 +2406,7 @@
                             <ul>
                                 <li><strong>Laden:</strong> Aufklappbare Unterbereiche trennen Produktion, Meilensteine, Klicks, Spezial-Upgrades, Zuckerstücke und permanente Upgrades</li>
                                 <li><strong>Anzeige:</strong> Klickrate, verfügbare Zuckerstücke und Splitter stehen jetzt direkt im Kopfbereich</li>
-                                <li><strong>Komfort:</strong> Offene Produktions-Meilensteine sind kompakter und bleiben beim Ausblenden abgeschlossener Upgrades sichtbar</li>
+                                <li><strong>Komfort:</strong> Produktions-Meilensteine nutzen das normale Laden-Layout und können auf kaufbare Einträge gefiltert werden</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-22</strong>
@@ -2754,7 +2733,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.23.5'
+        const APP_VERSION = '2026.07.23.6'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -4729,6 +4708,7 @@
             showDroneClicks: false,
             hideCompletedAchievements: false,
             hideMaxedShopUpgrades: false,
+            showOnlyBuyableMilestones: false,
             bonusAllUntil: 0,
             bonusAllMult: 1,
             bonusEventRateUntil: 0,
@@ -5895,6 +5875,18 @@
                 root.appendChild(createUpgradeRow(p, 'producer'))
             }
 
+            const milestoneBuyableFilterBtn = document.createElement('button')
+            milestoneBuyableFilterBtn.type = 'button'
+            milestoneBuyableFilterBtn.className = 'achievement-filter-btn'
+            milestoneBuyableFilterBtn.id = 'milestone-buyable-filter-btn'
+            milestoneBuyableFilterBtn.dataset.shopViewSection = 'milestones'
+            milestoneBuyableFilterBtn.addEventListener('click', () => {
+                state.showOnlyBuyableMilestones = !state.showOnlyBuyableMilestones
+                renderShop()
+                save()
+            })
+            root.appendChild(milestoneBuyableFilterBtn)
+
             const milestoneTitle = document.createElement('h2')
             milestoneTitle.className = 'shop-section-title'
             milestoneTitle.id = 'milestone-upgrades-title'
@@ -5918,6 +5910,11 @@
                 btn.addEventListener('click', () => buyMilestoneUpgrade(milestone.id))
                 milestoneRoot.appendChild(btn)
             }
+            const milestoneEmpty = document.createElement('div')
+            milestoneEmpty.className = 'achievement-summary'
+            milestoneEmpty.id = 'milestone-upgrades-empty'
+            milestoneEmpty.hidden = true
+            milestoneRoot.appendChild(milestoneEmpty)
             root.appendChild(milestoneRoot)
 
             const sugarTitle = document.createElement('h2')
@@ -6143,7 +6140,15 @@
         function renderMilestoneUpgrades() {
             const root = $('milestone-upgrades-root')
             const title = $('milestone-upgrades-title')
-            if (!root || !title) return
+            const filterBtn = $('milestone-buyable-filter-btn')
+            const empty = $('milestone-upgrades-empty')
+            if (!root || !title || !filterBtn || !empty) return
+
+            filterBtn.classList.toggle('active', state.showOnlyBuyableMilestones)
+            filterBtn.setAttribute('aria-pressed', String(state.showOnlyBuyableMilestones))
+            filterBtn.textContent = state.showOnlyBuyableMilestones
+                ? 'Alle Meilensteine anzeigen'
+                : 'Nur kaufbare anzeigen'
 
             const nextPendingIds = new Set()
             for (const producer of PRODUCERS) {
@@ -6159,22 +6164,27 @@
                 const unlocked = owned >= milestone.threshold
                 const purchased = state.milestoneUpgrades[milestone.id] === true
                 const nextPending = nextPendingIds.has(milestone.id)
-                const visible = purchased
-                    ? !state.hideMaxedShopUpgrades
-                    : unlocked || (state.hideMaxedShopUpgrades && nextPending)
+                const buyable = !purchased && unlocked && canAfford(milestone.cost)
+                const visible = state.showOnlyBuyableMilestones
+                    ? buyable
+                    : purchased ? !state.hideMaxedShopUpgrades : unlocked || nextPending
 
                 btn.classList.toggle('purchased', purchased)
                 btn.hidden = !visible
                 if (!visible) continue
                 visibleCount++
-                btn.disabled = purchased || !unlocked || !canAfford(milestone.cost)
+                btn.disabled = !buyable
                 btn.querySelector('.cost').textContent = purchased ? 'Gekauft' : formatNum(milestone.cost)
-                btn.querySelector('.desc').textContent = purchased ? milestone.desc : 'Produktion ×2'
+                btn.querySelector('.desc').textContent = milestone.desc
                 btn.querySelector('.owned').textContent = purchased
                     ? 'Produktion x2 aktiv'
                     : unlocked ? 'Bereit' : `${owned}/${milestone.threshold}`
             }
-            title.hidden = visibleCount === 0
+            title.hidden = false
+            empty.hidden = visibleCount > 0
+            empty.textContent = state.showOnlyBuyableMilestones
+                ? 'Aktuell ist kein Produktions-Meilenstein kaufbar.'
+                : 'Alle Produktions-Meilensteine wurden gekauft.'
         }
 
         function renderSugarWorkshop(force = false) {
@@ -7598,6 +7608,7 @@
                 showDroneClicks: false,
                 hideCompletedAchievements: false,
                 hideMaxedShopUpgrades: false,
+                showOnlyBuyableMilestones: false,
                 bonusAllUntil: 0,
                 bonusAllMult: 1,
                 bonusEventRateUntil: 0,
@@ -7668,6 +7679,7 @@
                 showDroneClicks: state.showDroneClicks,
                 hideCompletedAchievements: state.hideCompletedAchievements,
                 hideMaxedShopUpgrades: state.hideMaxedShopUpgrades,
+                showOnlyBuyableMilestones: state.showOnlyBuyableMilestones,
                 daily: state.daily,
                 bonusAllUntil: state.bonusAllUntil,
                 bonusAllMult: state.bonusAllMult,
@@ -7877,6 +7889,7 @@
             state.showDroneClicks = data.showDroneClicks === true
             state.hideCompletedAchievements = data.hideCompletedAchievements === true
             state.hideMaxedShopUpgrades = data.hideMaxedShopUpgrades === true
+            state.showOnlyBuyableMilestones = data.showOnlyBuyableMilestones === true
             state.sugarLumps = typeof data.sugarLumps === 'number' ? Math.max(0, Math.floor(data.sugarLumps)) : 0
             state.sugarLumpsTotal = typeof data.sugarLumpsTotal === 'number' ? Math.max(state.sugarLumps, Math.floor(data.sugarLumpsTotal)) : state.sugarLumps
             state.nextSugarLumpAt = typeof data.nextSugarLumpAt === 'number'
