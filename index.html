@@ -940,6 +940,12 @@
             color: var(--stats-strong);
         }
 
+        .stats-row.header-details {
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            font-size: 0.68rem;
+        }
+
         .audio-controls {
             margin-top: 0.5rem;
             display: flex;
@@ -1884,6 +1890,10 @@
             display: none;
         }
 
+        .shop-view-hidden {
+            display: none !important;
+        }
+
         .upgrade-row.milestone-row.purchased {
             border-color: var(--achievement-unlocked-border);
             background: var(--achievement-unlocked-bg);
@@ -2280,10 +2290,71 @@
         /* Tabs */
         .tabs {
             display: flex;
+            position: relative;
+            z-index: 25;
+            overflow: visible;
             border-top: 1px solid rgba(139, 90, 43, 0.2);
             background: var(--tabs-bg);
             padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0));
             margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.9rem);
+        }
+
+        .shop-submenu {
+            position: absolute;
+            left: 0.5rem;
+            right: 0.5rem;
+            bottom: calc(100% + 0.4rem);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.35rem;
+            padding: 0.5rem;
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.75rem;
+            background: var(--tabs-bg);
+            box-shadow: 0 -8px 22px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(0.5rem) scale(0.98);
+            transform-origin: bottom center;
+            transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+        }
+
+        .tabs.shop-menu-open .shop-submenu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .shop-submenu-btn {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.55rem;
+            padding: 0.5rem 0.4rem;
+            background: var(--theme-btn-bg);
+            color: var(--tab-fg);
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .shop-submenu-btn:hover,
+        .shop-submenu-btn:focus-visible {
+            background: var(--tab-hover-bg);
+            color: var(--tab-active-fg);
+            outline: none;
+        }
+
+        .shop-submenu-btn.active {
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
+        }
+
+        @media (max-width: 380px) {
+            .shop-submenu {
+                grid-template-columns: 1fr;
+            }
         }
 
         .tab-btn {
@@ -2354,13 +2425,15 @@
                     <ul>
                         <li><strong>2026-07-23</strong>
                             <ul>
-                                <li><strong>Komfort:</strong> Offene Produzenten-Meilensteine sind kompakter und bleiben beim Ausblenden abgeschlossener Upgrades sichtbar</li>
+                                <li><strong>Laden:</strong> Aufklappbare Unterbereiche trennen Produktion, Meilensteine, Klicks, Spezial-Upgrades, Zuckerstücke und permanente Upgrades</li>
+                                <li><strong>Anzeige:</strong> Klickrate, verfügbare Zuckerstücke und Splitter stehen jetzt direkt im Kopfbereich</li>
+                                <li><strong>Komfort:</strong> Offene Produktions-Meilensteine sind kompakter und bleiben beim Ausblenden abgeschlossener Upgrades sichtbar</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-22</strong>
                             <ul>
                                 <li><strong>Neue Inhalte:</strong> Vier Jahreszeiten mit eigenen Sammelfunden und dauerhaften Ertragsboni</li>
-                                <li><strong>Neue Inhalte:</strong> Zuckerstücke, Gebäudelevel und Produzenten-Meilensteine erweitern den Laden</li>
+                                <li><strong>Neue Inhalte:</strong> Zuckerstücke, Gebäudelevel und Produktions-Meilensteine erweitern den Laden</li>
                                 <li><strong>Spezial-Events:</strong> Splitter-, Kometen- und Timeskip-Keks mit eigenen Belohnungen hinzugefügt</li>
                                 <li><strong>Goldkeks:</strong> Goldrausch, Glückskeks, Klickrausch und Kekssturm sorgen für unterschiedliche Effekte</li>
                                 <li><strong>Upgrades:</strong> Neue Verbesserungen für Krits, Events, Drohnen, Milch, Synergien und Event-Belohnungen</li>
@@ -2595,6 +2668,11 @@
                 <span>pro Klick <strong id="tap-display">1</strong></span>
                 <span>pro Sek <strong id="cps-display">0</strong></span>
             </div>
+            <div class="stats-row header-details">
+                <span>Klickrate <strong id="clickrate-display">0/s</strong></span>
+                <span>Zuckerstücke <strong id="sugar-lumps-display">0</strong></span>
+                <span>Splitter <strong id="shards-display">0</strong></span>
+            </div>
         </header>
 
         <div class="achievement-toast-stack" id="achievement-toast-stack" aria-live="polite" aria-atomic="false"></div>
@@ -2654,8 +2732,16 @@
         <div class="app-version-pill" id="app-version-pill" aria-label="Aktuelle Version"></div>
 
         <nav class="tabs" aria-label="Navigation">
+            <div class="shop-submenu" id="shop-submenu" aria-label="Ladenbereiche" aria-hidden="true">
+                <button type="button" class="shop-submenu-btn active" data-shop-view-target="production">Produktionen</button>
+                <button type="button" class="shop-submenu-btn" data-shop-view-target="milestones">Produktions-Meilensteine</button>
+                <button type="button" class="shop-submenu-btn" data-shop-view-target="click">Klick-Verstärkung</button>
+                <button type="button" class="shop-submenu-btn" data-shop-view-target="special">Spezial-Upgrades</button>
+                <button type="button" class="shop-submenu-btn" data-shop-view-target="sugar">Zuckerstück-Werkstatt</button>
+                <button type="button" class="shop-submenu-btn" data-shop-view-target="permanent">Permanente Upgrades</button>
+            </div>
             <button type="button" class="tab-btn active" data-tab="play">Keks</button>
-            <button type="button" class="tab-btn" data-tab="shop">Laden</button>
+            <button type="button" class="tab-btn" data-tab="shop" aria-expanded="false" aria-controls="shop-submenu">Laden</button>
             <button type="button" class="tab-btn" data-tab="prestige">Prestige</button>
             <button type="button" class="tab-btn" data-tab="stats">Statistik</button>
         </nav>
@@ -2668,7 +2754,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.23.3'
+        const APP_VERSION = '2026.07.23.5'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -4667,6 +4753,7 @@
         let lastSugarWorkshopSignature = ''
         let lastSeasonId = ''
         let rejectedLocalSave = false
+        let activeShopView = 'production'
 
         const $ = (id) => document.getElementById(id)
 
@@ -5678,6 +5765,9 @@
             $('total-display').textContent = formatNum(state.cookies)
             $('tap-display').textContent = formatStatNum(calcTap() * incomeMult() * clickEventMult())
             $('cps-display').textContent = formatStatNum(calcCps() * incomeMult())
+            $('clickrate-display').textContent = `${formatStatNum(manualClicksPerSecond())}/s`
+            $('sugar-lumps-display').textContent = formatNum(state.sugarLumps)
+            $('shards-display').textContent = formatNum(state.prestige.shards + state.prestige.runShards)
             const prestigeNode = $('prestige-level-display')
             if (prestigeNode) {
                 prestigeNode.textContent = String(state.prestige.level)
@@ -5740,6 +5830,7 @@
             const buyControls = document.createElement('div')
             buyControls.className = 'buy-amount-controls'
             buyControls.id = 'buy-amount-controls'
+            buyControls.dataset.shopControlViews = 'production,click,special,permanent'
             for (const amount of BUY_AMOUNTS) {
                 const btn = document.createElement('button')
                 btn.type = 'button'
@@ -5754,6 +5845,7 @@
             maxedFilterBtn.type = 'button'
             maxedFilterBtn.className = 'achievement-filter-btn'
             maxedFilterBtn.id = 'shop-maxed-filter-btn'
+            maxedFilterBtn.dataset.shopControlViews = 'milestones,special,sugar,permanent'
             maxedFilterBtn.addEventListener('click', () => {
                 state.hideMaxedShopUpgrades = !state.hideMaxedShopUpgrades
                 lastSugarWorkshopSignature = ''
@@ -5765,6 +5857,7 @@
             const permanentCookieTitle = document.createElement('h2')
             permanentCookieTitle.className = 'shop-section-title'
             permanentCookieTitle.dataset.shopSectionTitle = 'permanent-cookie'
+            permanentCookieTitle.dataset.shopViewSection = 'permanent'
             permanentCookieTitle.textContent = 'Permanente Keksrezepte'
             root.appendChild(permanentCookieTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'cookie')) {
@@ -5774,6 +5867,7 @@
             const permanentMilkTitle = document.createElement('h2')
             permanentMilkTitle.className = 'shop-section-title'
             permanentMilkTitle.dataset.shopSectionTitle = 'permanent-milk'
+            permanentMilkTitle.dataset.shopViewSection = 'permanent'
             permanentMilkTitle.textContent = 'Permanente Milchsorten'
             root.appendChild(permanentMilkTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'milk')) {
@@ -5783,6 +5877,7 @@
             const permanentDailyTitle = document.createElement('h2')
             permanentDailyTitle.className = 'shop-section-title'
             permanentDailyTitle.dataset.shopSectionTitle = 'permanent-daily'
+            permanentDailyTitle.dataset.shopViewSection = 'permanent'
             permanentDailyTitle.textContent = 'Permanente Tages-Upgrades'
             root.appendChild(permanentDailyTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'daily')) {
@@ -5792,6 +5887,7 @@
             const prodTitle = document.createElement('h2')
             prodTitle.className = 'shop-section-title'
             prodTitle.dataset.shopSectionTitle = 'producer'
+            prodTitle.dataset.shopViewSection = 'production'
             prodTitle.textContent = 'Produktion'
             root.appendChild(prodTitle)
 
@@ -5802,11 +5898,13 @@
             const milestoneTitle = document.createElement('h2')
             milestoneTitle.className = 'shop-section-title'
             milestoneTitle.id = 'milestone-upgrades-title'
-            milestoneTitle.textContent = 'Produzenten-Meilensteine'
+            milestoneTitle.dataset.shopViewSection = 'milestones'
+            milestoneTitle.textContent = 'Produktions-Meilensteine'
             root.appendChild(milestoneTitle)
 
             const milestoneRoot = document.createElement('div')
             milestoneRoot.id = 'milestone-upgrades-root'
+            milestoneRoot.dataset.shopViewSection = 'milestones'
             for (const milestone of PRODUCER_MILESTONES) {
                 const btn = document.createElement('button')
                 btn.type = 'button'
@@ -5825,16 +5923,19 @@
             const sugarTitle = document.createElement('h2')
             sugarTitle.className = 'shop-section-title'
             sugarTitle.id = 'sugar-workshop-title'
+            sugarTitle.dataset.shopViewSection = 'sugar'
             sugarTitle.textContent = 'Zuckerstück-Werkstatt'
             root.appendChild(sugarTitle)
 
             const sugarRoot = document.createElement('div')
             sugarRoot.id = 'sugar-workshop-root'
+            sugarRoot.dataset.shopViewSection = 'sugar'
             root.appendChild(sugarRoot)
 
             const clickTitle = document.createElement('h2')
             clickTitle.className = 'shop-section-title'
             clickTitle.dataset.shopSectionTitle = 'click'
+            clickTitle.dataset.shopViewSection = 'click'
             clickTitle.textContent = 'Klick-Verstärkung'
             root.appendChild(clickTitle)
 
@@ -5845,6 +5946,7 @@
             const specialTitle = document.createElement('h2')
             specialTitle.className = 'shop-section-title'
             specialTitle.dataset.shopSectionTitle = 'special'
+            specialTitle.dataset.shopViewSection = 'special'
             specialTitle.textContent = 'Spezial-Upgrades'
             root.appendChild(specialTitle)
 
@@ -5951,6 +6053,9 @@
             btn.dataset.kind = kind
             btn.dataset.id = item.id
             btn.dataset.shopSection = kind === 'permanent' ? `permanent-${item.category}` : kind
+            btn.dataset.shopViewSection = kind === 'permanent'
+                ? 'permanent'
+                : kind === 'producer' ? 'production' : kind
             btn.disabled = kind === 'prestige'
                 ? state.prestige.level < 1 || owned >= item.max || state.prestige.shards < cost
                 : kind === 'special' || kind === 'permanent'
@@ -6004,6 +6109,24 @@
             renderMilestoneUpgrades()
             renderSugarWorkshop()
             renderShopSectionVisibility()
+            renderShopView()
+        }
+
+        function renderShopView() {
+            const root = $('shop-root')
+            if (!root) return
+            root.querySelectorAll('[data-shop-view-section]').forEach((node) => {
+                node.classList.toggle('shop-view-hidden', node.dataset.shopViewSection !== activeShopView)
+            })
+            root.querySelectorAll('[data-shop-control-views]').forEach((node) => {
+                const views = node.dataset.shopControlViews.split(',')
+                node.classList.toggle('shop-view-hidden', !views.includes(activeShopView))
+            })
+            document.querySelectorAll('[data-shop-view-target]').forEach((btn) => {
+                const active = btn.dataset.shopViewTarget === activeShopView
+                btn.classList.toggle('active', active)
+                btn.setAttribute('aria-pressed', String(active))
+            })
         }
 
         function renderShopSectionVisibility() {
@@ -6058,7 +6181,6 @@
             const root = $('sugar-workshop-root')
             if (!root) return
             const title = $('sugar-workshop-title')
-            if (title) title.textContent = `Zuckerstück-Werkstatt · ${formatNum(state.sugarLumps)} verfügbar`
             const eligible = PRODUCERS.filter((producer) => state.producers[producer.id] > 0 || state.producerLevels[producer.id] > 0)
             const visible = eligible.filter((producer) => !state.hideMaxedShopUpgrades || state.producerLevels[producer.id] < PRODUCER_LEVEL_MAX)
             const signature = `${state.hideMaxedShopUpgrades}|${state.sugarLumps}|${visible.map((producer) => `${producer.id}:${state.producerLevels[producer.id]}:${state.producers[producer.id]}`).join('|')}`
@@ -6212,7 +6334,6 @@
                         <h3 class="stats-card-title">Klicks</h3>
                         <div class="stats-list">
                             <div class="stats-list-row"><span>Manuell gesamt</span><strong>${formatNum(state.manualClicksTotal)}</strong></div>
-                            <div class="stats-list-row"><span>Aktuelle Klickrate</span><strong>${formatStatNum(manualClicksPerSecond())}/s</strong></div>
                             <div class="stats-list-row"><span>Kritische Klicks</span><strong>${formatNum(state.criticalClicksTotal)}</strong></div>
                             <div class="stats-list-row"><span>Effektive Krit-Rate</span><strong>${formatPct(manualCritRate)}</strong></div>
                             <div class="stats-list-row"><span>Krit-Chance</span><strong>${Math.round(critChance() * 100)}%</strong></div>
@@ -8929,6 +9050,16 @@
         }
 
         function initTabs() {
+            const tabs = document.querySelector('.tabs')
+            const shopSubmenu = $('shop-submenu')
+            const shopTab = document.querySelector('.tab-btn[data-tab="shop"]')
+
+            const setShopMenuOpen = (open) => {
+                tabs.classList.toggle('shop-menu-open', open)
+                shopTab.setAttribute('aria-expanded', String(open))
+                shopSubmenu.setAttribute('aria-hidden', String(!open))
+            }
+
             const activateTab = (tab) => {
                 document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab))
                 $('panel-play').classList.toggle('active', tab === 'play')
@@ -8946,8 +9077,28 @@
 
             document.querySelectorAll('.tab-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
+                    if (btn.dataset.tab === 'shop') {
+                        const open = !tabs.classList.contains('shop-menu-open')
+                        setShopMenuOpen(open)
+                        return
+                    }
+                    setShopMenuOpen(false)
                     activateTab(btn.dataset.tab)
                 })
+            })
+
+            document.querySelectorAll('[data-shop-view-target]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    activeShopView = btn.dataset.shopViewTarget
+                    activateTab('shop')
+                    setShopMenuOpen(false)
+                })
+            })
+
+            document.addEventListener('click', (ev) => {
+                if (tabs.classList.contains('shop-menu-open') && !tabs.contains(ev.target)) {
+                    setShopMenuOpen(false)
+                }
             })
         }
 
