@@ -2403,6 +2403,11 @@
                 <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
                 <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
+                        <li><strong>2026-07-24</strong>
+                            <ul>
+                                <li><strong>Tägliches:</strong> Automatisch vergebene Tagesaufgaben berechnen ihre Ziele und Cookie-Belohnungen jetzt anhand des vollständig geladenen Ertrags</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-23</strong>
                             <ul>
                                 <li><strong>Laden:</strong> Aufklappbare Unterbereiche trennen Produktion, Meilensteine, Klicks, Spezial-Upgrades, Zuckerstücke und permanente Upgrades</li>
@@ -2734,7 +2739,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.23.6'
+        const APP_VERSION = '2026.07.24.1'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -7901,7 +7906,6 @@
                 state.goldenEffectCounts[effect] = typeof count === 'number' ? Math.max(0, Math.floor(count)) : 0
             }
             state.daily = data.daily && typeof data.daily === 'object' ? data.daily : createEmptyDailyState()
-            ensureDailyState()
             state.bonusAllUntil = typeof data.bonusAllUntil === 'number' ? Math.max(0, Math.floor(data.bonusAllUntil)) : 0
             state.bonusAllMult = typeof data.bonusAllMult === 'number' ? Math.max(1, data.bonusAllMult) : 1
             state.bonusEventRateUntil = typeof data.bonusEventRateUntil === 'number' ? Math.max(0, Math.floor(data.bonusEventRateUntil)) : 0
@@ -8008,6 +8012,9 @@
             for (const achievement of ACHIEVEMENTS) {
                 state.achievements[achievement.id] = data.achievements?.[achievement.id] === true
             }
+
+            // Neue Tagesaufgaben erst erzeugen, nachdem alle Ertragswerte geladen sind.
+            ensureDailyState()
 
             const harvestedSugar = harvestReadySugarLumps()
             if (harvestedSugar > 0) {
