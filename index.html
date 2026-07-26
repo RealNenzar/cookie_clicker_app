@@ -2757,6 +2757,8 @@
                                 <li><strong>Relikte:</strong> Acht neue Schätze wirken auf Produktion, Klicks, Krits, Ereignisse, Offline-Ertrag, Garten und Laden</li>
                                 <li><strong>Garten:</strong> Pflanzen wachsen in ihren Beeten jetzt sichtbar aus dem Boden, statt ihren Fortschritt als Ladebalken anzuzeigen</li>
                                 <li><strong>Garten-Ausbau:</strong> Acht dauerhafte Garten-Upgrades und zehn neue Garten-Erfolge beeinflussen Garten und Hauptbäckerei</li>
+                                <li><strong>Dungeon-Endspiel:</strong> 24 weitere Relikte und eine zusätzliche Veteranen-Skalierung ab dem 10. abgeschlossenen Lauf hinzugefügt</li>
+                                <li><strong>Dungeon-Cooldown:</strong> Eine kostspielige Ausbildung reduziert Wartezeiten um bis zu 50%; sieben neue Endspiel-Erfolge ergänzt</li>
                                 <li><strong>Statistik:</strong> Garten- und Dungeon-Fortschritt werden in der Statistik angezeigt</li>
                             </ul>
                         </li>
@@ -3109,7 +3111,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.26.6'
+        const APP_VERSION = '2026.07.26.8'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -4934,6 +4936,41 @@
                 check: () => DUNGEON_TRAINING.every((item) => dungeonTrainingLevel(item.id) >= item.max),
             },
             {
+                id: 'dungeonCooldownFirst', name: 'Die Rast wird kürzer',
+                desc: 'Kaufe die erste Stufe Abklingzeit-Training', reward: '+2% Klick-Stärke',
+                type: 'tap', value: 0.02, check: () => dungeonTrainingLevel('cooldown') >= 1,
+            },
+            {
+                id: 'dungeonCooldownFive', name: 'Rastloser Abenteurer',
+                desc: 'Erreiche Stufe 5 beim Abklingzeit-Training', reward: '+3% Produktion',
+                type: 'cps', value: 0.03, check: () => dungeonTrainingLevel('cooldown') >= 5,
+            },
+            {
+                id: 'dungeonCooldownMax', name: 'Keine Zeit für Pausen',
+                desc: 'Maximiere das Abklingzeit-Training', reward: '+5% Klick-Stärke',
+                type: 'tap', value: 0.05, check: () => dungeonTrainingLevel('cooldown') >= 10,
+            },
+            {
+                id: 'dungeonVeteranMode', name: 'Willkommen bei den Veteranen',
+                desc: 'Schließe 10 Dungeon-Läufe ab', reward: '+4% Produktion',
+                type: 'cps', value: 0.04, check: () => state.dungeon.completedRuns >= 10,
+            },
+            {
+                id: 'dungeonNightmareMode', name: 'Der Albtraum beginnt',
+                desc: 'Schließe 20 Dungeon-Läufe ab', reward: '+6% Klick-Stärke',
+                type: 'tap', value: 0.06, check: () => state.dungeon.completedRuns >= 20,
+            },
+            {
+                id: 'dungeonAbyssMode', name: 'Bäcker des Abgrunds',
+                desc: 'Schließe 35 Dungeon-Läufe ab', reward: '+8% Produktion',
+                type: 'cps', value: 0.08, check: () => state.dungeon.completedRuns >= 35,
+            },
+            {
+                id: 'dungeonRoomFiveHundred', name: 'Fünfhundert gefallene Wächter',
+                desc: 'Besiege 500 Dungeon-Räume', reward: '+10% Produktion',
+                type: 'cps', value: 0.10, check: () => state.dungeon.completedRooms >= 500,
+            },
+            {
                 id: 'gardenFirstHarvest', name: 'Die erste Ernte',
                 desc: 'Ernte deine erste Gartenpflanze', reward: '+1% Produktion',
                 type: 'cps', value: 0.01, check: () => state.garden.totalHarvests >= 1,
@@ -5290,6 +5327,30 @@
             { id: 'merchantSeal', name: 'Siegel des Krümelhändlers', icon: '🏷️', type: 'shopDiscount', bonus: 0.04, desc: 'Dauerhaft -4% auf Ladenpreise' },
             { id: 'starVial', name: 'Phiole aus Sternenzucker', icon: '🧪', type: 'eventReward', bonus: 0.2, desc: 'Dauerhaft +20% Cookie-Belohnungen aus Ereignissen' },
             { id: 'cosmicOvenCore', name: 'Kern des kosmischen Ofens', icon: '🌠', type: 'cps', bonus: 0.15, desc: 'Dauerhaft +15% Produktion' },
+            { id: 'silverWhisk', name: 'Silberner Schneebesen', icon: '🥄', type: 'click', bonus: 0.035, minDepth: 1, desc: 'Dauerhaft +3,5% Klickstärke' },
+            { id: 'emberPan', name: 'Glutpfanne', icon: '🍳', type: 'cps', bonus: 0.035, minDepth: 1, desc: 'Dauerhaft +3,5% Produktion' },
+            { id: 'primeYeast', name: 'Samen der Ur-Hefe', icon: '🫧', type: 'all', bonus: 0.025, minDepth: 1, desc: 'Dauerhaft +2,5% auf alle Cookie-Erträge' },
+            { id: 'moonClover', name: 'Mondklee', icon: '☘️', type: 'event', bonus: 0.03, minDepth: 1, desc: 'Dauerhaft +3% Ereignisrate' },
+            { id: 'oracleCrumb', name: 'Krümel des Orakels', icon: '🔮', type: 'critChance', bonus: 0.0075, minDepth: 1, desc: 'Dauerhaft +0,75% kritische Chance' },
+            { id: 'nightApron', name: 'Schürze der Nachtbäcker', icon: '🌙', type: 'offline', bonus: 0.06, minDepth: 1, desc: 'Dauerhaft +6% Offline-Ertrag' },
+            { id: 'gardenBell', name: 'Glocke der Ernte', icon: '🔔', type: 'gardenHarvest', bonus: 0.08, minDepth: 1, desc: 'Dauerhaft +8% Cookie-Ertrag aus Garten-Ernten' },
+            { id: 'festivalCup', name: 'Festkelch', icon: '🏆', type: 'eventReward', bonus: 0.08, minDepth: 1, desc: 'Dauerhaft +8% Cookie-Belohnungen aus Ereignissen' },
+            { id: 'thunderWhisk', name: 'Donner-Schneebesen', icon: '⚡', type: 'click', bonus: 0.045, minDepth: 5, desc: 'Dauerhaft +4,5% Klickstärke' },
+            { id: 'grandmaCodex', name: 'Omas verbotenes Rezeptbuch', icon: '📕', type: 'cps', bonus: 0.045, minDepth: 5, desc: 'Dauerhaft +4,5% Produktion' },
+            { id: 'starDough', name: 'Sternenteig', icon: '🌟', type: 'all', bonus: 0.03, minDepth: 5, desc: 'Dauerhaft +3% auf alle Cookie-Erträge' },
+            { id: 'cometLens', name: 'Kometenlinse', icon: '🔭', type: 'event', bonus: 0.04, minDepth: 5, desc: 'Dauerhaft +4% Ereignisrate' },
+            { id: 'fateDice', name: 'Würfel des Schicksals', icon: '🎲', type: 'critChance', bonus: 0.01, minDepth: 5, desc: 'Dauerhaft +1% kritische Chance' },
+            { id: 'dreamOven', name: 'Ofen der tiefen Träume', icon: '💤', type: 'offline', bonus: 0.08, minDepth: 5, desc: 'Dauerhaft +8% Offline-Ertrag' },
+            { id: 'cornucopia', name: 'Kosmisches Füllhorn', icon: '🍇', type: 'gardenHarvest', bonus: 0.1, minDepth: 5, desc: 'Dauerhaft +10% Cookie-Ertrag aus Garten-Ernten' },
+            { id: 'luckyCauldron', name: 'Kessel des Glücks', icon: '🍯', type: 'eventReward', bonus: 0.1, minDepth: 5, desc: 'Dauerhaft +10% Cookie-Belohnungen aus Ereignissen' },
+            { id: 'dragonClaw', name: 'Klaue des Zimtdrachen', icon: '🐲', type: 'click', bonus: 0.06, minDepth: 10, desc: 'Dauerhaft +6% Klickstärke' },
+            { id: 'factoryHeart', name: 'Herz der ewigen Fabrik', icon: '⚙️', type: 'cps', bonus: 0.06, minDepth: 10, desc: 'Dauerhaft +6% Produktion' },
+            { id: 'infinityJar', name: 'Unendliches Keksglas', icon: '🏺', type: 'all', bonus: 0.04, minDepth: 10, desc: 'Dauerhaft +4% auf alle Cookie-Erträge' },
+            { id: 'astralBeacon', name: 'Astrales Backfeuer', icon: '🕯️', type: 'event', bonus: 0.05, minDepth: 10, desc: 'Dauerhaft +5% Ereignisrate' },
+            { id: 'voidEye', name: 'Auge des Leerenbäckers', icon: '👁️', type: 'critChance', bonus: 0.0125, minDepth: 10, desc: 'Dauerhaft +1,25% kritische Chance' },
+            { id: 'eternityClock', name: 'Uhr der ewigen Schicht', icon: '🕰️', type: 'offline', bonus: 0.1, minDepth: 10, desc: 'Dauerhaft +10% Offline-Ertrag' },
+            { id: 'queenGreenhouse', name: 'Gewächshaus der Königin', icon: '🏡', type: 'gardenHarvest', bonus: 0.12, minDepth: 10, desc: 'Dauerhaft +12% Cookie-Ertrag aus Garten-Ernten' },
+            { id: 'cosmicChalice', name: 'Kelch des kosmischen Festmahls', icon: '🍷', type: 'eventReward', bonus: 0.12, minDepth: 10, desc: 'Dauerhaft +12% Cookie-Belohnungen aus Ereignissen' },
         ]
 
         const DUNGEON_TRAINING = [
@@ -5332,6 +5393,11 @@
                 id: 'preparation', name: 'Expeditionsküche', icon: '🎒', max: 5,
                 desc: '+1 Proviantladung zu Beginn jedes Laufs pro Stufe',
                 baseCost: 1000000, costSeconds: 3600, tapSeconds: 1200, costMult: 3,
+            },
+            {
+                id: 'cooldown', name: 'Chronometer der Rastlosen', icon: '⏱️', max: 10,
+                desc: '-5% Dungeon-Abklingzeit pro Stufe, maximal -50%',
+                baseCost: 1000000, costSeconds: 3600, tapSeconds: 1200, costMult: 2.35,
             },
         ]
 
@@ -7560,6 +7626,14 @@
             return 2 + dungeonTrainingLevel('preparation')
         }
 
+        function dungeonCooldownMult(level = dungeonTrainingLevel('cooldown')) {
+            return Math.max(0.5, 1 - level * 0.05)
+        }
+
+        function dungeonCooldownMs(baseMs) {
+            return Math.floor(baseMs * dungeonCooldownMult())
+        }
+
         function dungeonRecoveryRatio() {
             return Math.min(0.5, 0.22 + dungeonTrainingLevel('recovery') * 0.025)
         }
@@ -7585,6 +7659,13 @@
             const cost = dungeonTrainingCost(item)
             if (!canAfford(cost)) return
             state.cookies -= cost
+            if (id === 'cooldown' && state.dungeon.cooldownUntil > Date.now()) {
+                const now = Date.now()
+                const remaining = state.dungeon.cooldownUntil - now
+                const previousMult = dungeonCooldownMult(level)
+                const nextMult = dungeonCooldownMult(level + 1)
+                state.dungeon.cooldownUntil = now + remaining * (nextMult / previousMult)
+            }
             state.dungeon.training[id] = level + 1
             state.dungeon.log = `${item.name} wurde auf Stufe ${level + 1} verbessert.`
             evaluateAchievements()
@@ -7594,12 +7675,45 @@
             save()
         }
 
+        function dungeonVeteranRuns() {
+            return Math.max(0, state.dungeon.completedRuns - 9)
+        }
+
+        function dungeonVeteranHpMult() {
+            const veteranRuns = dungeonVeteranRuns()
+            if (veteranRuns <= 0) return 1
+            return 1 + veteranRuns * 0.09 + Math.pow(veteranRuns, 1.18) * 0.018
+        }
+
+        function dungeonVeteranDamageMult() {
+            const veteranRuns = dungeonVeteranRuns()
+            if (veteranRuns <= 0) return 1
+            return 1 + veteranRuns * 0.04 + Math.floor(veteranRuns / 10) * 0.08
+        }
+
+        function dungeonDifficultyLabel() {
+            const runs = state.dungeon.completedRuns
+            if (runs >= 35) return 'Abgrund'
+            if (runs >= 20) return 'Albtraum'
+            if (runs >= 10) return 'Veteran'
+            return 'Normal'
+        }
+
         function spawnDungeonEnemy() {
             const boss = state.dungeon.room % 10 === 0
             const list = boss ? DUNGEON_BOSSES : DUNGEON_ENEMIES
             const enemy = list[(state.dungeon.depth + state.dungeon.room - 2) % list.length]
             const scale = 1 + (state.dungeon.depth - 1) * 0.22 + (state.dungeon.room - 1) * 0.055
-            const hp = Math.max(20, Math.floor(dungeonBaseAttackPower() * (1.7 + state.dungeon.room * 0.1) * enemy.hp * scale))
+            const hp = Math.max(
+                20,
+                Math.floor(
+                    dungeonBaseAttackPower()
+                    * (1.7 + state.dungeon.room * 0.1)
+                    * enemy.hp
+                    * scale
+                    * dungeonVeteranHpMult(),
+                ),
+            )
             state.dungeon.enemyId = enemy.id
             state.dungeon.enemyBoss = boss
             state.dungeon.enemyMaxHp = hp
@@ -7626,7 +7740,9 @@
                 state.sugarLumpsTotal++
                 return { icon: '🧁', name: '1 Zuckerstück' }
             }
-            const relic = missing[Math.floor(Math.random() * missing.length)]
+            const eligible = missing.filter((relic) => (relic.minDepth || 1) <= state.dungeon.depth)
+            const pool = eligible.length > 0 ? eligible : missing
+            const relic = pool[Math.floor(Math.random() * pool.length)]
             state.dungeon.relics[relic.id] = true
             return relic
         }
@@ -7655,7 +7771,7 @@
                 state.dungeon.enemyId = null
                 state.dungeon.enemyHp = 0
                 state.dungeon.supplies = 0
-                state.dungeon.cooldownUntil = Date.now() + 30 * 1000
+                state.dungeon.cooldownUntil = Date.now() + dungeonCooldownMs(30 * 1000)
                 state.dungeon.log = `Boss besiegt! ${relic.name} erhalten.`
                 showEventRewardToast(relic.icon, `Dungeon abgeschlossen: ${relic.name} erhalten`)
             } else {
@@ -7693,14 +7809,16 @@
                     * depthScale
                     * bossFactor
                     * dungeonIncomingDamageMult()
+                    * dungeonVeteranDamageMult()
                 state.dungeon.playerHp = Math.max(0, state.dungeon.playerHp - counter)
                 state.dungeon.log = `${critical ? 'Kritischer Treffer! ' : ''}${formatNum(damage)} Schaden · ${enemy.name} kontert für ${formatNum(counter)}.`
                 if (state.dungeon.playerHp <= 0) {
                     state.dungeon.active = false
                     state.dungeon.defeats++
                     state.dungeon.supplies = 0
-                    state.dungeon.cooldownUntil = Date.now() + 60 * 1000
-                    state.dungeon.log = 'Du wurdest besiegt. In einer Minute kannst du erneut antreten.'
+                    const defeatCooldown = dungeonCooldownMs(60 * 1000)
+                    state.dungeon.cooldownUntil = Date.now() + defeatCooldown
+                    state.dungeon.log = `Du wurdest besiegt. In ${formatDurationCompact(defeatCooldown)} kannst du erneut antreten.`
                 }
             }
             renderHeader()
@@ -7745,9 +7863,10 @@
                 : 0
             const relicCards = DUNGEON_RELICS.map((relic) => {
                 const owned = state.dungeon.relics[relic.id] === true
+                const depthLocked = !owned && (relic.minDepth || 1) > state.dungeon.depth
                 return `<div class="relic-card${owned ? '' : ' locked'}">
                     <strong>${owned ? relic.icon : '🔒'} ${relic.name}</strong>
-                    <span>${owned ? relic.desc : 'Besiege einen Dungeon-Boss'}</span>
+                    <span>${owned ? relic.desc : depthLocked ? `Fund möglich ab Tiefe ${relic.minDepth}` : 'Besiege einen Dungeon-Boss'}</span>
                 </div>`
             }).join('')
             const trainingCards = DUNGEON_TRAINING.map((item) => {
@@ -7771,6 +7890,9 @@
                         <div>Boss-Siege<strong>${state.dungeon.bossesDefeated}</strong></div>
                         <div>Kampfkraft<strong>${formatNum(dungeonAttackPower())}</strong></div>
                     </div>
+                    <p style="margin-top:0.55rem">Schwierigkeit: <strong>${dungeonDifficultyLabel()}</strong>${dungeonVeteranRuns() > 0
+                        ? ` · Gegner-LP +${formatPct(dungeonVeteranHpMult() - 1)} · Gegenschaden +${formatPct(dungeonVeteranDamageMult() - 1)}`
+                        : ' · Veteranen-Skalierung beginnt nach 10 abgeschlossenen Läufen'}</p>
                 </section>
                 <section class="minigame-card dungeon-enemy">
                     ${state.dungeon.active && enemy ? `
