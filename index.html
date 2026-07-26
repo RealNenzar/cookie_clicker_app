@@ -2403,7 +2403,8 @@
 
         .seed-grid,
         .relic-grid,
-        .dungeon-training-grid {
+        .dungeon-training-grid,
+        .garden-upgrade-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 0.4rem;
@@ -2413,6 +2414,7 @@
         .seed-card,
         .relic-card,
         .dungeon-training-card,
+        .garden-upgrade-card,
         .minigame-action {
             border: 1px solid var(--ctrl-border);
             border-radius: 0.6rem;
@@ -2423,6 +2425,7 @@
 
         button.seed-card,
         button.dungeon-training-card,
+        button.garden-upgrade-card,
         button.minigame-action {
             cursor: pointer;
             touch-action: manipulation;
@@ -2442,14 +2445,16 @@
 
         .seed-card strong,
         .relic-card strong,
-        .dungeon-training-card strong {
+        .dungeon-training-card strong,
+        .garden-upgrade-card strong {
             display: block;
             font-size: 0.7rem;
         }
 
         .seed-card span,
         .relic-card span,
-        .dungeon-training-card span {
+        .dungeon-training-card span,
+        .garden-upgrade-card span {
             display: block;
             margin-top: 0.18rem;
             color: var(--shop-desc-color);
@@ -2457,7 +2462,8 @@
             line-height: 1.35;
         }
 
-        .dungeon-training-card:disabled {
+        .dungeon-training-card:disabled,
+        .garden-upgrade-card:disabled {
             opacity: 0.48;
             cursor: not-allowed;
         }
@@ -2500,10 +2506,91 @@
             line-height: 1;
         }
 
+        .plant-growth {
+            --stem-height: 0rem;
+            --leaf-width: 0rem;
+            --leaf-height: 0rem;
+            --leaf-opacity: 0.2;
+            --plant-bottom: 0.22rem;
+            --plant-scale: 0.2;
+            --plant-opacity: 0.45;
+            --plant-saturation: 0.45;
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 3.15rem;
+            margin: -0.15rem 0 0.05rem;
+            overflow: hidden;
+        }
+
+        .plant-growth .plant-soil {
+            position: absolute;
+            left: 16%;
+            right: 16%;
+            bottom: 0.18rem;
+            height: 0.32rem;
+            border-radius: 50%;
+            background: rgba(57, 31, 12, 0.72);
+            box-shadow: 0 -1px 0 rgba(255, 225, 160, 0.16);
+        }
+
+        .plant-growth .plant-stem {
+            position: absolute;
+            left: 50%;
+            bottom: 0.28rem;
+            width: 0.16rem;
+            height: var(--stem-height);
+            border-radius: 999px 999px 0 0;
+            background: linear-gradient(90deg, #4a812d, #9bd65b);
+            transform: translateX(-50%);
+            transform-origin: center bottom;
+        }
+
+        .plant-growth .plant-stem::before,
+        .plant-growth .plant-stem::after {
+            content: '';
+            position: absolute;
+            top: 48%;
+            width: var(--leaf-width);
+            height: var(--leaf-height);
+            background: #78b747;
+            opacity: var(--leaf-opacity);
+        }
+
+        .plant-growth .plant-stem::before {
+            right: 55%;
+            border-radius: 100% 10% 100% 10%;
+            transform: rotate(24deg);
+            transform-origin: right bottom;
+        }
+
+        .plant-growth .plant-stem::after {
+            left: 55%;
+            border-radius: 10% 100% 10% 100%;
+            transform: rotate(-24deg);
+            transform-origin: left bottom;
+        }
+
+        .plant-growth .plant-sprite {
+            position: absolute;
+            left: 50%;
+            bottom: var(--plant-bottom);
+            font-size: 1.7rem;
+            line-height: 1;
+            opacity: var(--plant-opacity);
+            filter: saturate(var(--plant-saturation));
+            transform: translate(-50%, 38%) scale(var(--plant-scale));
+            transform-origin: center bottom;
+        }
+
+        .garden-plot.mature .plant-growth {
+            filter: drop-shadow(0 0 0.35rem rgba(205, 255, 135, 0.7));
+        }
+
         .garden-plot .plot-name,
         .garden-plot .plot-time {
             display: block;
-            margin-top: 0.28rem;
+            margin-top: 0.16rem;
             font-size: 0.59rem;
             font-weight: 700;
         }
@@ -2512,7 +2599,6 @@
             font-weight: 500;
         }
 
-        .garden-progress,
         .dungeon-health {
             height: 0.38rem;
             margin-top: 0.4rem;
@@ -2521,7 +2607,6 @@
             background: rgba(0, 0, 0, 0.24);
         }
 
-        .garden-progress span,
         .dungeon-health span {
             display: block;
             height: 100%;
@@ -2586,7 +2671,8 @@
             .minigame-summary,
             .seed-grid,
             .relic-grid,
-            .dungeon-training-grid {
+            .dungeon-training-grid,
+            .garden-upgrade-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -2669,6 +2755,8 @@
                                 <li><strong>Dungeon-Ausbildung:</strong> Angriff, Rüstung und Erholung lassen sich dauerhaft verbessern; zwei Proviantladungen helfen in schwierigen Läufen</li>
                                 <li><strong>Dungeon-Fortschritt:</strong> Fünf weitere kostspielige Ausbildungswege und zwölf neue Dungeon-Erfolge hinzugefügt</li>
                                 <li><strong>Relikte:</strong> Acht neue Schätze wirken auf Produktion, Klicks, Krits, Ereignisse, Offline-Ertrag, Garten und Laden</li>
+                                <li><strong>Garten:</strong> Pflanzen wachsen in ihren Beeten jetzt sichtbar aus dem Boden, statt ihren Fortschritt als Ladebalken anzuzeigen</li>
+                                <li><strong>Garten-Ausbau:</strong> Acht dauerhafte Garten-Upgrades und zehn neue Garten-Erfolge beeinflussen Garten und Hauptbäckerei</li>
                                 <li><strong>Statistik:</strong> Garten- und Dungeon-Fortschritt werden in der Statistik angezeigt</li>
                             </ul>
                         </li>
@@ -3021,7 +3109,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.26.4'
+        const APP_VERSION = '2026.07.26.6'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -4845,6 +4933,58 @@
                 type: 'cps', value: 0.12,
                 check: () => DUNGEON_TRAINING.every((item) => dungeonTrainingLevel(item.id) >= item.max),
             },
+            {
+                id: 'gardenFirstHarvest', name: 'Die erste Ernte',
+                desc: 'Ernte deine erste Gartenpflanze', reward: '+1% Produktion',
+                type: 'cps', value: 0.01, check: () => state.garden.totalHarvests >= 1,
+            },
+            {
+                id: 'gardenTenHarvests', name: 'Grüner Daumen',
+                desc: 'Ernte 10 Gartenpflanzen', reward: '+2% Klick-Stärke',
+                type: 'tap', value: 0.02, check: () => state.garden.totalHarvests >= 10,
+            },
+            {
+                id: 'gardenFiftyHarvests', name: 'Volle Erntekörbe',
+                desc: 'Ernte 50 Gartenpflanzen', reward: '+3% Produktion',
+                type: 'cps', value: 0.03, check: () => state.garden.totalHarvests >= 50,
+            },
+            {
+                id: 'gardenTwoFiftyHarvests', name: 'König der Felder',
+                desc: 'Ernte 250 Gartenpflanzen', reward: '+6% Produktion',
+                type: 'cps', value: 0.06, check: () => state.garden.totalHarvests >= 250,
+            },
+            {
+                id: 'gardenAllSeeds', name: 'Vollständiges Saatgutarchiv',
+                desc: 'Entdecke alle Gartensamen', reward: '+4% Klick-Stärke',
+                type: 'tap', value: 0.04, check: () => state.garden.discoveries >= GARDEN_PLANTS.length,
+            },
+            {
+                id: 'gardenAllHarvested', name: 'Botanische Meisterprüfung',
+                desc: 'Ernte jede Pflanzenart mindestens einmal', reward: '+5% Produktion',
+                type: 'cps', value: 0.05,
+                check: () => GARDEN_PLANTS.every((plant) => state.garden.harvestCounts[plant.id] >= 1),
+            },
+            {
+                id: 'gardenFullBloom', name: 'Das blühende Neunerfeld',
+                desc: 'Lasse alle 9 Beete gleichzeitig reif werden', reward: '+3% Produktion',
+                type: 'cps', value: 0.03, check: () => matureGardenPlants().length >= 9,
+            },
+            {
+                id: 'gardenUpgradeFive', name: 'Gartenlehrling',
+                desc: 'Kaufe insgesamt 5 Garten-Ausbaustufen', reward: '+3% Klick-Stärke',
+                type: 'tap', value: 0.03, check: () => gardenUpgradeTotal() >= 5,
+            },
+            {
+                id: 'gardenUpgradeTwentyFive', name: 'Meistergärtner',
+                desc: 'Kaufe insgesamt 25 Garten-Ausbaustufen', reward: '+6% Produktion',
+                type: 'cps', value: 0.06, check: () => gardenUpgradeTotal() >= 25,
+            },
+            {
+                id: 'gardenUpgradeComplete', name: 'Garten der Ewigkeit',
+                desc: 'Maximiere alle Garten-Upgrades', reward: '+12% Produktion',
+                type: 'cps', value: 0.12,
+                check: () => GARDEN_UPGRADES.every((item) => gardenUpgradeLevel(item.id) >= item.max),
+            },
         ]
 
         const PRESTIGE_UPGRADES = [
@@ -5080,6 +5220,49 @@
             },
         ]
 
+        const GARDEN_UPGRADES = [
+            {
+                id: 'richSoil', name: 'Reichhaltige Erde', icon: '🪴', max: 10,
+                desc: '+10% Wachstumsgeschwindigkeit pro Stufe',
+                baseCost: 10000, costSeconds: 240, tapSeconds: 80, costMult: 1.9,
+            },
+            {
+                id: 'seedVault', name: 'Saatgut-Tresor', icon: '🌰', max: 10,
+                desc: '-6% Saatkosten pro Stufe',
+                baseCost: 20000, costSeconds: 360, tapSeconds: 120, costMult: 2,
+            },
+            {
+                id: 'harvestBasket', name: 'Verzauberter Erntekorb', icon: '🧺', max: 10,
+                desc: '+15% Cookie-Ertrag aus Ernten pro Stufe',
+                baseCost: 50000, costSeconds: 600, tapSeconds: 200, costMult: 2.1,
+            },
+            {
+                id: 'botany', name: 'Arkanes Botanikbuch', icon: '📗', max: 10,
+                desc: '+10% Wirkung reifer Pflanzen pro Stufe',
+                baseCost: 100000, costSeconds: 900, tapSeconds: 300, costMult: 2.2,
+            },
+            {
+                id: 'bakerySymbiosis', name: 'Bäckerei-Symbiose', icon: '🏭', max: 12,
+                desc: '+3% gesamte Produktion pro Stufe',
+                baseCost: 250000, costSeconds: 1800, tapSeconds: 600, costMult: 2.3,
+            },
+            {
+                id: 'nectarGloves', name: 'Nektarhandschuhe', icon: '🧤', max: 12,
+                desc: '+3% Klickstärke pro Stufe',
+                baseCost: 250000, costSeconds: 1800, tapSeconds: 600, costMult: 2.3,
+            },
+            {
+                id: 'fortunePollen', name: 'Glückspollen', icon: '✨', max: 10,
+                desc: '+2% Ereignisrate pro Stufe',
+                baseCost: 500000, costSeconds: 2400, tapSeconds: 800, costMult: 2.45,
+            },
+            {
+                id: 'dreamRoots', name: 'Traumwurzeln', icon: '🌙', max: 10,
+                desc: '+5% Offline-Ertrag pro Stufe',
+                baseCost: 750000, costSeconds: 3000, tapSeconds: 1000, costMult: 2.6,
+            },
+        ]
+
         const DUNGEON_ENEMIES = [
             { id: 'crumb', name: 'Krümelratte', icon: '🐀', hp: 1, damage: 0.8, reward: 1 },
             { id: 'mold', name: 'Schimmelschleim', icon: '🦠', hp: 1.25, damage: 0.9, reward: 1.15 },
@@ -5160,6 +5343,7 @@
                 plots: Array.from({ length: 9 }, () => ({ seedId: null, plantedAt: 0 })),
                 totalHarvests: 0,
                 discoveries: 1,
+                upgrades: Object.fromEntries(GARDEN_UPGRADES.map((item) => [item.id, 0])),
             }
         }
 
@@ -5786,6 +5970,7 @@
             return (1 + prestigeUpgradeLevel('echoVault') * 0.15)
                 * (1 + prestigeUpgradeLevel('abyssStorage') * 0.08)
                 * permanentCookieIncomeMult()
+                * (1 + gardenUpgradeLevel('dreamRoots') * 0.05)
                 * dungeonRelicMult('offline')
         }
 
@@ -5797,10 +5982,31 @@
             return GARDEN_PLANTS.find((plant) => plant.id === id) || null
         }
 
+        function gardenUpgradeLevel(id) {
+            return state.garden.upgrades?.[id] || 0
+        }
+
+        function gardenUpgradeTotal() {
+            return GARDEN_UPGRADES.reduce((sum, item) => sum + gardenUpgradeLevel(item.id), 0)
+        }
+
+        function gardenGrowthMult() {
+            return 1 + gardenUpgradeLevel('richSoil') * 0.1
+        }
+
+        function gardenGrowMs(plant) {
+            return plant.growMs / gardenGrowthMult()
+        }
+
+        function gardenHarvestMult() {
+            return (1 + gardenUpgradeLevel('harvestBasket') * 0.15)
+                * dungeonRelicMult('gardenHarvest')
+        }
+
         function gardenPlotProgress(plot, now = Date.now()) {
             const plant = gardenPlantById(plot?.seedId)
             if (!plant || !Number.isFinite(plot.plantedAt) || plot.plantedAt <= 0) return 0
-            return Math.max(0, Math.min(1, (now - plot.plantedAt) / plant.growMs))
+            return Math.max(0, Math.min(1, (now - plot.plantedAt) / gardenGrowMs(plant)))
         }
 
         function matureGardenPlants(now = Date.now()) {
@@ -5811,7 +6017,9 @@
         }
 
         function gardenBonus(type, now = Date.now()) {
-            return matureGardenPlants(now).reduce((sum, plant) => sum + (plant.effect[type] || 0), 0)
+            const baseBonus = matureGardenPlants(now)
+                .reduce((sum, plant) => sum + (plant.effect[type] || 0), 0)
+            return baseBonus * (1 + gardenUpgradeLevel('botany') * 0.1)
         }
 
         function gardenCpsMult() {
@@ -5845,7 +6053,10 @@
         }
 
         function totalEventRateMult() {
-            return bonusEventRateMult() * gardenEventRateMult() * dungeonRelicMult('event')
+            return bonusEventRateMult()
+                * gardenEventRateMult()
+                * (1 + gardenUpgradeLevel('fortunePollen') * 0.02)
+                * dungeonRelicMult('event')
         }
 
         function goldenIntervalMs() {
@@ -6199,6 +6410,7 @@
                 * cosmicTragheitMult()
                 * prestigeLevelIncomeMult()
                 * (1 + achievementBonus('cps'))
+                * (1 + gardenUpgradeLevel('bakerySymbiosis') * 0.03)
                 * gardenCpsMult()
                 * dungeonRelicMult('cps')
         }
@@ -6213,6 +6425,7 @@
                 * cosmicOrbitMult()
                 * prestigeLevelIncomeMult()
                 * (1 + achievementBonus('tap'))
+                * (1 + gardenUpgradeLevel('nectarGloves') * 0.03)
                 * gardenClickMult()
                 * dungeonRelicMult('click')
         }
@@ -7028,6 +7241,7 @@
                             <div class="stats-list-row"><span>Pflanzen geerntet</span><strong>${formatNum(state.garden.totalHarvests)}</strong></div>
                             <div class="stats-list-row"><span>Reife Pflanzen</span><strong>${matureGardenPlants().length}</strong></div>
                             <div class="stats-list-row"><span>Gartenbonus</span><strong>${formatPct(gardenBonus('all') + gardenBonus('cps') + gardenBonus('click'))}</strong></div>
+                            <div class="stats-list-row"><span>Garten-Ausbaustufen</span><strong>${formatNum(gardenUpgradeTotal())}</strong></div>
                         </div>
                     </section>
                     <section class="stats-card">
@@ -7051,7 +7265,33 @@
         function gardenSeedCost(plant) {
             const productionBasis = calcCps() * plant.costSeconds
             const clickBasis = calcTap() * plant.costSeconds * 0.5
-            return Math.max(10, Math.floor(productionBasis + clickBasis))
+            const discount = Math.max(0.4, 1 - gardenUpgradeLevel('seedVault') * 0.06)
+            return Math.max(10, Math.floor((productionBasis + clickBasis) * discount))
+        }
+
+        function gardenUpgradeCost(item) {
+            const level = gardenUpgradeLevel(item.id)
+            const base = Math.max(
+                item.baseCost,
+                calcCps() * item.costSeconds + calcTap() * item.tapSeconds,
+            )
+            return Math.ceil(base * Math.pow(item.costMult, level))
+        }
+
+        function buyGardenUpgrade(id) {
+            const item = GARDEN_UPGRADES.find((entry) => entry.id === id)
+            if (!item) return
+            const level = gardenUpgradeLevel(id)
+            if (level >= item.max) return
+            const cost = gardenUpgradeCost(item)
+            if (!canAfford(cost)) return
+            state.cookies -= cost
+            state.garden.upgrades[id] = level + 1
+            evaluateAchievements()
+            renderHeader()
+            renderGarden()
+            renderStats()
+            save()
         }
 
         function gardenUnlockHint(plant) {
@@ -7103,13 +7343,14 @@
                 25,
                 calcCps() * plant.harvestSeconds,
                 calcTap() * plant.harvestSeconds * 2,
-            ) * dungeonRelicMult('gardenHarvest')
+            ) * gardenHarvestMult()
             grantDirectCookies(reward)
             state.garden.harvestCounts[plant.id] = (state.garden.harvestCounts[plant.id] || 0) + 1
             state.garden.totalHarvests++
             plot.seedId = null
             plot.plantedAt = 0
             unlockGardenSeeds()
+            evaluateAchievements()
             if (!silent) showEventRewardToast(plant.icon, `${plant.name} geerntet: +${formatNum(reward)} Kekse`)
             return reward
         }
@@ -7153,7 +7394,19 @@
                     data-garden-seed="${plant.id}" ${unlocked ? '' : 'disabled'}>
                     <strong>${plant.icon} ${plant.name}</strong>
                     <span>${unlocked ? plant.desc : `🔒 ${gardenUnlockHint(plant)}`}</span>
-                    <span>${unlocked ? `${formatNum(cost)} Kekse · ${formatDurationCompact(plant.growMs)}` : 'Noch nicht entdeckt'}</span>
+                    <span>${unlocked ? `${formatNum(cost)} Kekse · ${formatDurationCompact(gardenGrowMs(plant))}` : 'Noch nicht entdeckt'}</span>
+                </button>`
+            }).join('')
+
+            const upgradeCards = GARDEN_UPGRADES.map((item) => {
+                const level = gardenUpgradeLevel(item.id)
+                const maxed = level >= item.max
+                const cost = maxed ? 0 : gardenUpgradeCost(item)
+                const disabled = maxed || !canAfford(cost)
+                return `<button type="button" class="garden-upgrade-card" data-garden-upgrade="${item.id}" ${disabled ? 'disabled' : ''}>
+                    <strong>${item.icon} ${item.name} · ${level}/${item.max}</strong>
+                    <span>${item.desc}</span>
+                    <span>${maxed ? 'Vollständig ausgebaut' : `${formatNum(cost)} Kekse`}</span>
                 </button>`
             }).join('')
 
@@ -7170,12 +7423,25 @@
                 }
                 const progress = gardenPlotProgress(plot, now)
                 const mature = progress >= 1
-                const remaining = Math.max(0, plant.growMs - (now - plot.plantedAt))
-                return `<button type="button" class="garden-plot${mature ? ' mature' : ''}" data-garden-plot="${index}" ${mature ? '' : 'disabled'}>
-                    <span class="plot-icon">${plant.icon}</span>
+                const remaining = Math.max(0, gardenGrowMs(plant) - (now - plot.plantedAt))
+                const growth = Math.max(0.02, Math.min(1, progress))
+                const plantScale = 0.2 + growth * 0.8
+                const plantOpacity = 0.42 + growth * 0.58
+                const stemHeight = growth * 1.72
+                const leafWidth = growth * 0.52
+                const leafHeight = growth * 0.3
+                const plantBottom = 0.22 + growth * 1.7
+                const plantSaturation = 0.45 + growth * 0.75
+                const statusText = mature ? 'Erntebereit' : `${Math.round(progress * 100)}% gewachsen`
+                return `<button type="button" class="garden-plot${mature ? ' mature' : ''}" data-garden-plot="${index}"
+                    aria-label="${plant.name}: ${statusText}" ${mature ? '' : 'disabled'}>
+                    <span class="plant-growth" style="--stem-height:${stemHeight.toFixed(3)}rem;--leaf-width:${leafWidth.toFixed(3)}rem;--leaf-height:${leafHeight.toFixed(3)}rem;--leaf-opacity:${Math.min(1, 0.2 + growth).toFixed(3)};--plant-bottom:${plantBottom.toFixed(3)}rem;--plant-scale:${plantScale.toFixed(3)};--plant-opacity:${plantOpacity.toFixed(3)};--plant-saturation:${plantSaturation.toFixed(3)}" aria-hidden="true">
+                        <span class="plant-soil"></span>
+                        <span class="plant-stem"></span>
+                        <span class="plant-sprite">${plant.icon}</span>
+                    </span>
                     <span class="plot-name">${plant.name}</span>
                     <span class="plot-time">${mature ? 'Erntebereit' : formatDurationCompact(remaining)}</span>
-                    <span class="garden-progress"><span style="width:${Math.round(progress * 100)}%"></span></span>
                 </button>`
             }).join('')
 
@@ -7199,6 +7465,11 @@
                     <div class="seed-grid">${seedCards}</div>
                 </section>
                 <section class="minigame-card">
+                    <h3>Garten-Ausbau</h3>
+                    <p>Dauerhafte Verbesserungen für Beete und Hauptbäckerei. Höhere Stufen werden zunehmend kostspielig.</p>
+                    <div class="garden-upgrade-grid">${upgradeCards}</div>
+                </section>
+                <section class="minigame-card">
                     <h3>Beete</h3>
                     <div class="garden-grid">${plotCards}</div>
                     <div class="minigame-actions">
@@ -7214,6 +7485,9 @@
                     renderGarden()
                     save()
                 })
+            })
+            root.querySelectorAll('[data-garden-upgrade]').forEach((button) => {
+                button.addEventListener('click', () => buyGardenUpgrade(button.dataset.gardenUpgrade))
             })
             root.querySelectorAll('[data-garden-plot]').forEach((btn) => {
                 btn.addEventListener('click', () => {
@@ -8848,6 +9122,7 @@
                     plots: state.garden.plots.map((plot) => ({ ...plot })),
                     totalHarvests: state.garden.totalHarvests,
                     discoveries: state.garden.discoveries,
+                    upgrades: { ...state.garden.upgrades },
                 },
                 dungeon: {
                     ...state.dungeon,
@@ -9090,6 +9365,12 @@
                 ? Math.max(0, Math.floor(loadedGarden.totalHarvests))
                 : Object.values(state.garden.harvestCounts).reduce((sum, count) => sum + count, 0)
             state.garden.discoveries = GARDEN_PLANTS.filter((plant) => state.garden.unlocked[plant.id]).length
+            for (const item of GARDEN_UPGRADES) {
+                const level = loadedGarden.upgrades?.[item.id]
+                state.garden.upgrades[item.id] = Number.isFinite(level)
+                    ? Math.max(0, Math.min(item.max, Math.floor(level)))
+                    : 0
+            }
             unlockGardenSeeds(false)
             if (!state.garden.unlocked[state.garden.selectedSeedId]) state.garden.selectedSeedId = 'bakersWheat'
 
@@ -10239,6 +10520,7 @@
                 .join('|')
             if (gardenMatureSignature !== lastGardenMatureSignature) {
                 lastGardenMatureSignature = gardenMatureSignature
+                evaluateAchievements()
                 renderHeader()
                 renderStats()
                 if ($('panel-shop').classList.contains('active')) renderShop()
