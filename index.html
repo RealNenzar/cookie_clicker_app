@@ -2279,7 +2279,8 @@
             margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.9rem);
         }
 
-        .shop-submenu {
+        .shop-submenu,
+        .cookie-submenu {
             position: absolute;
             left: 0.5rem;
             right: 0.5rem;
@@ -2307,7 +2308,15 @@
             transform: translateY(0) scale(1);
         }
 
-        .shop-submenu-btn {
+        .tabs.cookie-menu-open .cookie-submenu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .shop-submenu-btn,
+        .cookie-submenu-btn {
             border: 1px solid var(--ctrl-border);
             border-radius: 0.55rem;
             padding: 0.5rem 0.4rem;
@@ -2320,19 +2329,268 @@
         }
 
         .shop-submenu-btn:hover,
-        .shop-submenu-btn:focus-visible {
+        .shop-submenu-btn:focus-visible,
+        .cookie-submenu-btn:hover,
+        .cookie-submenu-btn:focus-visible {
             background: var(--tab-hover-bg);
             color: var(--tab-active-fg);
             outline: none;
         }
 
-        .shop-submenu-btn.active {
+        .shop-submenu-btn.active,
+        .cookie-submenu-btn.active {
             background: var(--tab-active-bg);
             color: var(--tab-active-fg);
         }
 
         @media (max-width: 380px) {
-            .shop-submenu {
+            .shop-submenu,
+            .cookie-submenu {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Garten und Dungeon */
+        .minigame-shell {
+            padding: 0.8rem 1rem 5rem;
+        }
+
+        .minigame-hero,
+        .minigame-card {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.8rem;
+            background: var(--shop-card-bg);
+            color: var(--shop-name-color);
+            padding: 0.75rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .minigame-hero h2,
+        .minigame-card h3 {
+            margin: 0 0 0.35rem;
+        }
+
+        .minigame-hero p,
+        .minigame-card p {
+            margin: 0;
+            color: var(--shop-desc-color);
+            font-size: 0.72rem;
+            line-height: 1.45;
+        }
+
+        .minigame-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-top: 0.65rem;
+        }
+
+        .minigame-summary div {
+            border-radius: 0.55rem;
+            padding: 0.45rem;
+            background: var(--ctrl-bg);
+            color: var(--shop-desc-color);
+            font-size: 0.62rem;
+            text-align: center;
+        }
+
+        .minigame-summary strong {
+            display: block;
+            margin-top: 0.12rem;
+            color: var(--shop-name-color);
+            font-size: 0.72rem;
+        }
+
+        .seed-grid,
+        .relic-grid,
+        .dungeon-training-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-top: 0.55rem;
+        }
+
+        .seed-card,
+        .relic-card,
+        .dungeon-training-card,
+        .minigame-action {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.6rem;
+            background: var(--theme-btn-bg);
+            color: var(--shop-name-color);
+            padding: 0.55rem;
+        }
+
+        button.seed-card,
+        button.dungeon-training-card,
+        button.minigame-action {
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .seed-card.active {
+            border-color: var(--achievement-unlocked-border);
+            background: var(--achievement-unlocked-bg);
+            color: var(--achievement-unlocked-fg);
+        }
+
+        .seed-card.locked,
+        .relic-card.locked {
+            opacity: 0.48;
+            filter: grayscale(0.45);
+        }
+
+        .seed-card strong,
+        .relic-card strong,
+        .dungeon-training-card strong {
+            display: block;
+            font-size: 0.7rem;
+        }
+
+        .seed-card span,
+        .relic-card span,
+        .dungeon-training-card span {
+            display: block;
+            margin-top: 0.18rem;
+            color: var(--shop-desc-color);
+            font-size: 0.6rem;
+            line-height: 1.35;
+        }
+
+        .dungeon-training-card:disabled {
+            opacity: 0.48;
+            cursor: not-allowed;
+        }
+
+        .garden-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.45rem;
+            margin-top: 0.55rem;
+        }
+
+        .garden-plot {
+            position: relative;
+            min-height: 6.2rem;
+            border: 1px solid rgba(111, 78, 42, 0.35);
+            border-radius: 0.7rem;
+            padding: 0.5rem 0.35rem;
+            overflow: hidden;
+            background:
+                linear-gradient(rgba(87, 55, 26, 0.1), rgba(87, 55, 26, 0.1)),
+                repeating-linear-gradient(0deg, #8b5a2b 0 8px, #765025 8px 16px);
+            color: #fff8df;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .garden-plot.empty {
+            color: rgba(255, 248, 223, 0.75);
+        }
+
+        .garden-plot.mature {
+            border-color: #c8f08c;
+            box-shadow: inset 0 0 0 1px rgba(214, 255, 151, 0.4), 0 0 12px rgba(151, 214, 78, 0.28);
+        }
+
+        .garden-plot .plot-icon {
+            display: block;
+            font-size: 1.65rem;
+            line-height: 1;
+        }
+
+        .garden-plot .plot-name,
+        .garden-plot .plot-time {
+            display: block;
+            margin-top: 0.28rem;
+            font-size: 0.59rem;
+            font-weight: 700;
+        }
+
+        .garden-plot .plot-time {
+            font-weight: 500;
+        }
+
+        .garden-progress,
+        .dungeon-health {
+            height: 0.38rem;
+            margin-top: 0.4rem;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.24);
+        }
+
+        .garden-progress span,
+        .dungeon-health span {
+            display: block;
+            height: 100%;
+            width: 0;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #79bc43, #d8ef73);
+            transition: width 0.2s ease;
+        }
+
+        .minigame-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+            margin-top: 0.6rem;
+        }
+
+        .minigame-actions.triple {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .minigame-action.primary {
+            background: var(--tab-active-bg);
+            color: var(--tab-active-fg);
+            font-weight: 800;
+        }
+
+        .minigame-action:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .dungeon-enemy {
+            text-align: center;
+        }
+
+        .dungeon-enemy-icon {
+            display: block;
+            margin: 0.2rem 0;
+            font-size: 3rem;
+        }
+
+        .dungeon-health.player span {
+            background: linear-gradient(90deg, #4ba3df, #91e5ff);
+        }
+
+        .dungeon-health.enemy span {
+            background: linear-gradient(90deg, #d75245, #ffb15c);
+        }
+
+        .dungeon-log {
+            min-height: 3.1rem;
+            margin-top: 0.55rem;
+            padding: 0.55rem;
+            border-radius: 0.55rem;
+            background: var(--ctrl-bg);
+            color: var(--shop-desc-color);
+            font-size: 0.64rem;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 380px) {
+            .minigame-summary,
+            .seed-grid,
+            .relic-grid,
+            .dungeon-training-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .minigame-actions.triple {
                 grid-template-columns: 1fr;
             }
         }
@@ -2403,6 +2661,17 @@
                 <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
                 <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
+                        <li><strong>2026-07-26</strong>
+                            <ul>
+                                <li><strong>Navigation:</strong> Der Keks-Button öffnet jetzt eine Auswahl für Keks, Garten und Dungeon</li>
+                                <li><strong>Garten:</strong> Neun Beete, acht entdeckbare Pflanzen, Offline-Wachstum, Erntebelohnungen und kombinierbare Boni hinzugefügt</li>
+                                <li><strong>Dungeon:</strong> Zehn Räume pro Lauf, skalierende Gegner, Bosse, Splitterbelohnungen und vier dauerhafte Relikte hinzugefügt</li>
+                                <li><strong>Dungeon-Ausbildung:</strong> Angriff, Rüstung und Erholung lassen sich dauerhaft verbessern; zwei Proviantladungen helfen in schwierigen Läufen</li>
+                                <li><strong>Dungeon-Fortschritt:</strong> Fünf weitere kostspielige Ausbildungswege und zwölf neue Dungeon-Erfolge hinzugefügt</li>
+                                <li><strong>Relikte:</strong> Acht neue Schätze wirken auf Produktion, Klicks, Krits, Ereignisse, Offline-Ertrag, Garten und Laden</li>
+                                <li><strong>Statistik:</strong> Garten- und Dungeon-Fortschritt werden in der Statistik angezeigt</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-24</strong>
                             <ul>
                                 <li><strong>Tägliches:</strong> Automatisch vergebene Tagesaufgaben berechnen ihre Ziele und Cookie-Belohnungen jetzt anhand des vollständig geladenen Ertrags</li>
@@ -2700,6 +2969,14 @@
                 </div>
             </section>
 
+            <section class="panel" id="panel-garden" aria-label="Garten">
+                <div class="minigame-shell" id="garden-root"></div>
+            </section>
+
+            <section class="panel" id="panel-dungeon" aria-label="Dungeon">
+                <div class="minigame-shell" id="dungeon-root"></div>
+            </section>
+
             <section class="panel" id="panel-shop" aria-label="Laden">
                 <div class="shop" id="shop-root"></div>
             </section>
@@ -2717,6 +2994,11 @@
         <div class="app-version-pill" id="app-version-pill" aria-label="Aktuelle Version"></div>
 
         <nav class="tabs" aria-label="Navigation">
+            <div class="cookie-submenu" id="cookie-submenu" aria-label="Keksbereiche" aria-hidden="true">
+                <button type="button" class="cookie-submenu-btn active" data-cookie-view-target="play" aria-pressed="true">Keks</button>
+                <button type="button" class="cookie-submenu-btn" data-cookie-view-target="garden" aria-pressed="false">Garten</button>
+                <button type="button" class="cookie-submenu-btn" data-cookie-view-target="dungeon" aria-pressed="false">Dungeon</button>
+            </div>
             <div class="shop-submenu" id="shop-submenu" aria-label="Ladenbereiche" aria-hidden="true">
                 <button type="button" class="shop-submenu-btn active" data-shop-view-target="production">Produktionen</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="milestones">Produktions-Meilensteine</button>
@@ -2725,7 +3007,7 @@
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="sugar">Zuckerstück-Werkstatt</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="permanent">Permanente Upgrades</button>
             </div>
-            <button type="button" class="tab-btn active" data-tab="play">Keks</button>
+            <button type="button" class="tab-btn active" data-tab="play" aria-expanded="false" aria-controls="cookie-submenu">Keks</button>
             <button type="button" class="tab-btn" data-tab="shop" aria-expanded="false" aria-controls="shop-submenu">Laden</button>
             <button type="button" class="tab-btn" data-tab="prestige">Prestige</button>
             <button type="button" class="tab-btn" data-tab="stats">Statistik</button>
@@ -2739,7 +3021,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.24.1'
+        const APP_VERSION = '2026.07.26.4'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -4466,6 +4748,103 @@
                 desc: 'Aktiviere deinen ersten Timeskip-Keks', reward: '+3% Produktion',
                 type: 'cps', value: 0.03, check: () => state.timeSkipEventsTriggered >= 1,
             },
+            {
+                id: 'dungeonFirstRoom', name: 'Ein Schritt ins Dunkel',
+                desc: 'Besiege deinen ersten Dungeon-Gegner', reward: '+3% Dungeon-Schaden',
+                type: 'dungeonAttack', value: 0.03, check: () => state.dungeon.completedRooms >= 1,
+            },
+            {
+                id: 'dungeonFirstBoss', name: 'Drachenbezwinger',
+                desc: 'Besiege deinen ersten Dungeon-Boss', reward: '+2% Produktion',
+                type: 'cps', value: 0.02, check: () => state.dungeon.bossesDefeated >= 1,
+            },
+            {
+                id: 'dungeonDepthFive', name: 'Unter den Backstuben',
+                desc: 'Erreiche Dungeon-Tiefe 5', reward: '+5% Dungeon-Schaden',
+                type: 'dungeonAttack', value: 0.05, check: () => state.dungeon.depth >= 5,
+            },
+            {
+                id: 'dungeonDepthTen', name: 'Der tiefe Ofen',
+                desc: 'Erreiche Dungeon-Tiefe 10', reward: '+8% Dungeon-Schaden',
+                type: 'dungeonAttack', value: 0.08, check: () => state.dungeon.depth >= 10,
+            },
+            {
+                id: 'dungeonDepthTwentyFive', name: 'Jenseits des Krümelgrunds',
+                desc: 'Erreiche Dungeon-Tiefe 25', reward: '+10% Produktion',
+                type: 'cps', value: 0.10, check: () => state.dungeon.depth >= 25,
+            },
+            {
+                id: 'dungeonRoomCentury', name: 'Hundert Türen',
+                desc: 'Besiege 100 Dungeon-Räume', reward: '-5% Dungeon-Gegenschaden',
+                type: 'dungeonDefense', value: 0.05, check: () => state.dungeon.completedRooms >= 100,
+            },
+            {
+                id: 'dungeonBossTen', name: 'Bossjäger',
+                desc: 'Besiege 10 Dungeon-Bosse', reward: '+10% Dungeon-Belohnungen',
+                type: 'dungeonReward', value: 0.10, check: () => state.dungeon.bossesDefeated >= 10,
+            },
+            {
+                id: 'dungeonBossTwentyFive', name: 'Albtraum der Tiefe',
+                desc: 'Besiege 25 Dungeon-Bosse', reward: '+15% Dungeon-Belohnungen',
+                type: 'dungeonReward', value: 0.15, check: () => state.dungeon.bossesDefeated >= 25,
+            },
+            {
+                id: 'dungeonRelicSet', name: 'Reliktkammer',
+                desc: 'Finde alle Dungeon-Relikte', reward: '+5% Produktion',
+                type: 'cps', value: 0.05,
+                check: () => DUNGEON_RELICS.every((relic) => state.dungeon.relics[relic.id]),
+            },
+            {
+                id: 'dungeonTrainingFive', name: 'Erste Lektionen',
+                desc: 'Kaufe insgesamt 5 Dungeon-Ausbildungsstufen', reward: '+5% Dungeon-Schaden',
+                type: 'dungeonAttack', value: 0.05, check: () => dungeonTrainingTotal() >= 5,
+            },
+            {
+                id: 'dungeonTrainingTwentyFive', name: 'Veteranenausbildung',
+                desc: 'Kaufe insgesamt 25 Dungeon-Ausbildungsstufen', reward: '-8% Dungeon-Gegenschaden',
+                type: 'dungeonDefense', value: 0.08, check: () => dungeonTrainingTotal() >= 25,
+            },
+            {
+                id: 'dungeonTrainingFifty', name: 'Meister der Expedition',
+                desc: 'Kaufe insgesamt 50 Dungeon-Ausbildungsstufen', reward: '+12% Dungeon-Schaden',
+                type: 'dungeonAttack', value: 0.12, check: () => dungeonTrainingTotal() >= 50,
+            },
+            {
+                id: 'dungeonFirstRelic', name: 'Fund aus der Tiefe',
+                desc: 'Finde dein erstes Dungeon-Relikt', reward: '+2% Klick-Stärke',
+                type: 'tap', value: 0.02, check: () => dungeonRelicCount() >= 1,
+            },
+            {
+                id: 'dungeonRelicFour', name: 'Kleine Schatzkammer',
+                desc: 'Finde 4 Dungeon-Relikte', reward: '+3% Produktion',
+                type: 'cps', value: 0.03, check: () => dungeonRelicCount() >= 4,
+            },
+            {
+                id: 'dungeonRelicEight', name: 'Große Schatzkammer',
+                desc: 'Finde 8 Dungeon-Relikte', reward: '+5% Klick-Stärke',
+                type: 'tap', value: 0.05, check: () => dungeonRelicCount() >= 8,
+            },
+            {
+                id: 'dungeonRoomTwoFifty', name: 'Kartograf der Tiefe',
+                desc: 'Besiege 250 Dungeon-Räume', reward: '+5% Produktion',
+                type: 'cps', value: 0.05, check: () => state.dungeon.completedRooms >= 250,
+            },
+            {
+                id: 'dungeonBossFifty', name: 'Kein Boss bleibt stehen',
+                desc: 'Besiege 50 Dungeon-Bosse', reward: '+7% Klick-Stärke',
+                type: 'tap', value: 0.07, check: () => state.dungeon.bossesDefeated >= 50,
+            },
+            {
+                id: 'dungeonDepthFifty', name: 'Am Grund des Abgrunds',
+                desc: 'Erreiche Dungeon-Tiefe 50', reward: '+10% Produktion',
+                type: 'cps', value: 0.10, check: () => state.dungeon.depth >= 50,
+            },
+            {
+                id: 'dungeonTrainingComplete', name: 'Vollendeter Abenteurer',
+                desc: 'Maximiere alle Dungeon-Ausbildungen', reward: '+12% Produktion',
+                type: 'cps', value: 0.12,
+                check: () => DUNGEON_TRAINING.every((item) => dungeonTrainingLevel(item.id) >= item.max),
+            },
         ]
 
         const PRESTIGE_UPGRADES = [
@@ -4651,6 +5030,161 @@
             },
         ]
 
+        const GARDEN_PLANTS = [
+            {
+                id: 'bakersWheat', name: 'Bäckerweizen', icon: '🌾', growMs: 2 * 60 * 1000,
+                costSeconds: 20, effect: { cps: 0.02 }, harvestSeconds: 15,
+                desc: '+2% Produktion pro reifer Pflanze',
+            },
+            {
+                id: 'thumbcorn', name: 'Daumenmais', icon: '🌽', growMs: 3 * 60 * 1000,
+                costSeconds: 35, effect: { click: 0.03 }, harvestSeconds: 25,
+                unlockAfter: { seedId: 'bakersWheat', count: 3 },
+                desc: '+3% Klickstärke pro reifer Pflanze',
+            },
+            {
+                id: 'bakeberry', name: 'Backbeere', icon: '🍓', growMs: 4 * 60 * 1000,
+                costSeconds: 60, effect: { all: 0.02 }, harvestSeconds: 60,
+                unlockAfter: { seedId: 'bakersWheat', count: 6 },
+                desc: '+2% auf alle Erträge und starke Ernte',
+            },
+            {
+                id: 'cronerice', name: 'Chronoreis', icon: '🌱', growMs: 5 * 60 * 1000,
+                costSeconds: 75, effect: { cps: 0.03, click: 0.02 }, harvestSeconds: 80,
+                unlockAfter: { seedId: 'thumbcorn', count: 4 },
+                desc: '+3% Produktion und +2% Klickstärke',
+            },
+            {
+                id: 'gildmillet', name: 'Goldhirse', icon: '✨', growMs: 6 * 60 * 1000,
+                costSeconds: 110, effect: { event: 0.05 }, harvestSeconds: 120,
+                unlockAfter: { seedId: 'cronerice', count: 4 },
+                desc: '+5% Ereignisrate pro reifer Pflanze',
+            },
+            {
+                id: 'clover', name: 'Keksklee', icon: '🍀', growMs: 7 * 60 * 1000,
+                costSeconds: 150, effect: { event: 0.08 }, harvestSeconds: 160,
+                unlockAfter: { seedId: 'gildmillet', count: 4 },
+                desc: '+8% Ereignisrate pro reifer Pflanze',
+            },
+            {
+                id: 'chocoroot', name: 'Schokowurzel', icon: '🍫', growMs: 8 * 60 * 1000,
+                costSeconds: 180, effect: { all: 0.04 }, harvestSeconds: 220,
+                unlockAfter: { seedId: 'bakeberry', count: 3 },
+                desc: '+4% auf alle Erträge pro reifer Pflanze',
+            },
+            {
+                id: 'queenbeet', name: 'Königliche Rübe', icon: '👑', growMs: 10 * 60 * 1000,
+                costSeconds: 260, effect: { cps: 0.06, all: 0.03 }, harvestSeconds: 360,
+                unlockAfter: { seedId: 'chocoroot', count: 4 },
+                desc: '+6% Produktion und +3% auf alle Erträge',
+            },
+        ]
+
+        const DUNGEON_ENEMIES = [
+            { id: 'crumb', name: 'Krümelratte', icon: '🐀', hp: 1, damage: 0.8, reward: 1 },
+            { id: 'mold', name: 'Schimmelschleim', icon: '🦠', hp: 1.25, damage: 0.9, reward: 1.15 },
+            { id: 'goblin', name: 'Teigkobold', icon: '👺', hp: 1.5, damage: 1.05, reward: 1.3 },
+            { id: 'mimic', name: 'Keks-Mimik', icon: '🎁', hp: 1.8, damage: 1.15, reward: 1.55 },
+            { id: 'oven', name: 'Verfluchter Ofen', icon: '🔥', hp: 2.1, damage: 1.25, reward: 1.8 },
+        ]
+
+        const DUNGEON_BOSSES = [
+            { id: 'dragon', name: 'Zimtdrache', icon: '🐉', hp: 2.2, damage: 1.35, reward: 4 },
+            { id: 'witch', name: 'Zuckerhexe', icon: '🧙', hp: 2.5, damage: 1.45, reward: 4.5 },
+            { id: 'void', name: 'Leerenbäcker', icon: '🌌', hp: 2.8, damage: 1.55, reward: 5 },
+        ]
+
+        const DUNGEON_RELICS = [
+            { id: 'crumbBlade', name: 'Krümelklinge', icon: '⚔️', type: 'click', bonus: 0.1, desc: 'Dauerhaft +10% Klickstärke' },
+            { id: 'ovenHeart', name: 'Ofenherz', icon: '❤️‍🔥', type: 'cps', bonus: 0.1, desc: 'Dauerhaft +10% Produktion' },
+            { id: 'goldCompass', name: 'Goldkompass', icon: '🧭', type: 'event', bonus: 0.1, desc: 'Dauerhaft +10% Ereignisrate' },
+            { id: 'eternalSpade', name: 'Ewiger Spaten', icon: '🪏', type: 'all', bonus: 0.08, desc: 'Dauerhaft +8% auf alle Erträge' },
+            { id: 'cookieCrown', name: 'Krone der Ur-Bäckerei', icon: '👑', type: 'all', bonus: 0.1, desc: 'Dauerhaft +10% auf alle Cookie-Erträge' },
+            { id: 'titanGauntlet', name: 'Handschuh des Teigtitanen', icon: '🧤', type: 'click', bonus: 0.15, desc: 'Dauerhaft +15% Klickstärke' },
+            { id: 'luckyRune', name: 'Rune des perfekten Krümels', icon: '🍀', type: 'critChance', bonus: 0.025, desc: 'Dauerhaft +2,5% kritische Chance' },
+            { id: 'dreamHourglass', name: 'Traumsand-Stundenglas', icon: '⏳', type: 'offline', bonus: 0.2, desc: 'Dauerhaft +20% Offline-Ertrag' },
+            { id: 'harvestHorn', name: 'Horn der reichen Ernte', icon: '🌽', type: 'gardenHarvest', bonus: 0.25, desc: 'Dauerhaft +25% Cookie-Ertrag aus Garten-Ernten' },
+            { id: 'merchantSeal', name: 'Siegel des Krümelhändlers', icon: '🏷️', type: 'shopDiscount', bonus: 0.04, desc: 'Dauerhaft -4% auf Ladenpreise' },
+            { id: 'starVial', name: 'Phiole aus Sternenzucker', icon: '🧪', type: 'eventReward', bonus: 0.2, desc: 'Dauerhaft +20% Cookie-Belohnungen aus Ereignissen' },
+            { id: 'cosmicOvenCore', name: 'Kern des kosmischen Ofens', icon: '🌠', type: 'cps', bonus: 0.15, desc: 'Dauerhaft +15% Produktion' },
+        ]
+
+        const DUNGEON_TRAINING = [
+            {
+                id: 'weapon', name: 'Keksstahl-Klinge', icon: '🗡️', max: 15,
+                desc: '+15% Dungeon-Schaden pro Stufe',
+                baseCost: 25000, costSeconds: 300, tapSeconds: 120, costMult: 1.95,
+            },
+            {
+                id: 'armor', name: 'Teigrüstung', icon: '🛡️', max: 15,
+                desc: '+18% Dungeon-Lebenspunkte pro Stufe',
+                baseCost: 30000, costSeconds: 360, tapSeconds: 140, costMult: 2,
+            },
+            {
+                id: 'recovery', name: 'Provianttasche', icon: '🥨', max: 10,
+                desc: 'Mehr Heilung nach Räumen und durch Proviant',
+                baseCost: 50000, costSeconds: 600, tapSeconds: 200, costMult: 2.15,
+            },
+            {
+                id: 'precision', name: 'Runen-Schleifstein', icon: '🎯', max: 10,
+                desc: '+2,5% kritische Dungeon-Chance pro Stufe',
+                baseCost: 100000, costSeconds: 900, tapSeconds: 300, costMult: 2.2,
+            },
+            {
+                id: 'warding', name: 'Krümel-Barriere', icon: '🔰', max: 12,
+                desc: '-5% Dungeon-Gegenschaden pro Stufe',
+                baseCost: 150000, costSeconds: 1200, tapSeconds: 400, costMult: 2.25,
+            },
+            {
+                id: 'bossHunter', name: 'Bossbrecher', icon: '🐉', max: 10,
+                desc: '+12% Schaden gegen Dungeon-Bosse pro Stufe',
+                baseCost: 250000, costSeconds: 1800, tapSeconds: 600, costMult: 2.35,
+            },
+            {
+                id: 'treasure', name: 'Schatzkunde', icon: '💰', max: 10,
+                desc: '+20% Cookie-Belohnungen im Dungeon pro Stufe',
+                baseCost: 500000, costSeconds: 2400, tapSeconds: 800, costMult: 2.5,
+            },
+            {
+                id: 'preparation', name: 'Expeditionsküche', icon: '🎒', max: 5,
+                desc: '+1 Proviantladung zu Beginn jedes Laufs pro Stufe',
+                baseCost: 1000000, costSeconds: 3600, tapSeconds: 1200, costMult: 3,
+            },
+        ]
+
+        function createGardenState() {
+            return {
+                selectedSeedId: 'bakersWheat',
+                unlocked: Object.fromEntries(GARDEN_PLANTS.map((plant) => [plant.id, plant.id === 'bakersWheat'])),
+                harvestCounts: Object.fromEntries(GARDEN_PLANTS.map((plant) => [plant.id, 0])),
+                plots: Array.from({ length: 9 }, () => ({ seedId: null, plantedAt: 0 })),
+                totalHarvests: 0,
+                discoveries: 1,
+            }
+        }
+
+        function createDungeonState() {
+            return {
+                active: false,
+                depth: 1,
+                room: 0,
+                playerHp: 0,
+                enemyHp: 0,
+                enemyMaxHp: 0,
+                enemyId: null,
+                enemyBoss: false,
+                cooldownUntil: 0,
+                completedRooms: 0,
+                completedRuns: 0,
+                defeats: 0,
+                bossesDefeated: 0,
+                supplies: 0,
+                training: Object.fromEntries(DUNGEON_TRAINING.map((item) => [item.id, 0])),
+                relics: Object.fromEntries(DUNGEON_RELICS.map((relic) => [relic.id, false])),
+                log: 'Der Dungeon wartet auf mutige Bäcker.',
+            }
+        }
+
         const state = {
             cookies: 0,
             lifetimeCookies: 0,
@@ -4715,6 +5249,8 @@
             hideCompletedAchievements: false,
             hideMaxedShopUpgrades: false,
             showOnlyBuyableMilestones: false,
+            garden: createGardenState(),
+            dungeon: createDungeonState(),
             bonusAllUntil: 0,
             bonusAllMult: 1,
             bonusEventRateUntil: 0,
@@ -4740,6 +5276,10 @@
         let lastSeasonId = ''
         let rejectedLocalSave = false
         let activeShopView = 'production'
+        let activeCookieView = 'play'
+        let lastGardenRenderAt = 0
+        let lastDungeonRenderAt = 0
+        let lastGardenMatureSignature = ''
 
         const $ = (id) => document.getElementById(id)
 
@@ -5233,7 +5773,9 @@
 
         function shopCostDiscount() {
             const discount = 0.02 * prestigeUpgradeLevel('frugalGalaxy')
-            return Math.max(0.65, 1 - discount) * quantumSupplyChainDiscount()
+            return Math.max(0.65, 1 - discount)
+                * quantumSupplyChainDiscount()
+                * Math.max(0.75, 1 - dungeonRelicBonus('shopDiscount'))
         }
 
         function shardRewardMult() {
@@ -5244,22 +5786,78 @@
             return (1 + prestigeUpgradeLevel('echoVault') * 0.15)
                 * (1 + prestigeUpgradeLevel('abyssStorage') * 0.08)
                 * permanentCookieIncomeMult()
+                * dungeonRelicMult('offline')
         }
 
         function offlineCapMs() {
             return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 45 * 60 * 1000 + prestigeUpgradeLevel('abyssStorage') * 20 * 60 * 1000
         }
 
+        function gardenPlantById(id) {
+            return GARDEN_PLANTS.find((plant) => plant.id === id) || null
+        }
+
+        function gardenPlotProgress(plot, now = Date.now()) {
+            const plant = gardenPlantById(plot?.seedId)
+            if (!plant || !Number.isFinite(plot.plantedAt) || plot.plantedAt <= 0) return 0
+            return Math.max(0, Math.min(1, (now - plot.plantedAt) / plant.growMs))
+        }
+
+        function matureGardenPlants(now = Date.now()) {
+            return state.garden.plots
+                .filter((plot) => plot.seedId && gardenPlotProgress(plot, now) >= 1)
+                .map((plot) => gardenPlantById(plot.seedId))
+                .filter(Boolean)
+        }
+
+        function gardenBonus(type, now = Date.now()) {
+            return matureGardenPlants(now).reduce((sum, plant) => sum + (plant.effect[type] || 0), 0)
+        }
+
+        function gardenCpsMult() {
+            return 1 + gardenBonus('cps')
+        }
+
+        function gardenClickMult() {
+            return 1 + gardenBonus('click')
+        }
+
+        function gardenIncomeMult() {
+            return 1 + gardenBonus('all')
+        }
+
+        function gardenEventRateMult() {
+            return 1 + gardenBonus('event')
+        }
+
+        function dungeonRelicBonus(type) {
+            return DUNGEON_RELICS.reduce((sum, relic) =>
+                sum + (state.dungeon.relics[relic.id] && relic.type === type ? relic.bonus : 0), 0)
+        }
+
+        function dungeonRelicMult(type) {
+            return 1 + dungeonRelicBonus(type)
+        }
+
+        function dungeonRelicCount() {
+            return DUNGEON_RELICS.reduce((count, relic) =>
+                count + (state.dungeon.relics[relic.id] ? 1 : 0), 0)
+        }
+
+        function totalEventRateMult() {
+            return bonusEventRateMult() * gardenEventRateMult() * dungeonRelicMult('event')
+        }
+
         function goldenIntervalMs() {
             const reduce = 0.06 * prestigeUpgradeLevel('goldenSignal')
             const base = GOLDEN_INTERVAL_MS * Math.max(0.35, 1 - reduce) * prestigeMagnetMult()
-            return randomizedEventInterval(Math.max(120000, Math.floor(base / bonusEventRateMult())))
+            return randomizedEventInterval(Math.max(120000, Math.floor(base / totalEventRateMult())))
         }
 
         function milkIntervalMs() {
             const resonanceFade = Math.max(0.82, 1 - prestigeUpgradeLevel('milkResonance') * 0.01)
             const base = MILK_BASE_INTERVAL_MS * prestigeMagnetMult() * resonanceFade
-            return randomizedEventInterval(Math.max(600000, Math.floor(base / bonusEventRateMult())))
+            return randomizedEventInterval(Math.max(600000, Math.floor(base / totalEventRateMult())))
         }
 
         function frenzyDurationMs() {
@@ -5269,7 +5867,7 @@
         function diamondIntervalMs() {
             const reduce = 0.08 * prestigeUpgradeLevel('diamondLure')
             const base = DIAMOND_INTERVAL_MS * Math.max(0.4, 1 - reduce) * prestigeMagnetMult()
-            return randomizedEventInterval(Math.max(300000, Math.floor(base / bonusEventRateMult())))
+            return randomizedEventInterval(Math.max(300000, Math.floor(base / totalEventRateMult())))
         }
 
         function randomizedEventInterval(baseMs) {
@@ -5277,11 +5875,11 @@
         }
 
         function cometIntervalMs() {
-            return randomizedEventInterval(Math.max(480000, Math.floor(COMET_INTERVAL_MS / bonusEventRateMult())))
+            return randomizedEventInterval(Math.max(480000, Math.floor(COMET_INTERVAL_MS / totalEventRateMult())))
         }
 
         function timeSkipIntervalMs() {
-            return randomizedEventInterval(Math.max(900000, Math.floor(TIMESKIP_INTERVAL_MS / bonusEventRateMult())))
+            return randomizedEventInterval(Math.max(900000, Math.floor(TIMESKIP_INTERVAL_MS / totalEventRateMult())))
         }
 
         function diamondDurationMult() {
@@ -5401,7 +5999,7 @@
 
         function critChance() {
             const base = 0.04 + specialUpgradeLevel('critChance') * 0.012 + prestigeUpgradeLevel('hyperFocus') * 0.008
-            return Math.min(0.65, base + achievementBonus('critChance'))
+            return Math.min(0.65, base + achievementBonus('critChance') + dungeonRelicBonus('critChance'))
         }
 
         function critMultiplier() {
@@ -5576,7 +6174,14 @@
             if (now < state.cometTailUntil) {
                 mult *= 1 + specialUpgradeLevel('cometTail') * 0.04
             }
-            return mult * milkEventBonusMult() * prestigeImpulseMult() * bonusAllMult() * permanentCookieIncomeMult() * seasonalCollectionMult()
+            return mult
+                * milkEventBonusMult()
+                * prestigeImpulseMult()
+                * bonusAllMult()
+                * permanentCookieIncomeMult()
+                * seasonalCollectionMult()
+                * gardenIncomeMult()
+                * dungeonRelicMult('all')
         }
 
         function calcCps() {
@@ -5588,7 +6193,14 @@
                     * producerMilestoneMult(p.id)
                     * producerLevelMult(p.id)
             }
-            return cps * producerBonusMult() * cosmicOrbitMult() * cosmicTragheitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('cps'))
+            return cps
+                * producerBonusMult()
+                * cosmicOrbitMult()
+                * cosmicTragheitMult()
+                * prestigeLevelIncomeMult()
+                * (1 + achievementBonus('cps'))
+                * gardenCpsMult()
+                * dungeonRelicMult('cps')
         }
 
         function calcTap() {
@@ -5596,7 +6208,13 @@
             for (const c of CLICKS) {
                 tap += c.bonus * state.clicks[c.id] * clickSynergyMult(c.id)
             }
-            return tap * tapBonusMult() * cosmicOrbitMult() * prestigeLevelIncomeMult() * (1 + achievementBonus('tap'))
+            return tap
+                * tapBonusMult()
+                * cosmicOrbitMult()
+                * prestigeLevelIncomeMult()
+                * (1 + achievementBonus('tap'))
+                * gardenClickMult()
+                * dungeonRelicMult('click')
         }
 
         const recentManualTapAt = []
@@ -6403,12 +7021,534 @@
                             <div class="stats-list-row"><span>Gefunden</span><strong>${season.finds.filter((item) => state.seasonalFinds[item.id]).map((item) => item.icon).join(' ') || '–'}</strong></div>
                         </div>
                     </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">🌿 Garten</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Samen entdeckt</span><strong>${state.garden.discoveries} / ${GARDEN_PLANTS.length}</strong></div>
+                            <div class="stats-list-row"><span>Pflanzen geerntet</span><strong>${formatNum(state.garden.totalHarvests)}</strong></div>
+                            <div class="stats-list-row"><span>Reife Pflanzen</span><strong>${matureGardenPlants().length}</strong></div>
+                            <div class="stats-list-row"><span>Gartenbonus</span><strong>${formatPct(gardenBonus('all') + gardenBonus('cps') + gardenBonus('click'))}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">⚔️ Dungeon</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Aktuelle Tiefe</span><strong>${state.dungeon.depth}</strong></div>
+                            <div class="stats-list-row"><span>Räume besiegt</span><strong>${formatNum(state.dungeon.completedRooms)}</strong></div>
+                            <div class="stats-list-row"><span>Boss-Siege</span><strong>${formatNum(state.dungeon.bossesDefeated)}</strong></div>
+                            <div class="stats-list-row"><span>Relikte</span><strong>${Object.values(state.dungeon.relics).filter(Boolean).length} / ${DUNGEON_RELICS.length}</strong></div>
+                            <div class="stats-list-row"><span>Ausbildungsstufen</span><strong>${formatNum(Object.values(state.dungeon.training).reduce((sum, level) => sum + level, 0))}</strong></div>
+                        </div>
+                    </section>
                     <section class="stats-card wide">
                         <h3 class="stats-card-title">Produktion · ${formatNum(totalProducerOwned())} Gebäude</h3>
                         <div class="stats-producer-grid">${producerRows}</div>
                     </section>
                 </div>
             `
+        }
+
+        function gardenSeedCost(plant) {
+            const productionBasis = calcCps() * plant.costSeconds
+            const clickBasis = calcTap() * plant.costSeconds * 0.5
+            return Math.max(10, Math.floor(productionBasis + clickBasis))
+        }
+
+        function gardenUnlockHint(plant) {
+            if (!plant.unlockAfter) return 'Startpflanze'
+            const source = gardenPlantById(plant.unlockAfter.seedId)
+            const current = state.garden.harvestCounts[plant.unlockAfter.seedId] || 0
+            return `${current}/${plant.unlockAfter.count} × ${source?.name || 'Pflanze'} ernten`
+        }
+
+        function unlockGardenSeeds(notify = true) {
+            const unlocked = []
+            for (const plant of GARDEN_PLANTS) {
+                if (state.garden.unlocked[plant.id] || !plant.unlockAfter) continue
+                const count = state.garden.harvestCounts[plant.unlockAfter.seedId] || 0
+                if (count >= plant.unlockAfter.count) {
+                    state.garden.unlocked[plant.id] = true
+                    state.garden.discoveries++
+                    unlocked.push(plant)
+                }
+            }
+            if (notify) {
+                for (const plant of unlocked) {
+                    showEventRewardToast(plant.icon, `Neuer Gartensamen entdeckt: ${plant.name}`)
+                }
+            }
+            return unlocked
+        }
+
+        function plantGardenPlot(index) {
+            const plot = state.garden.plots[index]
+            const plant = gardenPlantById(state.garden.selectedSeedId)
+            if (!plot || plot.seedId || !plant || !state.garden.unlocked[plant.id]) return
+            const cost = gardenSeedCost(plant)
+            if (!canAfford(cost)) return
+            state.cookies -= cost
+            plot.seedId = plant.id
+            plot.plantedAt = Date.now()
+            renderHeader()
+            renderGarden()
+            save()
+        }
+
+        function harvestGardenPlot(index, silent = false) {
+            const plot = state.garden.plots[index]
+            const plant = gardenPlantById(plot?.seedId)
+            if (!plot || !plant || gardenPlotProgress(plot) < 1) return 0
+
+            const reward = Math.max(
+                25,
+                calcCps() * plant.harvestSeconds,
+                calcTap() * plant.harvestSeconds * 2,
+            ) * dungeonRelicMult('gardenHarvest')
+            grantDirectCookies(reward)
+            state.garden.harvestCounts[plant.id] = (state.garden.harvestCounts[plant.id] || 0) + 1
+            state.garden.totalHarvests++
+            plot.seedId = null
+            plot.plantedAt = 0
+            unlockGardenSeeds()
+            if (!silent) showEventRewardToast(plant.icon, `${plant.name} geerntet: +${formatNum(reward)} Kekse`)
+            return reward
+        }
+
+        function harvestAllGardenPlots() {
+            let reward = 0
+            let harvested = 0
+            for (let index = 0; index < state.garden.plots.length; index++) {
+                const gained = harvestGardenPlot(index, true)
+                if (gained > 0) {
+                    reward += gained
+                    harvested++
+                }
+            }
+            if (harvested > 0) {
+                showEventRewardToast('🧺', `${harvested} Pflanzen geerntet: +${formatNum(reward)} Kekse`)
+                renderHeader()
+                renderGarden()
+                renderStats()
+                save()
+            }
+        }
+
+        function renderGarden(now = Date.now()) {
+            const root = $('garden-root')
+            if (!root) return
+            const matureCount = state.garden.plots.filter((plot) => gardenPlotProgress(plot, now) >= 1).length
+            const plantedCount = state.garden.plots.filter((plot) => plot.seedId).length
+            const selectedPlant = gardenPlantById(state.garden.selectedSeedId)
+            const bonusParts = []
+            if (gardenBonus('cps', now) > 0) bonusParts.push(`+${formatPct(gardenBonus('cps', now))} Produktion`)
+            if (gardenBonus('click', now) > 0) bonusParts.push(`+${formatPct(gardenBonus('click', now))} Klick`)
+            if (gardenBonus('all', now) > 0) bonusParts.push(`+${formatPct(gardenBonus('all', now))} alle Erträge`)
+            if (gardenBonus('event', now) > 0) bonusParts.push(`+${formatPct(gardenBonus('event', now))} Ereignisrate`)
+
+            const seedCards = GARDEN_PLANTS.map((plant) => {
+                const unlocked = state.garden.unlocked[plant.id] === true
+                const active = unlocked && state.garden.selectedSeedId === plant.id
+                const cost = gardenSeedCost(plant)
+                return `<button type="button" class="seed-card${active ? ' active' : ''}${unlocked ? '' : ' locked'}"
+                    data-garden-seed="${plant.id}" ${unlocked ? '' : 'disabled'}>
+                    <strong>${plant.icon} ${plant.name}</strong>
+                    <span>${unlocked ? plant.desc : `🔒 ${gardenUnlockHint(plant)}`}</span>
+                    <span>${unlocked ? `${formatNum(cost)} Kekse · ${formatDurationCompact(plant.growMs)}` : 'Noch nicht entdeckt'}</span>
+                </button>`
+            }).join('')
+
+            const plotCards = state.garden.plots.map((plot, index) => {
+                const plant = gardenPlantById(plot.seedId)
+                if (!plant) {
+                    const cost = selectedPlant ? gardenSeedCost(selectedPlant) : 0
+                    const disabled = !selectedPlant || !state.garden.unlocked[selectedPlant.id] || !canAfford(cost)
+                    return `<button type="button" class="garden-plot empty" data-garden-plot="${index}" ${disabled ? 'disabled' : ''}>
+                        <span class="plot-icon">＋</span>
+                        <span class="plot-name">${selectedPlant ? selectedPlant.name : 'Samen wählen'}</span>
+                        <span class="plot-time">${selectedPlant ? formatNum(cost) : '–'}</span>
+                    </button>`
+                }
+                const progress = gardenPlotProgress(plot, now)
+                const mature = progress >= 1
+                const remaining = Math.max(0, plant.growMs - (now - plot.plantedAt))
+                return `<button type="button" class="garden-plot${mature ? ' mature' : ''}" data-garden-plot="${index}" ${mature ? '' : 'disabled'}>
+                    <span class="plot-icon">${plant.icon}</span>
+                    <span class="plot-name">${plant.name}</span>
+                    <span class="plot-time">${mature ? 'Erntebereit' : formatDurationCompact(remaining)}</span>
+                    <span class="garden-progress"><span style="width:${Math.round(progress * 100)}%"></span></span>
+                </button>`
+            }).join('')
+
+            root.innerHTML = `
+                <section class="minigame-hero">
+                    <h2>🌿 Garten</h2>
+                    <p>Pflanze Samen, lasse sie auch offline wachsen und kombiniere die Boni reifer Pflanzen.</p>
+                    <div class="minigame-summary">
+                        <div>Entdeckt<strong>${state.garden.discoveries}/${GARDEN_PLANTS.length}</strong></div>
+                        <div>Bepflanzt<strong>${plantedCount}/9</strong></div>
+                        <div>Erntebereit<strong>${matureCount}</strong></div>
+                    </div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Aktive Gartenboni</h3>
+                    <p>${bonusParts.join(' · ') || 'Noch keine reifen Pflanzen aktiv.'}</p>
+                </section>
+                <section class="minigame-card">
+                    <h3>Samen</h3>
+                    <p>Gewählt: <strong>${selectedPlant?.name || 'Keiner'}</strong></p>
+                    <div class="seed-grid">${seedCards}</div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Beete</h3>
+                    <div class="garden-grid">${plotCards}</div>
+                    <div class="minigame-actions">
+                        <button type="button" class="minigame-action primary" id="garden-harvest-all" ${matureCount > 0 ? '' : 'disabled'}>Alle reifen ernten</button>
+                        <button type="button" class="minigame-action" id="garden-save-btn">Garten speichern</button>
+                    </div>
+                </section>
+            `
+
+            root.querySelectorAll('[data-garden-seed]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    state.garden.selectedSeedId = btn.dataset.gardenSeed
+                    renderGarden()
+                    save()
+                })
+            })
+            root.querySelectorAll('[data-garden-plot]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const index = Number(btn.dataset.gardenPlot)
+                    if (state.garden.plots[index]?.seedId) {
+                        harvestGardenPlot(index)
+                        renderHeader()
+                        renderGarden()
+                        renderStats()
+                        save()
+                    } else {
+                        plantGardenPlot(index)
+                    }
+                })
+            })
+            $('garden-harvest-all')?.addEventListener('click', harvestAllGardenPlots)
+            $('garden-save-btn')?.addEventListener('click', () => {
+                save()
+                showEventRewardToast('🌿', 'Garten gespeichert')
+            })
+        }
+
+        function dungeonCurrentEnemy() {
+            const list = state.dungeon.enemyBoss ? DUNGEON_BOSSES : DUNGEON_ENEMIES
+            return list.find((enemy) => enemy.id === state.dungeon.enemyId) || null
+        }
+
+        function dungeonTrainingLevel(id) {
+            return state.dungeon.training?.[id] || 0
+        }
+
+        function dungeonTrainingTotal() {
+            return DUNGEON_TRAINING.reduce((sum, item) => sum + dungeonTrainingLevel(item.id), 0)
+        }
+
+        function dungeonPlayerBaseHp() {
+            const relicCount = Object.values(state.dungeon.relics).filter(Boolean).length
+            return Math.floor(100 + state.prestige.level * 15 + totalProducerOwned() * 0.5 + relicCount * 12)
+        }
+
+        function dungeonPlayerMaxHp() {
+            return Math.floor(dungeonPlayerBaseHp() * (1 + dungeonTrainingLevel('armor') * 0.18))
+        }
+
+        function dungeonBaseAttackPower() {
+            return Math.max(5, calcTap() * 4 + calcCps() * 0.35)
+        }
+
+        function dungeonAttackPower() {
+            return dungeonBaseAttackPower()
+                * (1 + dungeonTrainingLevel('weapon') * 0.15 + achievementBonus('dungeonAttack'))
+        }
+
+        function dungeonCritChance() {
+            return Math.min(0.8, critChance() + dungeonTrainingLevel('precision') * 0.025)
+        }
+
+        function dungeonIncomingDamageMult() {
+            return Math.max(
+                0.25,
+                1 - dungeonTrainingLevel('warding') * 0.05 - achievementBonus('dungeonDefense'),
+            )
+        }
+
+        function dungeonRewardMult() {
+            return 1 + dungeonTrainingLevel('treasure') * 0.2 + achievementBonus('dungeonReward')
+        }
+
+        function dungeonStartingSupplies() {
+            return 2 + dungeonTrainingLevel('preparation')
+        }
+
+        function dungeonRecoveryRatio() {
+            return Math.min(0.5, 0.22 + dungeonTrainingLevel('recovery') * 0.025)
+        }
+
+        function dungeonSupplyRatio() {
+            return Math.min(0.55, 0.32 + dungeonTrainingLevel('recovery') * 0.02)
+        }
+
+        function dungeonTrainingCost(item) {
+            const level = dungeonTrainingLevel(item.id)
+            const base = Math.max(
+                item.baseCost,
+                calcCps() * item.costSeconds + calcTap() * item.tapSeconds,
+            )
+            return Math.ceil(base * Math.pow(item.costMult, level))
+        }
+
+        function buyDungeonTraining(id) {
+            const item = DUNGEON_TRAINING.find((entry) => entry.id === id)
+            if (!item || state.dungeon.active) return
+            const level = dungeonTrainingLevel(id)
+            if (level >= item.max) return
+            const cost = dungeonTrainingCost(item)
+            if (!canAfford(cost)) return
+            state.cookies -= cost
+            state.dungeon.training[id] = level + 1
+            state.dungeon.log = `${item.name} wurde auf Stufe ${level + 1} verbessert.`
+            evaluateAchievements()
+            renderHeader()
+            renderDungeon()
+            renderStats()
+            save()
+        }
+
+        function spawnDungeonEnemy() {
+            const boss = state.dungeon.room % 10 === 0
+            const list = boss ? DUNGEON_BOSSES : DUNGEON_ENEMIES
+            const enemy = list[(state.dungeon.depth + state.dungeon.room - 2) % list.length]
+            const scale = 1 + (state.dungeon.depth - 1) * 0.22 + (state.dungeon.room - 1) * 0.055
+            const hp = Math.max(20, Math.floor(dungeonBaseAttackPower() * (1.7 + state.dungeon.room * 0.1) * enemy.hp * scale))
+            state.dungeon.enemyId = enemy.id
+            state.dungeon.enemyBoss = boss
+            state.dungeon.enemyMaxHp = hp
+            state.dungeon.enemyHp = hp
+            state.dungeon.log = `${enemy.name} stellt sich dir entgegen.`
+        }
+
+        function startDungeonRun() {
+            const now = Date.now()
+            if (state.dungeon.active || now < state.dungeon.cooldownUntil) return
+            state.dungeon.active = true
+            state.dungeon.room = 1
+            state.dungeon.playerHp = dungeonPlayerMaxHp()
+            state.dungeon.supplies = dungeonStartingSupplies()
+            spawnDungeonEnemy()
+            renderDungeon()
+            save()
+        }
+
+        function awardDungeonRelic() {
+            const missing = DUNGEON_RELICS.filter((relic) => !state.dungeon.relics[relic.id])
+            if (missing.length === 0) {
+                state.sugarLumps++
+                state.sugarLumpsTotal++
+                return { icon: '🧁', name: '1 Zuckerstück' }
+            }
+            const relic = missing[Math.floor(Math.random() * missing.length)]
+            state.dungeon.relics[relic.id] = true
+            return relic
+        }
+
+        function finishDungeonEnemy() {
+            const enemy = dungeonCurrentEnemy()
+            if (!enemy) return
+            const reward = Math.max(
+                50,
+                (calcCps() * 35 + calcTap() * 20)
+                    * enemy.reward
+                    * state.dungeon.depth
+                    * dungeonRewardMult(),
+            )
+            grantDirectCookies(reward)
+            state.dungeon.completedRooms++
+
+            if (state.dungeon.enemyBoss) {
+                state.dungeon.bossesDefeated++
+                state.dungeon.completedRuns++
+                grantDirectShards(1)
+                const relic = awardDungeonRelic()
+                state.dungeon.depth++
+                state.dungeon.active = false
+                state.dungeon.room = 0
+                state.dungeon.enemyId = null
+                state.dungeon.enemyHp = 0
+                state.dungeon.supplies = 0
+                state.dungeon.cooldownUntil = Date.now() + 30 * 1000
+                state.dungeon.log = `Boss besiegt! ${relic.name} erhalten.`
+                showEventRewardToast(relic.icon, `Dungeon abgeschlossen: ${relic.name} erhalten`)
+            } else {
+                state.dungeon.playerHp = Math.min(
+                    dungeonPlayerMaxHp(),
+                    state.dungeon.playerHp + dungeonPlayerMaxHp() * dungeonRecoveryRatio(),
+                )
+                state.dungeon.room++
+                spawnDungeonEnemy()
+                state.dungeon.log = `${enemy.name} besiegt: +${formatNum(reward)} Kekse.`
+            }
+            evaluateAchievements()
+        }
+
+        function attackDungeonEnemy() {
+            if (!state.dungeon.active) return
+            const enemy = dungeonCurrentEnemy()
+            if (!enemy) return
+            const critical = Math.random() < dungeonCritChance()
+            let damage = dungeonAttackPower() * (0.85 + Math.random() * 0.3)
+            if (critical) damage *= critMultiplier()
+            if (state.dungeon.enemyBoss) {
+                damage *= 1 + dungeonTrainingLevel('bossHunter') * 0.12
+            }
+            state.dungeon.enemyHp = Math.max(0, state.dungeon.enemyHp - damage)
+
+            if (state.dungeon.enemyHp <= 0) {
+                finishDungeonEnemy()
+            } else {
+                const depthScale = 1 + (state.dungeon.depth - 1) * 0.08
+                const bossFactor = state.dungeon.enemyBoss ? 0.68 : 1
+                const counter = dungeonPlayerBaseHp()
+                    * (0.022 + state.dungeon.room * 0.0025)
+                    * enemy.damage
+                    * depthScale
+                    * bossFactor
+                    * dungeonIncomingDamageMult()
+                state.dungeon.playerHp = Math.max(0, state.dungeon.playerHp - counter)
+                state.dungeon.log = `${critical ? 'Kritischer Treffer! ' : ''}${formatNum(damage)} Schaden · ${enemy.name} kontert für ${formatNum(counter)}.`
+                if (state.dungeon.playerHp <= 0) {
+                    state.dungeon.active = false
+                    state.dungeon.defeats++
+                    state.dungeon.supplies = 0
+                    state.dungeon.cooldownUntil = Date.now() + 60 * 1000
+                    state.dungeon.log = 'Du wurdest besiegt. In einer Minute kannst du erneut antreten.'
+                }
+            }
+            renderHeader()
+            renderDungeon()
+            renderStats()
+            save()
+        }
+
+        function useDungeonSupply() {
+            if (!state.dungeon.active || state.dungeon.supplies < 1) return
+            const maxHp = dungeonPlayerMaxHp()
+            if (state.dungeon.playerHp >= maxHp) return
+            const healed = Math.min(maxHp - state.dungeon.playerHp, maxHp * dungeonSupplyRatio())
+            state.dungeon.playerHp += healed
+            state.dungeon.supplies--
+            state.dungeon.log = `Proviant benutzt: +${formatNum(healed)} LP. Noch ${state.dungeon.supplies} Ladung${state.dungeon.supplies === 1 ? '' : 'en'}.`
+            renderDungeon()
+            save()
+        }
+
+        function fleeDungeon() {
+            if (!state.dungeon.active) return
+            state.dungeon.active = false
+            state.dungeon.room = 0
+            state.dungeon.enemyId = null
+            state.dungeon.enemyHp = 0
+            state.dungeon.supplies = 0
+            state.dungeon.log = 'Du hast den Dungeon verlassen.'
+            renderDungeon()
+            save()
+        }
+
+        function renderDungeon(now = Date.now()) {
+            const root = $('dungeon-root')
+            if (!root) return
+            const enemy = dungeonCurrentEnemy()
+            const cooldown = Math.max(0, state.dungeon.cooldownUntil - now)
+            const playerMaxHp = dungeonPlayerMaxHp()
+            const playerPct = state.dungeon.active ? Math.max(0, Math.min(100, state.dungeon.playerHp / playerMaxHp * 100)) : 100
+            const enemyPct = enemy && state.dungeon.enemyMaxHp > 0
+                ? Math.max(0, Math.min(100, state.dungeon.enemyHp / state.dungeon.enemyMaxHp * 100))
+                : 0
+            const relicCards = DUNGEON_RELICS.map((relic) => {
+                const owned = state.dungeon.relics[relic.id] === true
+                return `<div class="relic-card${owned ? '' : ' locked'}">
+                    <strong>${owned ? relic.icon : '🔒'} ${relic.name}</strong>
+                    <span>${owned ? relic.desc : 'Besiege einen Dungeon-Boss'}</span>
+                </div>`
+            }).join('')
+            const trainingCards = DUNGEON_TRAINING.map((item) => {
+                const level = dungeonTrainingLevel(item.id)
+                const maxed = level >= item.max
+                const cost = maxed ? 0 : dungeonTrainingCost(item)
+                const disabled = state.dungeon.active || maxed || !canAfford(cost)
+                return `<button type="button" class="dungeon-training-card" data-dungeon-training="${item.id}" ${disabled ? 'disabled' : ''}>
+                    <strong>${item.icon} ${item.name} · ${level}/${item.max}</strong>
+                    <span>${item.desc}</span>
+                    <span>${maxed ? 'Vollständig ausgebaut' : `${formatNum(cost)} Kekse`}${state.dungeon.active && !maxed ? ' · Nach dem Lauf verfügbar' : ''}</span>
+                </button>`
+            }).join('')
+
+            root.innerHTML = `
+                <section class="minigame-hero">
+                    <h2>⚔️ Dungeon</h2>
+                    <p>Kämpfe dich durch zehn Räume. Deine aktuelle Produktion und Klickstärke bestimmen deine Kampfkraft.</p>
+                    <div class="minigame-summary">
+                        <div>Tiefe<strong>${state.dungeon.depth}</strong></div>
+                        <div>Boss-Siege<strong>${state.dungeon.bossesDefeated}</strong></div>
+                        <div>Kampfkraft<strong>${formatNum(dungeonAttackPower())}</strong></div>
+                    </div>
+                </section>
+                <section class="minigame-card dungeon-enemy">
+                    ${state.dungeon.active && enemy ? `
+                        <h3>Raum ${state.dungeon.room}/10 ${state.dungeon.enemyBoss ? '· Boss' : ''}</h3>
+                        <span class="dungeon-enemy-icon">${enemy.icon}</span>
+                        <strong>${enemy.name}</strong>
+                        <p>${formatNum(state.dungeon.enemyHp)} / ${formatNum(state.dungeon.enemyMaxHp)} LP</p>
+                        <div class="dungeon-health enemy"><span style="width:${enemyPct}%"></span></div>
+                        <p style="margin-top:0.55rem">Bäcker-LP: ${formatNum(state.dungeon.playerHp)} / ${formatNum(playerMaxHp)}</p>
+                        <div class="dungeon-health player"><span style="width:${playerPct}%"></span></div>
+                        <div class="minigame-actions triple">
+                            <button type="button" class="minigame-action primary" id="dungeon-attack-btn">Angreifen</button>
+                            <button type="button" class="minigame-action" id="dungeon-supply-btn" ${state.dungeon.supplies < 1 || state.dungeon.playerHp >= playerMaxHp ? 'disabled' : ''}>Proviant (${state.dungeon.supplies})</button>
+                            <button type="button" class="minigame-action" id="dungeon-flee-btn">Fliehen</button>
+                        </div>
+                    ` : `
+                        <span class="dungeon-enemy-icon">🚪</span>
+                        <h3>${cooldown > 0 ? 'Der Dungeon erholt sich' : 'Bereit für einen neuen Lauf'}</h3>
+                        <p>${cooldown > 0 ? `Neuer Versuch in ${formatDurationCompact(cooldown)}` : 'Zehn Räume, ein Boss und eine dauerhafte Belohnung warten.'}</p>
+                        <div class="minigame-actions">
+                            <button type="button" class="minigame-action primary" id="dungeon-start-btn" ${cooldown > 0 ? 'disabled' : ''}>Dungeon starten</button>
+                            <button type="button" class="minigame-action" disabled>Tiefe ${state.dungeon.depth}</button>
+                        </div>
+                    `}
+                    <div class="dungeon-log">${state.dungeon.log}</div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Dungeon-Ausbildung</h3>
+                    <p>Verbesserungen gelten dauerhaft und können zwischen zwei Läufen mit Keksen gekauft werden.</p>
+                    <div class="dungeon-training-grid">${trainingCards}</div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Relikte</h3>
+                    <p>Jeder erfolgreiche Bosslauf gewährt ein noch fehlendes Relikt. Sind alle gefunden, erhältst du ein Zuckerstück.</p>
+                    <div class="relic-grid">${relicCards}</div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Dungeon-Statistik</h3>
+                    <div class="minigame-summary">
+                        <div>Räume<strong>${state.dungeon.completedRooms}</strong></div>
+                        <div>Läufe<strong>${state.dungeon.completedRuns}</strong></div>
+                        <div>Niederlagen<strong>${state.dungeon.defeats}</strong></div>
+                    </div>
+                </section>
+            `
+            $('dungeon-start-btn')?.addEventListener('click', startDungeonRun)
+            $('dungeon-attack-btn')?.addEventListener('click', attackDungeonEnemy)
+            $('dungeon-supply-btn')?.addEventListener('click', useDungeonSupply)
+            $('dungeon-flee-btn')?.addEventListener('click', fleeDungeon)
+            root.querySelectorAll('[data-dungeon-training]').forEach((button) => {
+                button.addEventListener('click', () => buyDungeonTraining(button.dataset.dungeonTraining))
+            })
         }
 
         function updateRow(btn, item, kind) {
@@ -6640,6 +7780,12 @@
             hideShardCookie(false)
             hideCometCookie()
             hideTimeSkipCookie()
+            state.dungeon.active = false
+            state.dungeon.room = 0
+            state.dungeon.enemyId = null
+            state.dungeon.enemyHp = 0
+            state.dungeon.supplies = 0
+            state.dungeon.log = 'Der Prestige-Aufstieg hat den laufenden Dungeon beendet.'
 
             const starterCookies = prestigeUpgradeLevel('starterSpark') * 500
             if (starterCookies > 0) {
@@ -7415,7 +8561,9 @@
             if (ev && !ev.isTrusted) return
             if (!state.cometVisible) return
             hideCometCookie()
-            const reward = Math.max(250, calcCps() * 90 + calcTap() * 30) * cometRewardMult()
+            const reward = Math.max(250, calcCps() * 90 + calcTap() * 30)
+                * cometRewardMult()
+                * dungeonRelicMult('eventReward')
             grantDirectCookies(reward)
             state.cometEventsTriggered++
             state.cometTailUntil = Date.now() + 30000
@@ -7432,7 +8580,9 @@
             if (!state.timeSkipVisible) return
             hideTimeSkipCookie()
             const manualRate = calcTap() * manualClicksPerSecond() * specialUpgradeLevel('timeCore') * 0.03
-            const reward = Math.max(1, (expectedAutomaticCookiesPerSecond() + manualRate) * TIMESKIP_SECONDS) * timeSkipRewardMult()
+            const reward = Math.max(1, (expectedAutomaticCookiesPerSecond() + manualRate) * TIMESKIP_SECONDS)
+                * timeSkipRewardMult()
+                * dungeonRelicMult('eventReward')
             grantDirectCookies(reward)
             state.timeSkipEventsTriggered++
             state.randomEventsTriggered++
@@ -7479,7 +8629,7 @@
             } else if (roll < 0.68) {
                 effect = 'lucky'
                 const bankReward = Math.min(state.cookies * 0.15 + 13, calcCps() * 900 + calcTap() * 120 + 13)
-                const reward = Math.max(25, bankReward)
+                const reward = Math.max(25, bankReward) * dungeonRelicMult('eventReward')
                 grantDirectCookies(reward)
                 showEventRewardToast('🍀', `Glückskeks: +${formatNum(reward)} Kekse`)
             } else if (roll < 0.9) {
@@ -7489,6 +8639,7 @@
             } else {
                 effect = 'storm'
                 const reward = Math.max(100, calcCps() * 180 + calcTap() * 80)
+                    * dungeonRelicMult('eventReward')
                 grantDirectCookies(reward)
                 showEventRewardToast('🍪', `Kekssturm: +${formatNum(reward)} Kekse`)
                 const pos = cookieCenterInPlayArea()
@@ -7615,6 +8766,8 @@
                 hideCompletedAchievements: false,
                 hideMaxedShopUpgrades: false,
                 showOnlyBuyableMilestones: false,
+                garden: createGardenState(),
+                dungeon: createDungeonState(),
                 bonusAllUntil: 0,
                 bonusAllMult: 1,
                 bonusEventRateUntil: 0,
@@ -7652,6 +8805,8 @@
             renderPrestige()
             renderAchievements()
             renderStats()
+            renderGarden()
+            renderDungeon()
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
@@ -7686,6 +8841,19 @@
                 hideCompletedAchievements: state.hideCompletedAchievements,
                 hideMaxedShopUpgrades: state.hideMaxedShopUpgrades,
                 showOnlyBuyableMilestones: state.showOnlyBuyableMilestones,
+                garden: {
+                    selectedSeedId: state.garden.selectedSeedId,
+                    unlocked: { ...state.garden.unlocked },
+                    harvestCounts: { ...state.garden.harvestCounts },
+                    plots: state.garden.plots.map((plot) => ({ ...plot })),
+                    totalHarvests: state.garden.totalHarvests,
+                    discoveries: state.garden.discoveries,
+                },
+                dungeon: {
+                    ...state.dungeon,
+                    training: { ...state.dungeon.training },
+                    relics: { ...state.dungeon.relics },
+                },
                 daily: state.daily,
                 bonusAllUntil: state.bonusAllUntil,
                 bonusAllMult: state.bonusAllMult,
@@ -7896,6 +9064,77 @@
             state.hideCompletedAchievements = data.hideCompletedAchievements === true
             state.hideMaxedShopUpgrades = data.hideMaxedShopUpgrades === true
             state.showOnlyBuyableMilestones = data.showOnlyBuyableMilestones === true
+
+            const freshGarden = createGardenState()
+            const loadedGarden = data.garden && typeof data.garden === 'object' ? data.garden : {}
+            const selectedSeed = gardenPlantById(loadedGarden.selectedSeedId)
+            state.garden.selectedSeedId = selectedSeed?.id || freshGarden.selectedSeedId
+            for (const plant of GARDEN_PLANTS) {
+                state.garden.unlocked[plant.id] = plant.id === 'bakersWheat' || loadedGarden.unlocked?.[plant.id] === true
+                const harvests = loadedGarden.harvestCounts?.[plant.id]
+                state.garden.harvestCounts[plant.id] = Number.isFinite(harvests)
+                    ? Math.max(0, Math.floor(harvests))
+                    : 0
+            }
+            state.garden.plots = Array.from({ length: 9 }, (_, index) => {
+                const loadedPlot = loadedGarden.plots?.[index]
+                const plant = gardenPlantById(loadedPlot?.seedId)
+                const plantedAt = Number.isFinite(loadedPlot?.plantedAt)
+                    ? Math.max(0, Math.floor(loadedPlot.plantedAt))
+                    : 0
+                return plant && plantedAt > 0
+                    ? { seedId: plant.id, plantedAt }
+                    : { seedId: null, plantedAt: 0 }
+            })
+            state.garden.totalHarvests = Number.isFinite(loadedGarden.totalHarvests)
+                ? Math.max(0, Math.floor(loadedGarden.totalHarvests))
+                : Object.values(state.garden.harvestCounts).reduce((sum, count) => sum + count, 0)
+            state.garden.discoveries = GARDEN_PLANTS.filter((plant) => state.garden.unlocked[plant.id]).length
+            unlockGardenSeeds(false)
+            if (!state.garden.unlocked[state.garden.selectedSeedId]) state.garden.selectedSeedId = 'bakersWheat'
+
+            const freshDungeon = createDungeonState()
+            const loadedDungeon = data.dungeon && typeof data.dungeon === 'object' ? data.dungeon : {}
+            state.dungeon.active = loadedDungeon.active === true
+            state.dungeon.depth = Number.isFinite(loadedDungeon.depth) ? Math.max(1, Math.floor(loadedDungeon.depth)) : 1
+            state.dungeon.room = Number.isFinite(loadedDungeon.room) ? Math.max(0, Math.min(10, Math.floor(loadedDungeon.room))) : 0
+            state.dungeon.playerHp = Number.isFinite(loadedDungeon.playerHp) ? Math.max(0, loadedDungeon.playerHp) : 0
+            state.dungeon.enemyHp = Number.isFinite(loadedDungeon.enemyHp) ? Math.max(0, loadedDungeon.enemyHp) : 0
+            state.dungeon.enemyMaxHp = Number.isFinite(loadedDungeon.enemyMaxHp) ? Math.max(0, loadedDungeon.enemyMaxHp) : 0
+            state.dungeon.enemyBoss = loadedDungeon.enemyBoss === true
+            const enemyList = state.dungeon.enemyBoss ? DUNGEON_BOSSES : DUNGEON_ENEMIES
+            state.dungeon.enemyId = enemyList.some((enemy) => enemy.id === loadedDungeon.enemyId)
+                ? loadedDungeon.enemyId
+                : null
+            state.dungeon.cooldownUntil = Number.isFinite(loadedDungeon.cooldownUntil)
+                ? Math.max(0, Math.floor(loadedDungeon.cooldownUntil))
+                : 0
+            for (const key of ['completedRooms', 'completedRuns', 'defeats', 'bossesDefeated']) {
+                state.dungeon[key] = Number.isFinite(loadedDungeon[key]) ? Math.max(0, Math.floor(loadedDungeon[key])) : 0
+            }
+            for (const item of DUNGEON_TRAINING) {
+                const level = loadedDungeon.training?.[item.id]
+                state.dungeon.training[item.id] = Number.isFinite(level)
+                    ? Math.max(0, Math.min(item.max, Math.floor(level)))
+                    : 0
+            }
+            state.dungeon.supplies = Number.isFinite(loadedDungeon.supplies)
+                ? Math.max(0, Math.min(dungeonStartingSupplies(), Math.floor(loadedDungeon.supplies)))
+                : 0
+            for (const relic of DUNGEON_RELICS) {
+                state.dungeon.relics[relic.id] = loadedDungeon.relics?.[relic.id] === true
+            }
+            state.dungeon.log = typeof loadedDungeon.log === 'string'
+                ? loadedDungeon.log.slice(0, 240)
+                : freshDungeon.log
+            if (!state.dungeon.enemyId || state.dungeon.room < 1 || state.dungeon.playerHp <= 0 || state.dungeon.enemyHp <= 0) {
+                state.dungeon.active = false
+                state.dungeon.room = 0
+                state.dungeon.enemyId = null
+                state.dungeon.enemyHp = 0
+                state.dungeon.supplies = 0
+            }
+
             state.sugarLumps = typeof data.sugarLumps === 'number' ? Math.max(0, Math.floor(data.sugarLumps)) : 0
             state.sugarLumpsTotal = typeof data.sugarLumpsTotal === 'number' ? Math.max(state.sugarLumps, Math.floor(data.sugarLumpsTotal)) : state.sugarLumps
             state.nextSugarLumpAt = typeof data.nextSugarLumpAt === 'number'
@@ -8995,6 +10234,15 @@
                 save()
             }
             const didDecayManualRate = pruneManualTapRate(now)
+            const gardenMatureSignature = state.garden.plots
+                .map((plot) => plot.seedId && gardenPlotProgress(plot, now) >= 1 ? plot.seedId : '')
+                .join('|')
+            if (gardenMatureSignature !== lastGardenMatureSignature) {
+                lastGardenMatureSignature = gardenMatureSignature
+                renderHeader()
+                renderStats()
+                if ($('panel-shop').classList.contains('active')) renderShop()
+            }
             if (state.frenzyUntil > 0 && now >= state.frenzyUntil) {
                 state.frenzyUntil = 0
                 if (specialUpgradeLevel('goldenAfterglow') > 0) {
@@ -9064,6 +10312,14 @@
                 lastStatsRenderAt = now
                 renderStats()
             }
+            if ($('panel-garden').classList.contains('active') && now - lastGardenRenderAt >= 1000) {
+                lastGardenRenderAt = now
+                renderGarden(now)
+            }
+            if ($('panel-dungeon').classList.contains('active') && now - lastDungeonRenderAt >= 1000) {
+                lastDungeonRenderAt = now
+                renderDungeon(now)
+            }
             if ($('settings-daily-panel').classList.contains('visible') && now - lastDailyRenderAt >= 500) {
                 lastDailyRenderAt = now
                 renderDailyPanel()
@@ -9074,20 +10330,52 @@
             const tabs = document.querySelector('.tabs')
             const shopSubmenu = $('shop-submenu')
             const shopTab = document.querySelector('.tab-btn[data-tab="shop"]')
+            const cookieSubmenu = $('cookie-submenu')
+            const cookieTab = document.querySelector('.tab-btn[data-tab="play"]')
 
             const setShopMenuOpen = (open) => {
                 tabs.classList.toggle('shop-menu-open', open)
                 shopTab.setAttribute('aria-expanded', String(open))
                 shopSubmenu.setAttribute('aria-hidden', String(!open))
+                if (open) setCookieMenuOpen(false)
+            }
+
+            const setCookieMenuOpen = (open) => {
+                tabs.classList.toggle('cookie-menu-open', open)
+                cookieTab.setAttribute('aria-expanded', String(open))
+                cookieSubmenu.setAttribute('aria-hidden', String(!open))
+                if (open) {
+                    tabs.classList.remove('shop-menu-open')
+                    shopTab.setAttribute('aria-expanded', 'false')
+                    shopSubmenu.setAttribute('aria-hidden', 'true')
+                }
             }
 
             const activateTab = (tab) => {
-                document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab))
+                const cookieViews = ['play', 'garden', 'dungeon']
+                document.querySelectorAll('.tab-btn').forEach((btn) => {
+                    const active = btn.dataset.tab === 'play'
+                        ? cookieViews.includes(tab)
+                        : btn.dataset.tab === tab
+                    btn.classList.toggle('active', active)
+                })
                 $('panel-play').classList.toggle('active', tab === 'play')
+                $('panel-garden').classList.toggle('active', tab === 'garden')
+                $('panel-dungeon').classList.toggle('active', tab === 'dungeon')
                 $('panel-shop').classList.toggle('active', tab === 'shop')
                 $('panel-prestige').classList.toggle('active', tab === 'prestige')
                 $('panel-stats').classList.toggle('active', tab === 'stats')
 
+                if (cookieViews.includes(tab)) {
+                    activeCookieView = tab
+                    document.querySelectorAll('[data-cookie-view-target]').forEach((btn) => {
+                        const active = btn.dataset.cookieViewTarget === tab
+                        btn.classList.toggle('active', active)
+                        btn.setAttribute('aria-pressed', String(active))
+                    })
+                }
+                if (tab === 'garden') renderGarden()
+                if (tab === 'dungeon') renderDungeon()
                 if (tab === 'shop') renderShop()
                 if (tab === 'prestige') renderPrestige()
                 if (tab === 'stats') {
@@ -9098,13 +10386,26 @@
 
             document.querySelectorAll('.tab-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
+                    if (btn.dataset.tab === 'play') {
+                        const open = !tabs.classList.contains('cookie-menu-open')
+                        setCookieMenuOpen(open)
+                        return
+                    }
                     if (btn.dataset.tab === 'shop') {
                         const open = !tabs.classList.contains('shop-menu-open')
                         setShopMenuOpen(open)
                         return
                     }
                     setShopMenuOpen(false)
+                    setCookieMenuOpen(false)
                     activateTab(btn.dataset.tab)
+                })
+            })
+
+            document.querySelectorAll('[data-cookie-view-target]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    activateTab(btn.dataset.cookieViewTarget)
+                    setCookieMenuOpen(false)
                 })
             })
 
@@ -9113,12 +10414,14 @@
                     activeShopView = btn.dataset.shopViewTarget
                     activateTab('shop')
                     setShopMenuOpen(false)
+                    setCookieMenuOpen(false)
                 })
             })
 
             document.addEventListener('click', (ev) => {
-                if (tabs.classList.contains('shop-menu-open') && !tabs.contains(ev.target)) {
+                if (!tabs.contains(ev.target)) {
                     setShopMenuOpen(false)
+                    setCookieMenuOpen(false)
                 }
             })
         }
@@ -9148,6 +10451,8 @@
             renderPrestige()
             renderAchievements()
             renderStats()
+            renderGarden()
+            renderDungeon()
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
