@@ -2759,6 +2759,7 @@
                                 <li><strong>Garten-Ausbau:</strong> Acht dauerhafte Garten-Upgrades und zehn neue Garten-Erfolge beeinflussen Garten und Hauptbäckerei</li>
                                 <li><strong>Dungeon-Endspiel:</strong> 24 weitere Relikte und eine zusätzliche Veteranen-Skalierung ab dem 10. abgeschlossenen Lauf hinzugefügt</li>
                                 <li><strong>Dungeon-Cooldown:</strong> Eine kostspielige Ausbildung reduziert Wartezeiten um bis zu 50%; sieben neue Endspiel-Erfolge ergänzt</li>
+                                <li><strong>Dungeon-Übersicht:</strong> Gefundene Relikte lassen sich ausblenden; jede Tiefe zeigt Kampfkraft, Gegner-LP und Gegenschaden</li>
                                 <li><strong>Statistik:</strong> Garten- und Dungeon-Fortschritt werden in der Statistik angezeigt</li>
                             </ul>
                         </li>
@@ -3111,7 +3112,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.26.8'
+        const APP_VERSION = '2026.07.26.9'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -5429,6 +5430,7 @@
                 defeats: 0,
                 bossesDefeated: 0,
                 supplies: 0,
+                hideUnlockedRelics: false,
                 training: Object.fromEntries(DUNGEON_TRAINING.map((item) => [item.id, 0])),
                 relics: Object.fromEntries(DUNGEON_RELICS.map((relic) => [relic.id, false])),
                 log: 'Der Dungeon wartet auf mutige Bäcker.',
@@ -7699,6 +7701,20 @@
             return 'Normal'
         }
 
+        function dungeonDepthHpMult() {
+            const depthScale = 1 + (state.dungeon.depth - 1) * 0.22
+            return depthScale * dungeonVeteranHpMult()
+        }
+
+        function dungeonDepthDamageMult() {
+            const depthScale = 1 + (state.dungeon.depth - 1) * 0.08
+            return depthScale * dungeonVeteranDamageMult()
+        }
+
+        function dungeonDepthCombatPower() {
+            return Math.round(100 * Math.sqrt(dungeonDepthHpMult() * dungeonDepthDamageMult()))
+        }
+
         function spawnDungeonEnemy() {
             const boss = state.dungeon.room % 10 === 0
             const list = boss ? DUNGEON_BOSSES : DUNGEON_ENEMIES
@@ -7861,14 +7877,17 @@
             const enemyPct = enemy && state.dungeon.enemyMaxHp > 0
                 ? Math.max(0, Math.min(100, state.dungeon.enemyHp / state.dungeon.enemyMaxHp * 100))
                 : 0
-            const relicCards = DUNGEON_RELICS.map((relic) => {
+            const visibleRelics = state.dungeon.hideUnlockedRelics
+                ? DUNGEON_RELICS.filter((relic) => !state.dungeon.relics[relic.id])
+                : DUNGEON_RELICS
+            const relicCards = visibleRelics.map((relic) => {
                 const owned = state.dungeon.relics[relic.id] === true
                 const depthLocked = !owned && (relic.minDepth || 1) > state.dungeon.depth
                 return `<div class="relic-card${owned ? '' : ' locked'}">
                     <strong>${owned ? relic.icon : '🔒'} ${relic.name}</strong>
                     <span>${owned ? relic.desc : depthLocked ? `Fund möglich ab Tiefe ${relic.minDepth}` : 'Besiege einen Dungeon-Boss'}</span>
                 </div>`
-            }).join('')
+            }).join('') || '<div class="achievement-summary">Alle Relikte sind gefunden und durch den Filter ausgeblendet.</div>'
             const trainingCards = DUNGEON_TRAINING.map((item) => {
                 const level = dungeonTrainingLevel(item.id)
                 const maxed = level >= item.max
@@ -7888,10 +7907,15 @@
                     <div class="minigame-summary">
                         <div>Tiefe<strong>${state.dungeon.depth}</strong></div>
                         <div>Boss-Siege<strong>${state.dungeon.bossesDefeated}</strong></div>
-                        <div>Kampfkraft<strong>${formatNum(dungeonAttackPower())}</strong></div>
+                        <div>Deine Kampfkraft<strong>${formatNum(dungeonAttackPower())}</strong></div>
+                    </div>
+                    <div class="minigame-summary">
+                        <div>Tiefen-Kampfkraft<strong>${formatNum(dungeonDepthCombatPower())}</strong></div>
+                        <div>Gegner-LP<strong>+${formatPct(dungeonDepthHpMult() - 1)}</strong></div>
+                        <div>Gegenschaden<strong>+${formatPct(dungeonDepthDamageMult() - 1)}</strong></div>
                     </div>
                     <p style="margin-top:0.55rem">Schwierigkeit: <strong>${dungeonDifficultyLabel()}</strong>${dungeonVeteranRuns() > 0
-                        ? ` · Gegner-LP +${formatPct(dungeonVeteranHpMult() - 1)} · Gegenschaden +${formatPct(dungeonVeteranDamageMult() - 1)}`
+                        ? ` · Veteranenstufe ${dungeonVeteranRuns()}`
                         : ' · Veteranen-Skalierung beginnt nach 10 abgeschlossenen Läufen'}</p>
                 </section>
                 <section class="minigame-card dungeon-enemy">
@@ -7927,6 +7951,11 @@
                 <section class="minigame-card">
                     <h3>Relikte</h3>
                     <p>Jeder erfolgreiche Bosslauf gewährt ein noch fehlendes Relikt. Sind alle gefunden, erhältst du ein Zuckerstück.</p>
+                    <div class="minigame-actions">
+                        <button type="button" class="minigame-action${state.dungeon.hideUnlockedRelics ? ' primary' : ''}" id="dungeon-relic-filter"
+                            aria-pressed="${state.dungeon.hideUnlockedRelics}">${state.dungeon.hideUnlockedRelics ? 'Gefundene einblenden' : 'Gefundene ausblenden'}</button>
+                        <button type="button" class="minigame-action" disabled>${dungeonRelicCount()} / ${DUNGEON_RELICS.length} gefunden</button>
+                    </div>
                     <div class="relic-grid">${relicCards}</div>
                 </section>
                 <section class="minigame-card">
@@ -7942,6 +7971,11 @@
             $('dungeon-attack-btn')?.addEventListener('click', attackDungeonEnemy)
             $('dungeon-supply-btn')?.addEventListener('click', useDungeonSupply)
             $('dungeon-flee-btn')?.addEventListener('click', fleeDungeon)
+            $('dungeon-relic-filter')?.addEventListener('click', () => {
+                state.dungeon.hideUnlockedRelics = !state.dungeon.hideUnlockedRelics
+                renderDungeon()
+                save()
+            })
             root.querySelectorAll('[data-dungeon-training]').forEach((button) => {
                 button.addEventListener('click', () => buyDungeonTraining(button.dataset.dungeonTraining))
             })
@@ -9512,6 +9546,7 @@
             state.dungeon.cooldownUntil = Number.isFinite(loadedDungeon.cooldownUntil)
                 ? Math.max(0, Math.floor(loadedDungeon.cooldownUntil))
                 : 0
+            state.dungeon.hideUnlockedRelics = loadedDungeon.hideUnlockedRelics === true
             for (const key of ['completedRooms', 'completedRuns', 'defeats', 'bossesDefeated']) {
                 state.dungeon[key] = Number.isFinite(loadedDungeon[key]) ? Math.max(0, Math.floor(loadedDungeon[key])) : 0
             }
