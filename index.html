@@ -2760,6 +2760,7 @@
                                 <li><strong>Dungeon-Endspiel:</strong> 24 weitere Relikte und eine zusätzliche Veteranen-Skalierung ab dem 10. abgeschlossenen Lauf hinzugefügt</li>
                                 <li><strong>Dungeon-Cooldown:</strong> Eine kostspielige Ausbildung reduziert Wartezeiten um bis zu 50%; sieben neue Endspiel-Erfolge ergänzt</li>
                                 <li><strong>Dungeon-Übersicht:</strong> Gefundene Relikte lassen sich ausblenden; jede Tiefe zeigt Kampfkraft, Gegner-LP und Gegenschaden</li>
+                                <li><strong>Dungeon-Eskalation:</strong> Bei Tiefe 10, 20, 30 und jeder weiteren Zehnerstufe werden Gegner zusätzlich stärker</li>
                                 <li><strong>Statistik:</strong> Garten- und Dungeon-Fortschritt werden in der Statistik angezeigt</li>
                             </ul>
                         </li>
@@ -3112,7 +3113,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.26.9'
+        const APP_VERSION = '2026.07.26.10'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -7701,14 +7702,26 @@
             return 'Normal'
         }
 
+        function dungeonDepthTier() {
+            return Math.floor(state.dungeon.depth / 10)
+        }
+
+        function dungeonTierHpMult() {
+            return Math.pow(1.25, dungeonDepthTier())
+        }
+
+        function dungeonTierDamageMult() {
+            return Math.pow(1.15, dungeonDepthTier())
+        }
+
         function dungeonDepthHpMult() {
             const depthScale = 1 + (state.dungeon.depth - 1) * 0.22
-            return depthScale * dungeonVeteranHpMult()
+            return depthScale * dungeonVeteranHpMult() * dungeonTierHpMult()
         }
 
         function dungeonDepthDamageMult() {
             const depthScale = 1 + (state.dungeon.depth - 1) * 0.08
-            return depthScale * dungeonVeteranDamageMult()
+            return depthScale * dungeonVeteranDamageMult() * dungeonTierDamageMult()
         }
 
         function dungeonDepthCombatPower() {
@@ -7727,7 +7740,8 @@
                     * (1.7 + state.dungeon.room * 0.1)
                     * enemy.hp
                     * scale
-                    * dungeonVeteranHpMult(),
+                    * dungeonVeteranHpMult()
+                    * dungeonTierHpMult(),
                 ),
             )
             state.dungeon.enemyId = enemy.id
@@ -7826,6 +7840,7 @@
                     * bossFactor
                     * dungeonIncomingDamageMult()
                     * dungeonVeteranDamageMult()
+                    * dungeonTierDamageMult()
                 state.dungeon.playerHp = Math.max(0, state.dungeon.playerHp - counter)
                 state.dungeon.log = `${critical ? 'Kritischer Treffer! ' : ''}${formatNum(damage)} Schaden · ${enemy.name} kontert für ${formatNum(counter)}.`
                 if (state.dungeon.playerHp <= 0) {
@@ -7916,7 +7931,7 @@
                     </div>
                     <p style="margin-top:0.55rem">Schwierigkeit: <strong>${dungeonDifficultyLabel()}</strong>${dungeonVeteranRuns() > 0
                         ? ` · Veteranenstufe ${dungeonVeteranRuns()}`
-                        : ' · Veteranen-Skalierung beginnt nach 10 abgeschlossenen Läufen'}</p>
+                        : ' · Veteranen-Skalierung beginnt nach 10 abgeschlossenen Läufen'} · Zehner-Eskalation ${dungeonDepthTier()}</p>
                 </section>
                 <section class="minigame-card dungeon-enemy">
                     ${state.dungeon.active && enemy ? `
