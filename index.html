@@ -2667,12 +2667,77 @@
             line-height: 1.4;
         }
 
+        .pantheon-slot-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.45rem;
+            margin-top: 0.55rem;
+        }
+
+        .pantheon-slot {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.65rem;
+            padding: 0.55rem;
+            background: var(--ctrl-bg);
+            text-align: center;
+        }
+
+        .pantheon-slot strong,
+        .pantheon-spirit-card strong {
+            display: block;
+            font-size: 0.7rem;
+        }
+
+        .pantheon-slot span,
+        .pantheon-spirit-card span {
+            display: block;
+            margin-top: 0.2rem;
+            color: var(--shop-desc-color);
+            font-size: 0.6rem;
+            line-height: 1.35;
+        }
+
+        .pantheon-spirit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-top: 0.55rem;
+        }
+
+        .pantheon-spirit-card {
+            border: 1px solid var(--ctrl-border);
+            border-radius: 0.6rem;
+            padding: 0.55rem;
+            background: var(--theme-btn-bg);
+            color: var(--shop-name-color);
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .pantheon-spirit-card.selected {
+            border-color: var(--achievement-unlocked-border);
+            background: var(--achievement-unlocked-bg);
+            color: var(--achievement-unlocked-fg);
+        }
+
+        .pantheon-spirit-card.slotted {
+            box-shadow: inset 0 0 0 1px rgba(231, 192, 92, 0.55);
+        }
+
+        .pantheon-spirit-card.locked {
+            opacity: 0.5;
+            filter: grayscale(0.55);
+            cursor: not-allowed;
+        }
+
         @media (max-width: 380px) {
             .minigame-summary,
             .seed-grid,
             .relic-grid,
             .dungeon-training-grid,
-            .garden-upgrade-grid {
+            .garden-upgrade-grid,
+            .pantheon-spirit-grid,
+            .pantheon-slot-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -2751,6 +2816,9 @@
                             <ul>
                                 <li><strong>Klick-Meilensteine:</strong> 68 kaufbare Meilensteine verdoppeln stufenweise den Grundwert einzelner Klickverstärkungen</li>
                                 <li><strong>Erfolge:</strong> Neue Langzeit-Erfolge für Klick-Meilensteine, Klick-Upgrades und manuelle Klicks hinzugefügt</li>
+                                <li><strong>Pantheon:</strong> Neun Gottheiten können mit unterschiedlich starker Wirkung in drei Tempelplätze eingesetzt werden</li>
+                                <li><strong>Pantheon-Freischaltungen:</strong> Gottheiten werden dauerhaft durch Klicks, Ereignisse, Garten, Dungeon und andere Fortschritte freigeschaltet</li>
+                                <li><strong>Pantheon-Endgame:</strong> Alle neun Gottheiten verlangen jetzt echte Langzeitfortschritte, jedoch keine Prestige-Stufen</li>
                             </ul>
                         </li>
                         <li><strong>2026-07-26</strong>
@@ -3075,6 +3143,10 @@
                 <div class="minigame-shell" id="dungeon-root"></div>
             </section>
 
+            <section class="panel" id="panel-pantheon" aria-label="Pantheon">
+                <div class="minigame-shell" id="pantheon-root"></div>
+            </section>
+
             <section class="panel" id="panel-shop" aria-label="Laden">
                 <div class="shop" id="shop-root"></div>
             </section>
@@ -3096,6 +3168,7 @@
                 <button type="button" class="cookie-submenu-btn active" data-cookie-view-target="play" aria-pressed="true">Keks</button>
                 <button type="button" class="cookie-submenu-btn" data-cookie-view-target="garden" aria-pressed="false">Garten</button>
                 <button type="button" class="cookie-submenu-btn" data-cookie-view-target="dungeon" aria-pressed="false">Dungeon</button>
+                <button type="button" class="cookie-submenu-btn" data-cookie-view-target="pantheon" aria-pressed="false">Pantheon</button>
             </div>
             <div class="shop-submenu" id="shop-submenu" aria-label="Ladenbereiche" aria-hidden="true">
                 <button type="button" class="shop-submenu-btn active" data-shop-view-target="production">Produktionen</button>
@@ -3120,7 +3193,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.29.1'
+        const APP_VERSION = '2026.07.29.6'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -5082,6 +5155,42 @@
                 type: 'cps', value: 0.10, check: () => state.clicks.creator >= 25,
             },
             {
+                id: 'pantheonFirstSpirit', name: 'Einzug in den Tempel',
+                desc: 'Setze deine erste Gottheit ins Pantheon ein', reward: '+2% Produktion',
+                type: 'cps', value: 0.02, check: () => pantheonDiscoveredCount() >= 1,
+            },
+            {
+                id: 'pantheonFull', name: 'Dreifaltiger Tempel',
+                desc: 'Belege alle drei Pantheonplätze gleichzeitig', reward: '+3% Klick-Stärke',
+                type: 'tap', value: 0.03, check: () => pantheonFilledSlots() >= 3,
+            },
+            {
+                id: 'pantheonAllSpirits', name: 'Rat der Neun',
+                desc: 'Setze jede Gottheit mindestens einmal ein', reward: '+6% Produktion',
+                type: 'cps', value: 0.06, check: () => pantheonDiscoveredCount() >= PANTHEON_SPIRITS.length,
+            },
+            {
+                id: 'pantheonSwapTen', name: 'Tempeldiener',
+                desc: 'Führe 10 Pantheon-Wechsel durch', reward: '+2% Klick-Stärke',
+                type: 'tap', value: 0.02, check: () => state.pantheon.totalSwaps >= 10,
+            },
+            {
+                id: 'pantheonSwapTwentyFive', name: 'Hüter der Altäre',
+                desc: 'Führe 25 Pantheon-Wechsel durch', reward: '+4% Produktion',
+                type: 'cps', value: 0.04, check: () => state.pantheon.totalSwaps >= 25,
+            },
+            {
+                id: 'pantheonSwapHundred', name: 'Meister des Pantheons',
+                desc: 'Führe 100 Pantheon-Wechsel durch', reward: '+8% Klick-Stärke',
+                type: 'tap', value: 0.08, check: () => state.pantheon.totalSwaps >= 100,
+            },
+            {
+                id: 'pantheonPerfectCouncil', name: 'Der vollendete Götterrat',
+                desc: 'Entdecke alle Gottheiten und belege alle drei Plätze', reward: '+8% Produktion',
+                type: 'cps', value: 0.08,
+                check: () => pantheonDiscoveredCount() >= PANTHEON_SPIRITS.length && pantheonFilledSlots() >= 3,
+            },
+            {
                 id: 'gardenFirstHarvest', name: 'Die erste Ernte',
                 desc: 'Ernte deine erste Gartenpflanze', reward: '+1% Produktion',
                 type: 'cps', value: 0.01, check: () => state.garden.totalHarvests >= 1,
@@ -5318,6 +5427,79 @@
             },
         ]
 
+        const PANTHEON_SWAP_RECHARGE_MS = 6 * 60 * 60 * 1000
+        const PANTHEON_MAX_SWAPS = 3
+        const PANTHEON_SLOTS = [
+            { id: 'diamond', name: 'Diamantplatz', icon: '💎', factor: 1 },
+            { id: 'ruby', name: 'Rubinplatz', icon: '♦️', factor: 0.65 },
+            { id: 'jade', name: 'Jadeplatz', icon: '🟢', factor: 0.4 },
+        ]
+        const PANTHEON_SPIRITS = [
+            {
+                id: 'holobore', name: 'Holobore', icon: '🔥',
+                desc: '+18% Produktion, aber -8% Klickstärke',
+                effects: { cps: 0.18, click: -0.08 },
+                unlockHint: '1 Billiarde Lebenszeit-Kekse produzieren',
+                unlockCheck: () => state.lifetimeCookies >= 1e15,
+            },
+            {
+                id: 'muridal', name: 'Muridal', icon: '👊',
+                desc: '+18% Klickstärke, aber -8% Produktion',
+                effects: { click: 0.18, cps: -0.08 },
+                unlockHint: '100.000-mal selbst klicken',
+                unlockCheck: () => state.manualClicksTotal >= 100000,
+            },
+            {
+                id: 'selebrak', name: 'Selebrak', icon: '🎉',
+                desc: '+18% Ereignisrate, aber -5% Produktion',
+                effects: { event: 0.18, cps: -0.05 },
+                unlockHint: '150 Spezialereignisse aktivieren',
+                unlockCheck: () => state.randomEventsTriggered >= 150,
+            },
+            {
+                id: 'cyclius', name: 'Cyclius', icon: '🌙',
+                desc: '+25% Offline-Ertrag, aber -5% Klickstärke',
+                effects: { offline: 0.25, click: -0.05 },
+                unlockHint: '30 Tagesbelohnungen oder 25 Timeskips erhalten',
+                unlockCheck: () => state.dailyRewardsClaimed >= 30 || state.timeSkipEventsTriggered >= 25,
+            },
+            {
+                id: 'jeremy', name: 'Jeremy', icon: '🌿',
+                desc: '+20% Gartenwachstum und Ernte, aber -5% Produktion',
+                effects: { gardenGrowth: 0.2, gardenHarvest: 0.2, cps: -0.05 },
+                unlockHint: '200 Pflanzen im Garten ernten',
+                unlockCheck: () => state.garden.totalHarvests >= 200,
+            },
+            {
+                id: 'dotjeiess', name: 'Dotjeiess', icon: '⚖️',
+                desc: '-6% Ladenpreise, aber -6% Produktion',
+                effects: { shopDiscount: 0.06, cps: -0.06 },
+                unlockHint: 'Insgesamt 2.900 Produzenten und Klickverstärkungen besitzen',
+                unlockCheck: () => totalProducerOwned() + totalClickUpgradesOwned() >= 2900,
+            },
+            {
+                id: 'skruuia', name: 'Skruuia', icon: '⚔️',
+                desc: '+18% Dungeon-Schaden und +15% Belohnung, aber -8% Offline-Ertrag',
+                effects: { dungeonAttack: 0.18, dungeonReward: 0.15, offline: -0.08 },
+                unlockHint: '35 Dungeon-Bosse besiegen',
+                unlockCheck: () => state.dungeon.bossesDefeated >= 35,
+            },
+            {
+                id: 'rigidel', name: 'Rigidel', icon: '🎯',
+                desc: '+3% Krit-Chance, aber -5% Produktion',
+                effects: { critChance: 0.03, cps: -0.05 },
+                unlockHint: '25.000 kritische Klicks erzielen',
+                unlockCheck: () => state.criticalClicksTotal >= 25000,
+            },
+            {
+                id: 'mokalsium', name: 'Mokalsium', icon: '🌌',
+                desc: '+8% auf alle Cookie-Erträge, aber -8% Ereignisrate',
+                effects: { all: 0.08, event: -0.08 },
+                unlockHint: '175 Erfolge freischalten',
+                unlockCheck: () => unlockedAchievementsCount() >= 175,
+            },
+        ]
+
         const GARDEN_PLANTS = [
             {
                 id: 'bakersWheat', name: 'Bäckerweizen', icon: '🌾', growMs: 2 * 60 * 1000,
@@ -5512,6 +5694,19 @@
             },
         ]
 
+        function createPantheonState() {
+            return {
+                unlockRevision: 4,
+                selectedSpiritId: null,
+                slots: Object.fromEntries(PANTHEON_SLOTS.map((slot) => [slot.id, null])),
+                swaps: PANTHEON_MAX_SWAPS,
+                nextSwapAt: 0,
+                totalSwaps: 0,
+                discovered: Object.fromEntries(PANTHEON_SPIRITS.map((spirit) => [spirit.id, false])),
+                unlocked: Object.fromEntries(PANTHEON_SPIRITS.map((spirit) => [spirit.id, false])),
+            }
+        }
+
         function createGardenState() {
             return {
                 selectedSeedId: 'bakersWheat',
@@ -5613,6 +5808,7 @@
             hideMaxedShopUpgrades: false,
             showOnlyBuyableMilestones: false,
             showOnlyBuyableClickMilestones: false,
+            pantheon: createPantheonState(),
             garden: createGardenState(),
             dungeon: createDungeonState(),
             bonusAllUntil: 0,
@@ -5643,6 +5839,7 @@
         let activeCookieView = 'play'
         let lastGardenRenderAt = 0
         let lastDungeonRenderAt = 0
+        let lastPantheonRenderAt = 0
         let lastGardenMatureSignature = ''
 
         const $ = (id) => document.getElementById(id)
@@ -6135,11 +6332,61 @@
             return FRENZY_MULT + prestigeUpgradeLevel('starSurge') * 0.22
         }
 
+        function pantheonSpiritById(id) {
+            return PANTHEON_SPIRITS.find((spirit) => spirit.id === id) || null
+        }
+
+        function pantheonSlotById(id) {
+            return PANTHEON_SLOTS.find((slot) => slot.id === id) || null
+        }
+
+        function pantheonBonus(type) {
+            return PANTHEON_SLOTS.reduce((total, slot) => {
+                const spirit = pantheonSpiritById(state.pantheon.slots[slot.id])
+                return total + (spirit?.effects[type] || 0) * slot.factor
+            }, 0)
+        }
+
+        function pantheonMult(type) {
+            return Math.max(0.1, 1 + pantheonBonus(type))
+        }
+
+        function pantheonFilledSlots() {
+            return PANTHEON_SLOTS.reduce((count, slot) =>
+                count + (state.pantheon.slots[slot.id] ? 1 : 0), 0)
+        }
+
+        function pantheonDiscoveredCount() {
+            return PANTHEON_SPIRITS.reduce((count, spirit) =>
+                count + (state.pantheon.discovered[spirit.id] ? 1 : 0), 0)
+        }
+
+        function pantheonUnlockedCount() {
+            return PANTHEON_SPIRITS.reduce((count, spirit) =>
+                count + (state.pantheon.unlocked[spirit.id] ? 1 : 0), 0)
+        }
+
+        function refreshPantheonUnlocks(notify = true) {
+            const unlocked = []
+            for (const spirit of PANTHEON_SPIRITS) {
+                if (state.pantheon.unlocked[spirit.id] || !spirit.unlockCheck()) continue
+                state.pantheon.unlocked[spirit.id] = true
+                unlocked.push(spirit)
+            }
+            if (notify) {
+                for (const spirit of unlocked) {
+                    showEventRewardToast(spirit.icon, `Pantheon-Gottheit freigeschaltet: ${spirit.name}`)
+                }
+            }
+            return unlocked
+        }
+
         function shopCostDiscount() {
             const discount = 0.02 * prestigeUpgradeLevel('frugalGalaxy')
             return Math.max(0.65, 1 - discount)
                 * quantumSupplyChainDiscount()
                 * Math.max(0.75, 1 - dungeonRelicBonus('shopDiscount'))
+                * Math.max(0.75, 1 - pantheonBonus('shopDiscount'))
         }
 
         function shardRewardMult() {
@@ -6152,6 +6399,7 @@
                 * permanentCookieIncomeMult()
                 * (1 + gardenUpgradeLevel('dreamRoots') * 0.05)
                 * dungeonRelicMult('offline')
+                * pantheonMult('offline')
         }
 
         function offlineCapMs() {
@@ -6171,7 +6419,8 @@
         }
 
         function gardenGrowthMult() {
-            return 1 + gardenUpgradeLevel('richSoil') * 0.1
+            return (1 + gardenUpgradeLevel('richSoil') * 0.1)
+                * pantheonMult('gardenGrowth')
         }
 
         function gardenGrowMs(plant) {
@@ -6181,6 +6430,7 @@
         function gardenHarvestMult() {
             return (1 + gardenUpgradeLevel('harvestBasket') * 0.15)
                 * dungeonRelicMult('gardenHarvest')
+                * pantheonMult('gardenHarvest')
         }
 
         function gardenPlotProgress(plot, now = Date.now()) {
@@ -6237,6 +6487,7 @@
                 * gardenEventRateMult()
                 * (1 + gardenUpgradeLevel('fortunePollen') * 0.02)
                 * dungeonRelicMult('event')
+                * pantheonMult('event')
         }
 
         function goldenIntervalMs() {
@@ -6410,7 +6661,10 @@
 
         function critChance() {
             const base = 0.04 + specialUpgradeLevel('critChance') * 0.012 + prestigeUpgradeLevel('hyperFocus') * 0.008
-            return Math.min(0.65, base + achievementBonus('critChance') + dungeonRelicBonus('critChance'))
+            return Math.min(
+                0.65,
+                base + achievementBonus('critChance') + dungeonRelicBonus('critChance') + pantheonBonus('critChance'),
+            )
         }
 
         function critMultiplier() {
@@ -6593,6 +6847,7 @@
                 * seasonalCollectionMult()
                 * gardenIncomeMult()
                 * dungeonRelicMult('all')
+                * pantheonMult('all')
         }
 
         function calcCps() {
@@ -6613,6 +6868,7 @@
                 * (1 + gardenUpgradeLevel('bakerySymbiosis') * 0.03)
                 * gardenCpsMult()
                 * dungeonRelicMult('cps')
+                * pantheonMult('cps')
         }
 
         function calcTap() {
@@ -6631,6 +6887,7 @@
                 * (1 + gardenUpgradeLevel('nectarGloves') * 0.03)
                 * gardenClickMult()
                 * dungeonRelicMult('click')
+                * pantheonMult('click')
         }
 
         const recentManualTapAt = []
@@ -7448,6 +7705,7 @@
         function renderStats() {
             const root = $('stats-root')
             if (!root) return
+            refreshPantheonSwaps()
 
             const manualCritRate = state.manualClicksTotal > 0
                 ? state.criticalClicksTotal / state.manualClicksTotal
@@ -7529,6 +7787,16 @@
                             <div class="stats-list-row"><span>Alle Saisonfunde</span><strong>${seasonalFindCount()} / ${SEASONAL_FINDS.length}</strong></div>
                             <div class="stats-list-row"><span>Dauerbonus</span><strong>${formatPct(seasonalCollectionMult() - 1)}</strong></div>
                             <div class="stats-list-row"><span>Gefunden</span><strong>${season.finds.filter((item) => state.seasonalFinds[item.id]).map((item) => item.icon).join(' ') || '–'}</strong></div>
+                        </div>
+                    </section>
+                    <section class="stats-card">
+                        <h3 class="stats-card-title">🏛️ Pantheon</h3>
+                        <div class="stats-list">
+                            <div class="stats-list-row"><span>Belegte Plätze</span><strong>${pantheonFilledSlots()} / ${PANTHEON_SLOTS.length}</strong></div>
+                            <div class="stats-list-row"><span>Freigeschaltet</span><strong>${pantheonUnlockedCount()} / ${PANTHEON_SPIRITS.length}</strong></div>
+                            <div class="stats-list-row"><span>Gottheiten entdeckt</span><strong>${pantheonDiscoveredCount()} / ${PANTHEON_SPIRITS.length}</strong></div>
+                            <div class="stats-list-row"><span>Wechsel verfügbar</span><strong>${state.pantheon.swaps} / ${PANTHEON_MAX_SWAPS}</strong></div>
+                            <div class="stats-list-row"><span>Wechsel insgesamt</span><strong>${formatNum(state.pantheon.totalSwaps)}</strong></div>
                         </div>
                     </section>
                     <section class="stats-card">
@@ -7836,6 +8104,7 @@
         function dungeonAttackPower() {
             return dungeonBaseAttackPower()
                 * (1 + dungeonTrainingLevel('weapon') * 0.15 + achievementBonus('dungeonAttack'))
+                * pantheonMult('dungeonAttack')
         }
 
         function dungeonCritChance() {
@@ -7850,7 +8119,8 @@
         }
 
         function dungeonRewardMult() {
-            return 1 + dungeonTrainingLevel('treasure') * 0.2 + achievementBonus('dungeonReward')
+            return (1 + dungeonTrainingLevel('treasure') * 0.2 + achievementBonus('dungeonReward'))
+                * pantheonMult('dungeonReward')
         }
 
         function dungeonStartingSupplies() {
@@ -8222,6 +8492,159 @@
             root.querySelectorAll('[data-dungeon-training]').forEach((button) => {
                 button.addEventListener('click', () => buyDungeonTraining(button.dataset.dungeonTraining))
             })
+        }
+
+        function refreshPantheonSwaps(now = Date.now()) {
+            if (state.pantheon.swaps >= PANTHEON_MAX_SWAPS) {
+                state.pantheon.swaps = PANTHEON_MAX_SWAPS
+                state.pantheon.nextSwapAt = 0
+                return false
+            }
+            if (!Number.isFinite(state.pantheon.nextSwapAt) || state.pantheon.nextSwapAt <= 0) {
+                state.pantheon.nextSwapAt = now + PANTHEON_SWAP_RECHARGE_MS
+                return true
+            }
+            if (now < state.pantheon.nextSwapAt) return false
+            const gained = 1 + Math.floor((now - state.pantheon.nextSwapAt) / PANTHEON_SWAP_RECHARGE_MS)
+            state.pantheon.swaps = Math.min(PANTHEON_MAX_SWAPS, state.pantheon.swaps + gained)
+            state.pantheon.nextSwapAt = state.pantheon.swaps < PANTHEON_MAX_SWAPS
+                ? state.pantheon.nextSwapAt + gained * PANTHEON_SWAP_RECHARGE_MS
+                : 0
+            return true
+        }
+
+        function spendPantheonSwap(now = Date.now()) {
+            refreshPantheonSwaps(now)
+            if (state.pantheon.swaps < 1) return false
+            state.pantheon.swaps--
+            state.pantheon.totalSwaps++
+            if (state.pantheon.nextSwapAt <= 0) {
+                state.pantheon.nextSwapAt = now + PANTHEON_SWAP_RECHARGE_MS
+            }
+            return true
+        }
+
+        function assignPantheonSpirit(slotId) {
+            const slot = pantheonSlotById(slotId)
+            const spirit = pantheonSpiritById(state.pantheon.selectedSpiritId)
+            if (!slot || !spirit || !state.pantheon.unlocked[spirit.id] || state.pantheon.slots[slot.id] === spirit.id) return
+            if (!spendPantheonSwap()) return
+
+            for (const otherSlot of PANTHEON_SLOTS) {
+                if (state.pantheon.slots[otherSlot.id] === spirit.id) {
+                    state.pantheon.slots[otherSlot.id] = null
+                }
+            }
+            state.pantheon.slots[slot.id] = spirit.id
+            state.pantheon.discovered[spirit.id] = true
+            state.pantheon.selectedSpiritId = null
+            evaluateAchievements()
+            renderHeader()
+            renderPantheon()
+            renderGarden()
+            renderDungeon()
+            renderPantheon()
+            renderShop()
+            renderStats()
+            save()
+        }
+
+        function removePantheonSpirit(slotId) {
+            const slot = pantheonSlotById(slotId)
+            if (!slot || !state.pantheon.slots[slot.id]) return
+            if (!spendPantheonSwap()) return
+            state.pantheon.slots[slot.id] = null
+            evaluateAchievements()
+            renderHeader()
+            renderPantheon()
+            renderGarden()
+            renderDungeon()
+            renderShop()
+            renderStats()
+            save()
+        }
+
+        function renderPantheon(now = Date.now()) {
+            const root = $('pantheon-root')
+            if (!root) return
+            const swapsChanged = refreshPantheonSwaps(now)
+            const newlyUnlocked = refreshPantheonUnlocks()
+            const selectedSpirit = pantheonSpiritById(state.pantheon.selectedSpiritId)
+            const nextSwapText = state.pantheon.swaps >= PANTHEON_MAX_SWAPS
+                ? 'Vollständig geladen'
+                : `+1 in ${formatDurationCompact(Math.max(0, state.pantheon.nextSwapAt - now))}`
+
+            const slotCards = PANTHEON_SLOTS.map((slot) => {
+                const spirit = pantheonSpiritById(state.pantheon.slots[slot.id])
+                const canAssign = selectedSpirit && selectedSpirit.id !== spirit?.id && state.pantheon.swaps > 0
+                return `<div class="pantheon-slot">
+                    <strong>${slot.icon} ${slot.name} · ${Math.round(slot.factor * 100)}%</strong>
+                    <span>${spirit ? `${spirit.icon} ${spirit.name}` : 'Nicht belegt'}</span>
+                    <span>${spirit ? spirit.desc : 'Wähle unten eine Gottheit aus.'}</span>
+                    <div class="minigame-actions">
+                        <button type="button" class="minigame-action primary" data-pantheon-slot="${slot.id}" ${canAssign ? '' : 'disabled'}>Einsetzen · 1 Wechsel</button>
+                        <button type="button" class="minigame-action" data-pantheon-remove="${slot.id}" ${spirit && state.pantheon.swaps > 0 ? '' : 'disabled'}>Entfernen</button>
+                    </div>
+                </div>`
+            }).join('')
+
+            const spiritCards = PANTHEON_SPIRITS.map((spirit) => {
+                const slotted = PANTHEON_SLOTS.find((slot) => state.pantheon.slots[slot.id] === spirit.id)
+                const unlocked = state.pantheon.unlocked[spirit.id] === true
+                const selected = unlocked && selectedSpirit?.id === spirit.id
+                return `<button type="button" class="pantheon-spirit-card${selected ? ' selected' : ''}${slotted ? ' slotted' : ''}${unlocked ? '' : ' locked'}"
+                    data-pantheon-spirit="${spirit.id}" aria-pressed="${selected}" ${unlocked ? '' : 'disabled'}>
+                    <strong>${unlocked ? spirit.icon : '🔒'} ${spirit.name}</strong>
+                    <span>${unlocked ? spirit.desc : `Freischaltung: ${spirit.unlockHint}`}</span>
+                    <span>${unlocked ? slotted ? `${slotted.name} · ${Math.round(slotted.factor * 100)}% Wirkung` : selected ? 'Ausgewählt – jetzt einen Platz wählen' : 'Nicht eingesetzt' : 'Noch nicht freigeschaltet'}</span>
+                </button>`
+            }).join('')
+
+            root.innerHTML = `
+                <section class="minigame-hero">
+                    <h2>🏛️ Pantheon</h2>
+                    <p>Setze Gottheiten in drei Plätze ein. Vorteile und Nachteile werden auf schwächeren Plätzen gleichermaßen reduziert.</p>
+                    <div class="minigame-summary">
+                        <div>Sofort verfügbar<strong>${state.pantheon.swaps}/${PANTHEON_MAX_SWAPS} Wechsel</strong></div>
+                        <div>Nächste Ladung<strong>${nextSwapText}</strong></div>
+                        <div>Freigeschaltet<strong>${pantheonUnlockedCount()}/${PANTHEON_SPIRITS.length}</strong></div>
+                    </div>
+                    <p style="margin-top:0.55rem">Alle verfügbaren Wechsel können sofort genutzt werden. Der Timer lädt nur verbrauchte Wechsel wieder auf.</p>
+                </section>
+                <section class="minigame-card">
+                    <h3>Tempelplätze</h3>
+                    <p>${selectedSpirit ? `${selectedSpirit.icon} ${selectedSpirit.name} ausgewählt. Wähle einen Platz.` : 'Wähle zuerst unten eine Gottheit aus.'}</p>
+                    <div class="pantheon-slot-grid">${slotCards}</div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Gottheiten</h3>
+                    <div class="pantheon-spirit-grid">${spiritCards}</div>
+                </section>
+                <section class="minigame-card">
+                    <h3>Pantheon-Statistik</h3>
+                    <div class="minigame-summary">
+                        <div>Belegt<strong>${pantheonFilledSlots()}/3</strong></div>
+                        <div>Wechsel gesamt<strong>${formatNum(state.pantheon.totalSwaps)}</strong></div>
+                        <div>Regeneration<strong>1 je 6h</strong></div>
+                    </div>
+                </section>
+            `
+
+            root.querySelectorAll('[data-pantheon-spirit]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.pantheonSpirit
+                    state.pantheon.selectedSpiritId = state.pantheon.selectedSpiritId === id ? null : id
+                    renderPantheon()
+                    save()
+                })
+            })
+            root.querySelectorAll('[data-pantheon-slot]').forEach((button) => {
+                button.addEventListener('click', () => assignPantheonSpirit(button.dataset.pantheonSlot))
+            })
+            root.querySelectorAll('[data-pantheon-remove]').forEach((button) => {
+                button.addEventListener('click', () => removePantheonSpirit(button.dataset.pantheonRemove))
+            })
+            if (swapsChanged || newlyUnlocked.length > 0) save()
         }
 
         function updateRow(btn, item, kind) {
@@ -8602,6 +9025,8 @@
                 }
             }
 
+            const unlockedSpirits = refreshPantheonUnlocks()
+
             if (changed) {
                 newlyUnlocked.forEach((achievement, index) => {
                     setTimeout(() => showAchievementToast(achievement), index * 550)
@@ -8616,6 +9041,9 @@
                     renderStats()
                     renderAchievements()
                 }
+            }
+            if (unlockedSpirits.length > 0 && $('panel-pantheon')?.classList.contains('active')) {
+                renderPantheon()
             }
         }
 
@@ -9456,6 +9884,7 @@
                 hideMaxedShopUpgrades: false,
                 showOnlyBuyableMilestones: false,
                 showOnlyBuyableClickMilestones: false,
+                pantheon: createPantheonState(),
                 garden: createGardenState(),
                 dungeon: createDungeonState(),
                 bonusAllUntil: 0,
@@ -9497,6 +9926,7 @@
             renderStats()
             renderGarden()
             renderDungeon()
+            renderPantheon()
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
@@ -9533,6 +9963,12 @@
                 hideMaxedShopUpgrades: state.hideMaxedShopUpgrades,
                 showOnlyBuyableMilestones: state.showOnlyBuyableMilestones,
                 showOnlyBuyableClickMilestones: state.showOnlyBuyableClickMilestones,
+                pantheon: {
+                    ...state.pantheon,
+                    slots: { ...state.pantheon.slots },
+                    discovered: { ...state.pantheon.discovered },
+                    unlocked: { ...state.pantheon.unlocked },
+                },
                 garden: {
                     selectedSeedId: state.garden.selectedSeedId,
                     unlocked: { ...state.garden.unlocked },
@@ -9760,6 +10196,38 @@
             state.showOnlyBuyableMilestones = data.showOnlyBuyableMilestones === true
             state.showOnlyBuyableClickMilestones = data.showOnlyBuyableClickMilestones === true
 
+            const freshPantheon = createPantheonState()
+            const loadedPantheon = data.pantheon && typeof data.pantheon === 'object' ? data.pantheon : {}
+            const pantheonUnlockRevision = Number.isFinite(loadedPantheon.unlockRevision)
+                ? Math.max(0, Math.floor(loadedPantheon.unlockRevision))
+                : 0
+            state.pantheon.unlockRevision = freshPantheon.unlockRevision
+            state.pantheon.selectedSpiritId = pantheonSpiritById(loadedPantheon.selectedSpiritId)?.id || null
+            const assignedSpirits = new Set()
+            for (const slot of PANTHEON_SLOTS) {
+                const spirit = pantheonSpiritById(loadedPantheon.slots?.[slot.id])
+                state.pantheon.slots[slot.id] = spirit && !assignedSpirits.has(spirit.id) ? spirit.id : null
+                if (state.pantheon.slots[slot.id]) assignedSpirits.add(state.pantheon.slots[slot.id])
+            }
+            state.pantheon.swaps = Number.isFinite(loadedPantheon.swaps)
+                ? Math.max(0, Math.min(PANTHEON_MAX_SWAPS, Math.floor(loadedPantheon.swaps)))
+                : freshPantheon.swaps
+            state.pantheon.nextSwapAt = Number.isFinite(loadedPantheon.nextSwapAt)
+                ? Math.max(0, Math.floor(loadedPantheon.nextSwapAt))
+                : 0
+            state.pantheon.totalSwaps = Number.isFinite(loadedPantheon.totalSwaps)
+                ? Math.max(0, Math.floor(loadedPantheon.totalSwaps))
+                : 0
+            for (const spirit of PANTHEON_SPIRITS) {
+                state.pantheon.discovered[spirit.id] = loadedPantheon.discovered?.[spirit.id] === true
+                    || assignedSpirits.has(spirit.id)
+                state.pantheon.unlocked[spirit.id] =
+                    (pantheonUnlockRevision >= freshPantheon.unlockRevision && loadedPantheon.unlocked?.[spirit.id] === true)
+                    || state.pantheon.discovered[spirit.id]
+                    || state.pantheon.selectedSpiritId === spirit.id
+            }
+            refreshPantheonSwaps()
+
             const freshGarden = createGardenState()
             const loadedGarden = data.garden && typeof data.garden === 'object' ? data.garden : {}
             const selectedSeed = gardenPlantById(loadedGarden.selectedSeedId)
@@ -9956,6 +10424,7 @@
             for (const achievement of ACHIEVEMENTS) {
                 state.achievements[achievement.id] = data.achievements?.[achievement.id] === true
             }
+            refreshPantheonUnlocks(false)
 
             // Neue Tagesaufgaben erst erzeugen, nachdem alle Ertragswerte geladen sind.
             ensureDailyState()
@@ -11026,6 +11495,10 @@
                 lastDungeonRenderAt = now
                 renderDungeon(now)
             }
+            if ($('panel-pantheon').classList.contains('active') && now - lastPantheonRenderAt >= 1000) {
+                lastPantheonRenderAt = now
+                renderPantheon(now)
+            }
             if ($('settings-daily-panel').classList.contains('visible') && now - lastDailyRenderAt >= 500) {
                 lastDailyRenderAt = now
                 renderDailyPanel()
@@ -11058,7 +11531,7 @@
             }
 
             const activateTab = (tab) => {
-                const cookieViews = ['play', 'garden', 'dungeon']
+                const cookieViews = ['play', 'garden', 'dungeon', 'pantheon']
                 document.querySelectorAll('.tab-btn').forEach((btn) => {
                     const active = btn.dataset.tab === 'play'
                         ? cookieViews.includes(tab)
@@ -11068,6 +11541,7 @@
                 $('panel-play').classList.toggle('active', tab === 'play')
                 $('panel-garden').classList.toggle('active', tab === 'garden')
                 $('panel-dungeon').classList.toggle('active', tab === 'dungeon')
+                $('panel-pantheon').classList.toggle('active', tab === 'pantheon')
                 $('panel-shop').classList.toggle('active', tab === 'shop')
                 $('panel-prestige').classList.toggle('active', tab === 'prestige')
                 $('panel-stats').classList.toggle('active', tab === 'stats')
@@ -11082,6 +11556,7 @@
                 }
                 if (tab === 'garden') renderGarden()
                 if (tab === 'dungeon') renderDungeon()
+                if (tab === 'pantheon') renderPantheon()
                 if (tab === 'shop') renderShop()
                 if (tab === 'prestige') renderPrestige()
                 if (tab === 'stats') {
@@ -11159,6 +11634,7 @@
             renderStats()
             renderGarden()
             renderDungeon()
+            renderPantheon()
             renderAudioControls()
             renderThemeToggle()
             renderEffectSettings()
