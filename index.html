@@ -2747,6 +2747,12 @@
                 <button type="button" class="patch-toggle" id="patch-toggle" aria-label="Patchnotes anzeigen" aria-expanded="false" aria-controls="patch-tooltip">📝</button>
                 <div class="patch-tooltip" id="patch-tooltip" role="note" aria-hidden="true">
                     <ul>
+                        <li><strong>2026-07-29</strong>
+                            <ul>
+                                <li><strong>Klick-Meilensteine:</strong> 68 kaufbare Meilensteine verdoppeln stufenweise den Grundwert einzelner Klickverstärkungen</li>
+                                <li><strong>Erfolge:</strong> Neue Langzeit-Erfolge für Klick-Meilensteine, Klick-Upgrades und manuelle Klicks hinzugefügt</li>
+                            </ul>
+                        </li>
                         <li><strong>2026-07-26</strong>
                             <ul>
                                 <li><strong>Navigation:</strong> Der Keks-Button öffnet jetzt eine Auswahl für Keks, Garten und Dungeon</li>
@@ -3095,6 +3101,7 @@
                 <button type="button" class="shop-submenu-btn active" data-shop-view-target="production">Produktionen</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="milestones">Produktions-Meilensteine</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="click">Klick-Verstärkung</button>
+                <button type="button" class="shop-submenu-btn" data-shop-view-target="click-milestones">Klick-Meilensteine</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="special">Spezial-Upgrades</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="sugar">Zuckerstück-Werkstatt</button>
                 <button type="button" class="shop-submenu-btn" data-shop-view-target="permanent">Permanente Upgrades</button>
@@ -3113,7 +3120,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.07.26.10'
+        const APP_VERSION = '2026.07.29.1'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -3354,6 +3361,18 @@
                 name: `${producer.name}: Stufe ${tier + 1}`,
                 desc: `Verdoppelt die Produktion von ${producer.name}`,
                 cost: Math.max(1, Math.floor(producer.baseCost * threshold * threshold * 0.4 * (tier + 1))),
+            })))
+
+        const CLICK_MILESTONE_THRESHOLDS = [10, 25, 50, 100]
+        const CLICK_MILESTONES = CLICKS.flatMap((click) =>
+            CLICK_MILESTONE_THRESHOLDS.map((threshold, tier) => ({
+                id: `${click.id}-${threshold}`,
+                clickId: click.id,
+                threshold,
+                tier,
+                name: `${click.name}: Stufe ${tier + 1}`,
+                desc: `Verdoppelt den Grundwert von ${click.name}`,
+                cost: Math.max(1, Math.floor(click.baseCost * threshold * threshold * 0.5 * (tier + 1))),
             })))
 
         const PERMANENT_UPGRADES = [
@@ -4973,6 +4992,96 @@
                 type: 'cps', value: 0.10, check: () => state.dungeon.completedRooms >= 500,
             },
             {
+                id: 'firstClickMilestone', name: 'Der verstärkte Finger',
+                desc: 'Kaufe deinen ersten Klick-Meilenstein', reward: '+1,5% Klick-Stärke',
+                type: 'tap', value: 0.015, check: () => totalClickMilestonesPurchased() >= 1,
+            },
+            {
+                id: 'clickMilestoneFive', name: 'Fünf kräftige Schläge',
+                desc: 'Kaufe 5 Klick-Meilensteine', reward: '+2% Klick-Stärke',
+                type: 'tap', value: 0.02, check: () => totalClickMilestonesPurchased() >= 5,
+            },
+            {
+                id: 'clickMilestoneFifteen', name: 'Meilenstein-Sammler',
+                desc: 'Kaufe 15 Klick-Meilensteine', reward: '+3% Klick-Stärke',
+                type: 'tap', value: 0.03, check: () => totalClickMilestonesPurchased() >= 15,
+            },
+            {
+                id: 'clickMilestoneThirty', name: 'Kraftwerk der Hände',
+                desc: 'Kaufe 30 Klick-Meilensteine', reward: '+4% Produktion',
+                type: 'cps', value: 0.04, check: () => totalClickMilestonesPurchased() >= 30,
+            },
+            {
+                id: 'clickMilestoneFifty', name: 'Fünfzigfach verstärkt',
+                desc: 'Kaufe 50 Klick-Meilensteine', reward: '+6% Klick-Stärke',
+                type: 'tap', value: 0.06, check: () => totalClickMilestonesPurchased() >= 50,
+            },
+            {
+                id: 'clickMilestoneComplete', name: 'Perfektion der Berührung',
+                desc: 'Kaufe alle Klick-Meilensteine', reward: '+10% Klick-Stärke',
+                type: 'tap', value: 0.10, check: () => totalClickMilestonesPurchased() >= CLICK_MILESTONES.length,
+            },
+            {
+                id: 'clickMilestoneTierOne', name: 'Zehner-Garde',
+                desc: 'Kaufe den 10er-Meilenstein jeder Klickverstärkung', reward: '+3% Klick-Stärke',
+                type: 'tap', value: 0.03, check: () => clickMilestoneTierComplete(10),
+            },
+            {
+                id: 'clickMilestoneTierTwo', name: 'Fünfundzwanziger-Garde',
+                desc: 'Kaufe den 25er-Meilenstein jeder Klickverstärkung', reward: '+4% Produktion',
+                type: 'cps', value: 0.04, check: () => clickMilestoneTierComplete(25),
+            },
+            {
+                id: 'clickMilestoneTierThree', name: 'Fünfziger-Garde',
+                desc: 'Kaufe den 50er-Meilenstein jeder Klickverstärkung', reward: '+5% Klick-Stärke',
+                type: 'tap', value: 0.05, check: () => clickMilestoneTierComplete(50),
+            },
+            {
+                id: 'clickMilestoneTierFour', name: 'Hundertfacher Meister',
+                desc: 'Kaufe den 100er-Meilenstein jeder Klickverstärkung', reward: '+7% Produktion',
+                type: 'cps', value: 0.07, check: () => clickMilestoneTierComplete(100),
+            },
+            {
+                id: 'clickUpgradeTwoThousand', name: 'Zweitausend Verstärkungen',
+                desc: 'Kaufe insgesamt 2.000 Klickverstärkungen', reward: '+8% Klick-Stärke',
+                type: 'tap', value: 0.08, check: () => totalClickUpgradesOwned() >= 2000,
+            },
+            {
+                id: 'clickUpgradeFiveThousand', name: 'Fünftausendfacher Griff',
+                desc: 'Kaufe insgesamt 5.000 Klickverstärkungen', reward: '+12% Klick-Stärke',
+                type: 'tap', value: 0.12, check: () => totalClickUpgradesOwned() >= 5000,
+            },
+            {
+                id: 'manualTwoMillion', name: 'Zwei Millionen Berührungen',
+                desc: 'Klicke 2.000.000-mal selbst', reward: '+10% Klick-Stärke',
+                type: 'tap', value: 0.10, check: () => state.manualClicksTotal >= 2000000,
+            },
+            {
+                id: 'manualFiveMillion', name: 'Fünf Millionen Keksschläge',
+                desc: 'Klicke 5.000.000-mal selbst', reward: '+12% Produktion',
+                type: 'cps', value: 0.12, check: () => state.manualClicksTotal >= 5000000,
+            },
+            {
+                id: 'manualTenMillion', name: 'Die zehnmillionste Berührung',
+                desc: 'Klicke 10.000.000-mal selbst', reward: '+15% Klick-Stärke',
+                type: 'tap', value: 0.15, check: () => state.manualClicksTotal >= 10000000,
+            },
+            {
+                id: 'creatorHandFive', name: 'Handwerk der Schöpfung',
+                desc: 'Besitze 5 Schöpfer-Hände', reward: '+5% Klick-Stärke',
+                type: 'tap', value: 0.05, check: () => state.clicks.creator >= 5,
+            },
+            {
+                id: 'creatorHandTen', name: 'Zehn Schöpferhände',
+                desc: 'Besitze 10 Schöpfer-Hände', reward: '+7% Klick-Stärke',
+                type: 'tap', value: 0.07, check: () => state.clicks.creator >= 10,
+            },
+            {
+                id: 'creatorHandTwentyFive', name: 'Armee der Schöpfer',
+                desc: 'Besitze 25 Schöpfer-Hände', reward: '+10% Produktion',
+                type: 'cps', value: 0.10, check: () => state.clicks.creator >= 25,
+            },
+            {
                 id: 'gardenFirstHarvest', name: 'Die erste Ernte',
                 desc: 'Ernte deine erste Gartenpflanze', reward: '+1% Produktion',
                 type: 'cps', value: 0.01, check: () => state.garden.totalHarvests >= 1,
@@ -5446,6 +5555,7 @@
             specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
             permanentUpgrades: Object.fromEntries(PERMANENT_UPGRADES.map((u) => [u.id, 0])),
             milestoneUpgrades: Object.fromEntries(PRODUCER_MILESTONES.map((u) => [u.id, false])),
+            clickMilestoneUpgrades: Object.fromEntries(CLICK_MILESTONES.map((u) => [u.id, false])),
             producerLevels: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
             sugarLumps: 0,
             sugarLumpsTotal: 0,
@@ -5502,6 +5612,7 @@
             hideCompletedAchievements: false,
             hideMaxedShopUpgrades: false,
             showOnlyBuyableMilestones: false,
+            showOnlyBuyableClickMilestones: false,
             garden: createGardenState(),
             dungeon: createDungeonState(),
             bonusAllUntil: 0,
@@ -6229,6 +6340,26 @@
             return Math.pow(2, milestoneUpgradeLevel(producerId))
         }
 
+        function clickMilestoneUpgradeLevel(clickId) {
+            return CLICK_MILESTONES.reduce((level, milestone) =>
+                level + (milestone.clickId === clickId && state.clickMilestoneUpgrades[milestone.id] ? 1 : 0), 0)
+        }
+
+        function clickMilestoneMult(clickId) {
+            return Math.pow(2, clickMilestoneUpgradeLevel(clickId))
+        }
+
+        function totalClickMilestonesPurchased() {
+            return CLICK_MILESTONES.reduce((total, milestone) =>
+                total + (state.clickMilestoneUpgrades[milestone.id] ? 1 : 0), 0)
+        }
+
+        function clickMilestoneTierComplete(threshold) {
+            return CLICK_MILESTONES
+                .filter((milestone) => milestone.threshold === threshold)
+                .every((milestone) => state.clickMilestoneUpgrades[milestone.id])
+        }
+
         function producerLevelMult(producerId) {
             return 1 + (state.producerLevels[producerId] || 0) * PRODUCER_LEVEL_BONUS
         }
@@ -6487,7 +6618,10 @@
         function calcTap() {
             let tap = BASE_TAP
             for (const c of CLICKS) {
-                tap += c.bonus * state.clicks[c.id] * clickSynergyMult(c.id)
+                tap += c.bonus
+                    * state.clicks[c.id]
+                    * clickSynergyMult(c.id)
+                    * clickMilestoneMult(c.id)
             }
             return tap
                 * tapBonusMult()
@@ -6731,7 +6865,7 @@
             maxedFilterBtn.type = 'button'
             maxedFilterBtn.className = 'achievement-filter-btn'
             maxedFilterBtn.id = 'shop-maxed-filter-btn'
-            maxedFilterBtn.dataset.shopControlViews = 'milestones,special,sugar,permanent'
+            maxedFilterBtn.dataset.shopControlViews = 'milestones,click-milestones,special,sugar,permanent'
             maxedFilterBtn.addEventListener('click', () => {
                 state.hideMaxedShopUpgrades = !state.hideMaxedShopUpgrades
                 lastSugarWorkshopSignature = ''
@@ -6845,6 +6979,48 @@
             for (const c of CLICKS) {
                 root.appendChild(createUpgradeRow(c, 'click'))
             }
+
+            const clickMilestoneFilterBtn = document.createElement('button')
+            clickMilestoneFilterBtn.type = 'button'
+            clickMilestoneFilterBtn.className = 'achievement-filter-btn'
+            clickMilestoneFilterBtn.id = 'click-milestone-buyable-filter-btn'
+            clickMilestoneFilterBtn.dataset.shopViewSection = 'click-milestones'
+            clickMilestoneFilterBtn.addEventListener('click', () => {
+                state.showOnlyBuyableClickMilestones = !state.showOnlyBuyableClickMilestones
+                renderShop()
+                save()
+            })
+            root.appendChild(clickMilestoneFilterBtn)
+
+            const clickMilestoneTitle = document.createElement('h2')
+            clickMilestoneTitle.className = 'shop-section-title'
+            clickMilestoneTitle.id = 'click-milestone-upgrades-title'
+            clickMilestoneTitle.dataset.shopViewSection = 'click-milestones'
+            clickMilestoneTitle.textContent = 'Klick-Meilensteine'
+            root.appendChild(clickMilestoneTitle)
+
+            const clickMilestoneRoot = document.createElement('div')
+            clickMilestoneRoot.id = 'click-milestone-upgrades-root'
+            clickMilestoneRoot.dataset.shopViewSection = 'click-milestones'
+            for (const milestone of CLICK_MILESTONES) {
+                const btn = document.createElement('button')
+                btn.type = 'button'
+                btn.className = 'upgrade-row milestone-row'
+                btn.dataset.clickMilestoneId = milestone.id
+                btn.innerHTML = `
+                    <span class="icon"><i class="fa-solid fa-hand-pointer" aria-hidden="true"></i></span>
+                    <span class="info"><div class="name">${milestone.name}</div><div class="desc">${milestone.desc}</div></span>
+                    <span class="meta"><div class="cost"></div><div class="owned"></div></span>
+                `
+                btn.addEventListener('click', () => buyClickMilestoneUpgrade(milestone.id))
+                clickMilestoneRoot.appendChild(btn)
+            }
+            const clickMilestoneEmpty = document.createElement('div')
+            clickMilestoneEmpty.className = 'achievement-summary'
+            clickMilestoneEmpty.id = 'click-milestone-upgrades-empty'
+            clickMilestoneEmpty.hidden = true
+            clickMilestoneRoot.appendChild(clickMilestoneEmpty)
+            root.appendChild(clickMilestoneRoot)
 
             const specialTitle = document.createElement('h2')
             specialTitle.className = 'shop-section-title'
@@ -7010,6 +7186,7 @@
                 updateRow(rows[i++], s, 'special')
             }
             renderMilestoneUpgrades()
+            renderClickMilestoneUpgrades()
             renderSugarWorkshop()
             renderShopSectionVisibility()
             renderShopView()
@@ -7091,6 +7268,56 @@
             empty.textContent = state.showOnlyBuyableMilestones
                 ? 'Aktuell ist kein Produktions-Meilenstein kaufbar.'
                 : 'Alle Produktions-Meilensteine wurden gekauft.'
+        }
+
+        function renderClickMilestoneUpgrades() {
+            const root = $('click-milestone-upgrades-root')
+            const title = $('click-milestone-upgrades-title')
+            const filterBtn = $('click-milestone-buyable-filter-btn')
+            const empty = $('click-milestone-upgrades-empty')
+            if (!root || !title || !filterBtn || !empty) return
+
+            filterBtn.classList.toggle('active', state.showOnlyBuyableClickMilestones)
+            filterBtn.setAttribute('aria-pressed', String(state.showOnlyBuyableClickMilestones))
+            filterBtn.textContent = state.showOnlyBuyableClickMilestones
+                ? 'Alle Meilensteine anzeigen'
+                : 'Nur kaufbare anzeigen'
+
+            const nextPendingIds = new Set()
+            for (const click of CLICKS) {
+                const nextPending = CLICK_MILESTONES.find((milestone) =>
+                    milestone.clickId === click.id && state.clickMilestoneUpgrades[milestone.id] !== true)
+                if (nextPending) nextPendingIds.add(nextPending.id)
+            }
+
+            let visibleCount = 0
+            for (const milestone of CLICK_MILESTONES) {
+                const btn = root.querySelector(`[data-click-milestone-id="${milestone.id}"]`)
+                const owned = state.clicks[milestone.clickId]
+                const unlocked = owned >= milestone.threshold
+                const purchased = state.clickMilestoneUpgrades[milestone.id] === true
+                const nextPending = nextPendingIds.has(milestone.id)
+                const buyable = !purchased && unlocked && canAfford(milestone.cost)
+                const visible = state.showOnlyBuyableClickMilestones
+                    ? buyable
+                    : purchased ? !state.hideMaxedShopUpgrades : unlocked || nextPending
+
+                btn.classList.toggle('purchased', purchased)
+                btn.hidden = !visible
+                if (!visible) continue
+                visibleCount++
+                btn.disabled = !buyable
+                btn.querySelector('.cost').textContent = purchased ? 'Gekauft' : formatNum(milestone.cost)
+                btn.querySelector('.desc').textContent = milestone.desc
+                btn.querySelector('.owned').textContent = purchased
+                    ? 'Klick-Grundwert x2 aktiv'
+                    : unlocked ? 'Bereit' : `${owned}/${milestone.threshold}`
+            }
+            title.hidden = false
+            empty.hidden = visibleCount > 0
+            empty.textContent = state.showOnlyBuyableClickMilestones
+                ? 'Aktuell ist kein Klick-Meilenstein kaufbar.'
+                : 'Alle Klick-Meilensteine wurden gekauft.'
         }
 
         function renderSugarWorkshop(force = false) {
@@ -7256,6 +7483,7 @@
                             <div class="stats-list-row"><span>Krit-Multiplikator</span><strong>x${critMultiplier().toFixed(1)}</strong></div>
                             <div class="stats-list-row"><span>Drohnenrate</span><strong>${formatStatNum(autoClicksPerSecond())}/s</strong></div>
                             <div class="stats-list-row"><span>Klick-Upgrades</span><strong>${formatNum(totalClickUpgradesOwned())}</strong></div>
+                            <div class="stats-list-row"><span>Klick-Meilensteine</span><strong>${totalClickMilestonesPurchased()} / ${CLICK_MILESTONES.length}</strong></div>
                         </div>
                     </section>
                     <section class="stats-card">
@@ -8098,6 +8326,20 @@
             save()
         }
 
+        function buyClickMilestoneUpgrade(id) {
+            const milestone = CLICK_MILESTONES.find((item) => item.id === id)
+            if (!milestone || state.clickMilestoneUpgrades[id]) return
+            if (state.clicks[milestone.clickId] < milestone.threshold) return
+            if (!canAfford(milestone.cost)) return
+            state.cookies -= milestone.cost
+            state.clickMilestoneUpgrades[id] = true
+            evaluateAchievements()
+            renderHeader()
+            renderShop()
+            renderStats()
+            save()
+        }
+
         function buyProducerLevel(producerId) {
             const producer = PRODUCERS.find((item) => item.id === producerId)
             if (!producer) return
@@ -8206,6 +8448,7 @@
             state.clicks = Object.fromEntries(CLICKS.map((c) => [c.id, 0]))
             state.specialUpgrades = Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0]))
             state.milestoneUpgrades = Object.fromEntries(PRODUCER_MILESTONES.map((u) => [u.id, false]))
+            state.clickMilestoneUpgrades = Object.fromEntries(CLICK_MILESTONES.map((u) => [u.id, false]))
             state.frenzyUntil = 0
             state.clickFrenzyUntil = 0
             state.diamondUntil = 0
@@ -9156,6 +9399,7 @@
                 specialUpgrades: Object.fromEntries(SPECIAL_UPGRADES.map((u) => [u.id, 0])),
                 permanentUpgrades: Object.fromEntries(PERMANENT_UPGRADES.map((u) => [u.id, 0])),
                 milestoneUpgrades: Object.fromEntries(PRODUCER_MILESTONES.map((u) => [u.id, false])),
+                clickMilestoneUpgrades: Object.fromEntries(CLICK_MILESTONES.map((u) => [u.id, false])),
                 producerLevels: Object.fromEntries(PRODUCERS.map((p) => [p.id, 0])),
                 sugarLumps: 0,
                 sugarLumpsTotal: 0,
@@ -9211,6 +9455,7 @@
                 hideCompletedAchievements: false,
                 hideMaxedShopUpgrades: false,
                 showOnlyBuyableMilestones: false,
+                showOnlyBuyableClickMilestones: false,
                 garden: createGardenState(),
                 dungeon: createDungeonState(),
                 bonusAllUntil: 0,
@@ -9269,6 +9514,7 @@
                 specialUpgrades: { ...state.specialUpgrades },
                 permanentUpgrades: { ...state.permanentUpgrades },
                 milestoneUpgrades: { ...state.milestoneUpgrades },
+                clickMilestoneUpgrades: { ...state.clickMilestoneUpgrades },
                 producerLevels: { ...state.producerLevels },
                 sugarLumps: state.sugarLumps,
                 sugarLumpsTotal: state.sugarLumpsTotal,
@@ -9286,6 +9532,7 @@
                 hideCompletedAchievements: state.hideCompletedAchievements,
                 hideMaxedShopUpgrades: state.hideMaxedShopUpgrades,
                 showOnlyBuyableMilestones: state.showOnlyBuyableMilestones,
+                showOnlyBuyableClickMilestones: state.showOnlyBuyableClickMilestones,
                 garden: {
                     selectedSeedId: state.garden.selectedSeedId,
                     unlocked: { ...state.garden.unlocked },
@@ -9469,6 +9716,7 @@
                 }
             }
             validateBooleanMap(data.milestoneUpgrades, PRODUCER_MILESTONES)
+            validateBooleanMap(data.clickMilestoneUpgrades, CLICK_MILESTONES)
             validateBooleanMap(data.seasonalFinds, SEASONAL_FINDS)
 
             const counters = [
@@ -9510,6 +9758,7 @@
             state.hideCompletedAchievements = data.hideCompletedAchievements === true
             state.hideMaxedShopUpgrades = data.hideMaxedShopUpgrades === true
             state.showOnlyBuyableMilestones = data.showOnlyBuyableMilestones === true
+            state.showOnlyBuyableClickMilestones = data.showOnlyBuyableClickMilestones === true
 
             const freshGarden = createGardenState()
             const loadedGarden = data.garden && typeof data.garden === 'object' ? data.garden : {}
@@ -9681,6 +9930,9 @@
             }
             for (const milestone of PRODUCER_MILESTONES) {
                 state.milestoneUpgrades[milestone.id] = data.milestoneUpgrades?.[milestone.id] === true
+            }
+            for (const milestone of CLICK_MILESTONES) {
+                state.clickMilestoneUpgrades[milestone.id] = data.clickMilestoneUpgrades?.[milestone.id] === true
             }
             for (const find of SEASONAL_FINDS) {
                 state.seasonalFinds[find.id] = data.seasonalFinds?.[find.id] === true
