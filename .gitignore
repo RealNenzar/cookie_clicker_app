@@ -1,0 +1,2 @@
+# Private local development tools (never publish to GitHub)
+.local-tools/
