@@ -1918,6 +1918,26 @@
             font-weight: 800;
         }
 
+        .upgrade-row.permanent-row[data-shop-section="permanent-production"] {
+            border-color: rgba(198, 119, 32, 0.5);
+            background: linear-gradient(135deg, var(--shop-row-bg), rgba(224, 143, 51, 0.13));
+        }
+
+        .upgrade-row.permanent-row[data-shop-section="permanent-events"] {
+            border-color: rgba(49, 132, 196, 0.52);
+            background: linear-gradient(135deg, var(--shop-row-bg), rgba(65, 151, 216, 0.13));
+        }
+
+        .upgrade-row.permanent-row[data-shop-section="permanent-adventure"] {
+            border-color: rgba(46, 145, 92, 0.5);
+            background: linear-gradient(135deg, var(--shop-row-bg), rgba(56, 165, 105, 0.13));
+        }
+
+        .upgrade-row.permanent-row[data-shop-section="permanent-legacy"] {
+            border-color: rgba(156, 72, 180, 0.52);
+            background: linear-gradient(135deg, var(--shop-row-bg), rgba(166, 80, 191, 0.14));
+        }
+
         .upgrade-row .icon {
             display: flex;
             align-items: center;
@@ -2828,6 +2848,8 @@
                     <ul>
                         <li><strong>2026-08-03</strong>
                             <ul>
+                                <li><strong>Permanente Upgrades:</strong> 15 neue Langzeit-Upgrades erweitern Produktion, Ereignisse, Abenteuer und Offline-Fortschritt</li>
+                                <li><strong>Neue Vermächtnisse:</strong> Garten, Dungeon, Tagesaufgaben, Splitter und Zuckerstücke erhalten dauerhafte Ausbaustufen</li>
                                 <li><strong>Dungeon-Endspiel:</strong> Acht neue, abgestuft bepreiste Ausbildungen schaffen weitere Fortschrittswege ab Tiefe 30</li>
                                 <li><strong>Dungeon-Cooldown:</strong> Wartezeiten nach Siegen und Niederlagen wurden deutlich erhöht und die Ausbildung neu abgestimmt</li>
                                 <li><strong>Tägliche Aufgaben:</strong> 13 abwechslungsreiche Ziele und neue Belohnungen wie Zeitsprünge und zeitlich begrenzte Effekte hinzugefügt</li>
@@ -3218,7 +3240,7 @@
         const SAVE_KEY = 'ls_cookie_clicker_v2'
         const LOCAL_SAVE_PREFIX = 'CCL1'
         const LOCAL_SAVE_SALT = 'cc.local.integrity.2026.07.v1'
-        const APP_VERSION = '2026.08.03.4'
+        const APP_VERSION = '2026.08.03.5'
         const VERSION_FILE_PATH = 'version.json'
         const VERSION_CHECK_INTERVAL_MS = 5 * 60 * 1000
         const BASE_TAP = 1
@@ -3533,6 +3555,81 @@
                 id: 'dailyRerollMastery', category: 'daily', name: 'Schicksalswürfel',
                 icon: 'fa-solid fa-dice', desc: '+1 täglicher Aufgaben-Reroll pro Stufe (maximal 5 insgesamt)',
                 baseCost: 250000000000, costMult: 1000, max: 3,
+            },
+            {
+                id: 'dailyFortune', category: 'daily', name: 'Tägliches Vermächtnis',
+                icon: 'fa-solid fa-calendar-check', desc: '+20% Cookie- und Zeitsprung-Belohnungen aus Tagesaufgaben pro Stufe',
+                baseCost: 100000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'dailyMomentum', category: 'daily', name: 'Ewiger Tatendrang',
+                icon: 'fa-solid fa-hourglass-half', desc: '+12% Dauer zeitlich begrenzter Tagesboni pro Stufe',
+                baseCost: 5000000000000000000000, costMult: 120, max: 5,
+            },
+            {
+                id: 'eternalOvens', category: 'production', name: 'Ewige Backöfen',
+                icon: 'fa-solid fa-fire-flame-curved', desc: 'Permanent +10% Produktion pro Sekunde pro Stufe',
+                baseCost: 10000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'masterHands', category: 'production', name: 'Hände des Meisterbäckers',
+                icon: 'fa-solid fa-hand-sparkles', desc: 'Permanent +12% Wert manueller Klicks pro Stufe',
+                baseCost: 500000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'droneBlueprint', category: 'production', name: 'Unvergänglicher Bauplan',
+                icon: 'fa-solid fa-microchip', desc: 'Permanent +8% Geschwindigkeit aller Klick-Drohnen pro Stufe',
+                baseCost: 25000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'celestialCompass', category: 'events', name: 'Himmelskompass',
+                icon: 'fa-solid fa-compass', desc: 'Permanent +6% Erscheinungsrate aller Spezial-Events pro Stufe',
+                baseCost: 1000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'goldenChronicle', category: 'events', name: 'Goldene Chronik',
+                icon: 'fa-solid fa-book-open', desc: 'Permanent +8% Dauer von Gold- und Klickrausch pro Stufe',
+                baseCost: 100000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'diamondMemory', category: 'events', name: 'Diamant-Gedächtnis',
+                icon: 'fa-solid fa-gem', desc: 'Permanent +10% Dauer von Diamantrausch pro Stufe',
+                baseCost: 10000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'cosmicCollectorLegacy', category: 'events', name: 'Kosmisches Sammlererbe',
+                icon: 'fa-solid fa-meteor', desc: 'Permanent +12% direkte Cookie-Belohnungen aus Spezial-Events pro Stufe',
+                baseCost: 1000000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'milkEternity', category: 'events', name: 'Unendliche Milchstraße',
+                icon: 'fa-solid fa-glass-water', desc: 'Permanent +10% Dauer von Milch-Events pro Stufe',
+                baseCost: 100000000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'evergreenCodex', category: 'adventure', name: 'Immergrüner Kodex',
+                icon: 'fa-solid fa-seedling', desc: 'Permanent +8% Gartenwachstum und Erntewert pro Stufe',
+                baseCost: 1000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'dungeonOath', category: 'adventure', name: 'Ewiger Dungeon-Schwur',
+                icon: 'fa-solid fa-shield-halved', desc: 'Permanent +8% Dungeon-Angriff und Belohnungen sowie -3% Schaden pro Stufe',
+                baseCost: 100000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'offlineArchive', category: 'legacy', name: 'Archiv der stillen Stunden',
+                icon: 'fa-solid fa-box-archive', desc: 'Permanent +15% Offline-Ertrag und +30 Minuten Offline-Limit pro Stufe',
+                baseCost: 10000000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'shardForge', category: 'legacy', name: 'Uralte Splitter-Schmiede',
+                icon: 'fa-solid fa-hammer', desc: 'Permanent +10% Splitter aus Cookie-Meilensteinen pro Stufe',
+                baseCost: 1000000000000000000000000000000000, costMult: 100, max: 5,
+            },
+            {
+                id: 'sugarClock', category: 'legacy', name: 'Zuckerwerk-Uhr',
+                icon: 'fa-solid fa-clock-rotate-left', desc: 'Zuckerstücke reifen permanent 5% schneller pro Stufe',
+                baseCost: 100000000000000000000000000000000000, costMult: 100, max: 5,
             },
         ]
 
@@ -6153,6 +6250,75 @@
             return 1 + permanentBonusFor('milk')
         }
 
+        function permanentLevelMult(id, bonusPerLevel) {
+            return 1 + permanentUpgradeLevel(id) * bonusPerLevel
+        }
+
+        function permanentProductionCpsMult() {
+            return permanentLevelMult('eternalOvens', 0.10)
+        }
+
+        function permanentManualTapMult() {
+            return permanentLevelMult('masterHands', 0.12)
+        }
+
+        function permanentDroneSpeedMult() {
+            return permanentLevelMult('droneBlueprint', 0.08)
+        }
+
+        function permanentEventRateMult() {
+            return permanentLevelMult('celestialCompass', 0.06)
+        }
+
+        function permanentGoldenDurationMult() {
+            return permanentLevelMult('goldenChronicle', 0.08)
+        }
+
+        function permanentDiamondDurationMult() {
+            return permanentLevelMult('diamondMemory', 0.10)
+        }
+
+        function permanentEventRewardMult() {
+            return permanentLevelMult('cosmicCollectorLegacy', 0.12)
+        }
+
+        function permanentMilkDurationMult() {
+            return permanentLevelMult('milkEternity', 0.10)
+        }
+
+        function permanentGardenLegacyMult() {
+            return permanentLevelMult('evergreenCodex', 0.08)
+        }
+
+        function permanentDungeonLegacyMult() {
+            return permanentLevelMult('dungeonOath', 0.08)
+        }
+
+        function permanentOfflineArchiveMult() {
+            return permanentLevelMult('offlineArchive', 0.15)
+        }
+
+        function permanentDailyRewardMult() {
+            return permanentLevelMult('dailyFortune', 0.20)
+        }
+
+        function permanentDailyDurationMult() {
+            return permanentLevelMult('dailyMomentum', 0.12)
+        }
+
+        function sugarLumpGrowMs(level = permanentUpgradeLevel('sugarClock')) {
+            return Math.floor(SUGAR_LUMP_GROW_MS * Math.max(0.75, 1 - level * 0.05))
+        }
+
+        function rescaleSugarLumpTimer(oldLevel, newLevel) {
+            const now = Date.now()
+            if (!Number.isFinite(state.nextSugarLumpAt) || state.nextSugarLumpAt <= now) return
+            const oldGrowMs = sugarLumpGrowMs(oldLevel)
+            const newGrowMs = sugarLumpGrowMs(newLevel)
+            const remainingRatio = Math.min(1, Math.max(0, (state.nextSugarLumpAt - now) / oldGrowMs))
+            state.nextSugarLumpAt = now + Math.floor(newGrowMs * remainingRatio)
+        }
+
         function cosmicOrbitMult() {
             return 1 + prestigeUpgradeLevel('cosmicOrbit') * 0.03
         }
@@ -6215,7 +6381,11 @@
         }
 
         function dailyCookieBaseReward() {
-            return Math.max(1000, Math.floor((calcCps() + calcTap() * 2 + 1) * 300))
+            return Math.max(1000, Math.floor((calcCps() + calcTap() * 2 + 1) * 300 * permanentDailyRewardMult()))
+        }
+
+        function dailyBoostDurationMs(task) {
+            return Math.floor((task.rewardDurationMs || 0) * permanentDailyDurationMult())
         }
 
         function dailyTaskDefinitions(dateKey) {
@@ -6348,17 +6518,20 @@
             if (task.rewardType === 'shards') return `${formatNum(task.rewardValue)} Splitter`
             if (task.rewardType === 'timeskip') return `${formatDurationCompact(task.rewardValue * 1000)} Produktions-Zeitsprung`
             if (task.rewardType === 'cookieBoost') {
-                return `+${formatPct(task.rewardValue)} Cookie-Ertrag für ${formatDurationCompact(task.rewardDurationMs)}`
+                return `+${formatPct(task.rewardValue)} Cookie-Ertrag für ${formatDurationCompact(dailyBoostDurationMs(task))}`
             }
             if (task.rewardType === 'eventBoost') {
-                return `+${formatPct(task.rewardValue)} Ereignisrate für ${formatDurationCompact(task.rewardDurationMs)}`
+                return `+${formatPct(task.rewardValue)} Ereignisrate für ${formatDurationCompact(dailyBoostDurationMs(task))}`
             }
             return `${formatNum(task.rewardValue)} Cookies`
         }
 
         function grantDailyTimeskip(seconds) {
             const durationSeconds = Math.max(1, Number(seconds) || 0)
-            const reward = Math.max(dailyCookieBaseReward(), expectedAutomaticCookiesPerSecond() * durationSeconds)
+            const reward = Math.max(
+                dailyCookieBaseReward(),
+                expectedAutomaticCookiesPerSecond() * durationSeconds * permanentDailyRewardMult(),
+            )
             grantDirectCookies(reward)
             return reward
         }
@@ -6399,12 +6572,12 @@
                 const now = Date.now()
                 const activeMultiplier = now < state.bonusAllUntil ? state.bonusAllMult : 1
                 state.bonusAllMult = Math.max(activeMultiplier, 1 + task.rewardValue)
-                state.bonusAllUntil = Math.max(now, state.bonusAllUntil) + task.rewardDurationMs
+                state.bonusAllUntil = Math.max(now, state.bonusAllUntil) + dailyBoostDurationMs(task)
             } else if (task.rewardType === 'eventBoost') {
                 const now = Date.now()
                 const activeMultiplier = now < state.bonusEventRateUntil ? state.bonusEventRateMult : 1
                 state.bonusEventRateMult = Math.max(activeMultiplier, 1 + task.rewardValue)
-                state.bonusEventRateUntil = Math.max(now, state.bonusEventRateUntil) + task.rewardDurationMs
+                state.bonusEventRateUntil = Math.max(now, state.bonusEventRateUntil) + dailyBoostDurationMs(task)
             } else {
                 grantDirectCookies(task.rewardValue)
             }
@@ -6429,8 +6602,9 @@
                 state.daily.rewardText = `Selten: ${formatNum(baseReward * 3)} Cookies`
             } else if (roll < 0.96) {
                 state.bonusAllMult = Math.max(state.bonusAllMult, 1.15)
-                state.bonusAllUntil = Math.max(state.bonusAllUntil, Date.now() + 10 * 60 * 1000)
-                state.daily.rewardText = 'Episch: +15% für 10 Minuten'
+                const duration = Math.floor(10 * 60 * 1000 * permanentDailyDurationMult())
+                state.bonusAllUntil = Math.max(state.bonusAllUntil, Date.now() + duration)
+                state.daily.rewardText = `Episch: +15% für ${formatDurationCompact(duration)}`
             } else {
                 grantDirectShards(3)
                 state.daily.rewardText = 'Legendär: 3 Splitter'
@@ -6535,12 +6709,12 @@
                     icon: '👆',
                     name: 'Klickrausch',
                     until: state.clickFrenzyUntil,
-                    duration: CLICK_FRENZY_MS,
+                    duration: clickFrenzyDurationMs(),
                     mult: CLICK_FRENZY_MULT,
                 })
             }
             if (now < state.diamondUntil) {
-                const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
+                const duration = Math.floor(baseFrenzyDurationMs() * 1.25 * diamondDurationMult())
                 effects.push({
                     kind: 'diamond',
                     icon: '💎',
@@ -6551,7 +6725,10 @@
                 })
             }
             if (now < state.milkUntil) {
-                const duration = MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900
+                const duration = Math.floor(
+                    (MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900)
+                    * permanentMilkDurationMult(),
+                )
                 const milkVariant = activePermanentVariant('milk')
                 effects.push({
                     kind: 'milk',
@@ -6694,13 +6871,16 @@
         }
 
         function shardRewardMult() {
-            return (1 + prestigeUpgradeLevel('splitterCore') * 0.18) * (1 + prestigeUpgradeLevel('abyssStorage') * 0.06)
+            return (1 + prestigeUpgradeLevel('splitterCore') * 0.18)
+                * (1 + prestigeUpgradeLevel('abyssStorage') * 0.06)
+                * permanentLevelMult('shardForge', 0.10)
         }
 
         function offlineIncomeMult() {
             return (1 + prestigeUpgradeLevel('echoVault') * 0.15)
                 * (1 + prestigeUpgradeLevel('abyssStorage') * 0.08)
                 * permanentCookieIncomeMult()
+                * permanentOfflineArchiveMult()
                 * (1 + gardenUpgradeLevel('dreamRoots') * 0.05)
                 * (1 + gardenBonus('offline'))
                 * dungeonRelicMult('offline')
@@ -6708,7 +6888,10 @@
         }
 
         function offlineCapMs() {
-            return OFFLINE_CAP_MS + prestigeUpgradeLevel('echoVault') * 45 * 60 * 1000 + prestigeUpgradeLevel('abyssStorage') * 20 * 60 * 1000
+            return OFFLINE_CAP_MS
+                + prestigeUpgradeLevel('echoVault') * 45 * 60 * 1000
+                + prestigeUpgradeLevel('abyssStorage') * 20 * 60 * 1000
+                + permanentUpgradeLevel('offlineArchive') * 30 * 60 * 1000
         }
 
         function gardenPlantById(id) {
@@ -6725,6 +6908,7 @@
 
         function gardenGrowthMult() {
             return (1 + gardenUpgradeLevel('richSoil') * 0.1)
+                * permanentGardenLegacyMult()
                 * pantheonMult('gardenGrowth')
         }
 
@@ -6764,6 +6948,7 @@
             return (1 + gardenUpgradeLevel('harvestBasket') * 0.15)
                 * (1 + gardenUpgradeLevel('masterHarvest') * 0.1)
                 * (1 + gardenBonus('harvest'))
+                * permanentGardenLegacyMult()
                 * dungeonRelicMult('gardenHarvest')
                 * pantheonMult('gardenHarvest')
         }
@@ -6821,6 +7006,7 @@
 
         function totalEventRateMult() {
             return bonusEventRateMult()
+                * permanentEventRateMult()
                 * gardenEventRateMult()
                 * (1 + gardenUpgradeLevel('fortunePollen') * 0.02)
                 * dungeonRelicMult('event')
@@ -6839,8 +7025,16 @@
             return randomizedEventInterval(Math.max(600000, Math.floor(base / totalEventRateMult())))
         }
 
-        function frenzyDurationMs() {
+        function baseFrenzyDurationMs() {
             return FRENZY_MS + prestigeUpgradeLevel('timeStretch') * 1800
+        }
+
+        function frenzyDurationMs() {
+            return Math.floor(baseFrenzyDurationMs() * permanentGoldenDurationMult())
+        }
+
+        function clickFrenzyDurationMs() {
+            return Math.floor(CLICK_FRENZY_MS * permanentGoldenDurationMult())
         }
 
         function diamondIntervalMs() {
@@ -6864,6 +7058,7 @@
         function diamondDurationMult() {
             return (1 + prestigeUpgradeLevel('diamondLure') * 0.1)
                 * (1 + specialUpgradeLevel('diamondSetting') * 0.05)
+                * permanentDiamondDurationMult()
         }
 
         function nextShardThreshold(milestone) {
@@ -6957,16 +7152,17 @@
         }
 
         function harvestReadySugarLumps(now = Date.now()) {
+            const growMs = sugarLumpGrowMs()
             if (!Number.isFinite(state.nextSugarLumpAt) || state.nextSugarLumpAt <= 0) {
-                state.nextSugarLumpAt = now + SUGAR_LUMP_GROW_MS
+                state.nextSugarLumpAt = now + growMs
                 return 0
             }
             if (now < state.nextSugarLumpAt) return 0
-            const elapsedHarvests = 1 + Math.floor((now - state.nextSugarLumpAt) / SUGAR_LUMP_GROW_MS)
+            const elapsedHarvests = 1 + Math.floor((now - state.nextSugarLumpAt) / growMs)
             const harvested = Math.min(SUGAR_LUMP_OFFLINE_CAP, elapsedHarvests)
             state.sugarLumps += harvested
             state.sugarLumpsTotal += harvested
-            state.nextSugarLumpAt += elapsedHarvests * SUGAR_LUMP_GROW_MS
+            state.nextSugarLumpAt += elapsedHarvests * growMs
             return harvested
         }
 
@@ -7014,6 +7210,7 @@
             const overclockMult = 1 + specialUpgradeLevel('droneOverclock') * 0.14
             return level * (0.45 + (level - 1) * 0.08) * (1 + prestigeUpgradeLevel('hyperFocus') * 0.04) * overclockMult
                 * (1 + specialUpgradeLevel('droneSwarm') * 0.05)
+                * permanentDroneSpeedMult()
         }
 
         function droneCritChance() {
@@ -7198,6 +7395,7 @@
             }
             return cps
                 * producerBonusMult()
+                * permanentProductionCpsMult()
                 * cosmicOrbitMult()
                 * cosmicTragheitMult()
                 * prestigeLevelIncomeMult()
@@ -7218,6 +7416,7 @@
             }
             return tap
                 * tapBonusMult()
+                * permanentManualTapMult()
                 * cosmicOrbitMult()
                 * prestigeLevelIncomeMult()
                 * (1 + achievementBonus('tap'))
@@ -7496,6 +7695,24 @@
             root.appendChild(permanentDailyTitle)
             for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === 'daily')) {
                 root.appendChild(createUpgradeRow(item, 'permanent'))
+            }
+
+            const permanentSections = [
+                { category: 'production', title: 'Permanente Backkunst' },
+                { category: 'events', title: 'Permanente Ereigniskunde' },
+                { category: 'adventure', title: 'Permanentes Abenteuerwissen' },
+                { category: 'legacy', title: 'Permanentes Vermächtnis' },
+            ]
+            for (const section of permanentSections) {
+                const title = document.createElement('h2')
+                title.className = 'shop-section-title'
+                title.dataset.shopSectionTitle = `permanent-${section.category}`
+                title.dataset.shopViewSection = 'permanent'
+                title.textContent = section.title
+                root.appendChild(title)
+                for (const item of PERMANENT_UPGRADES.filter((upgrade) => upgrade.category === section.category)) {
+                    root.appendChild(createUpgradeRow(item, 'permanent'))
+                }
             }
 
             const prodTitle = document.createElement('h2')
@@ -8508,6 +8725,7 @@
                     + dungeonTrainingLevel('deepWeapon') * 0.1
                     + achievementBonus('dungeonAttack'))
                 * (1 + clearedRoomBonus + lowHealthBonus)
+                * permanentDungeonLegacyMult()
                 * dungeonRelicMult('dungeonAttack')
                 * (1 + gardenBonus('dungeonAttack'))
                 * pantheonMult('dungeonAttack')
@@ -8521,6 +8739,7 @@
             return Math.max(
                 0.15,
                 (1 - dungeonTrainingLevel('warding') * 0.05 - achievementBonus('dungeonDefense'))
+                    * Math.max(0.75, 1 - permanentUpgradeLevel('dungeonOath') * 0.03)
                     * Math.max(0.5, 1 - dungeonRelicBonus('dungeonDefense'))
                     * Math.max(0.5, 1 - gardenBonus('dungeonDefense')),
             )
@@ -8528,6 +8747,7 @@
 
         function dungeonRewardMult() {
             return (1 + dungeonTrainingLevel('treasure') * 0.2 + achievementBonus('dungeonReward'))
+                * permanentDungeonLegacyMult()
                 * pantheonMult('dungeonReward')
         }
 
@@ -9253,6 +9473,9 @@
                     state.clicks[id]++
                 } else if (kind === 'permanent') {
                     state.permanentUpgrades[id] = currentOwned + 1
+                    if (id === 'sugarClock') {
+                        rescaleSugarLumpTimer(currentOwned, currentOwned + 1)
+                    }
                 } else {
                     state.specialUpgrades[id] = currentOwned + 1
                 }
@@ -10112,6 +10335,7 @@
             hideCometCookie()
             const reward = Math.max(250, calcCps() * 90 + calcTap() * 30)
                 * cometRewardMult()
+                * permanentEventRewardMult()
                 * dungeonRelicMult('eventReward')
             grantDirectCookies(reward)
             state.cometEventsTriggered++
@@ -10131,6 +10355,7 @@
             const manualRate = calcTap() * manualClicksPerSecond() * specialUpgradeLevel('timeCore') * 0.03
             const reward = Math.max(1, (expectedAutomaticCookiesPerSecond() + manualRate) * TIMESKIP_SECONDS)
                 * timeSkipRewardMult()
+                * permanentEventRewardMult()
                 * dungeonRelicMult('eventReward')
             grantDirectCookies(reward)
             state.timeSkipEventsTriggered++
@@ -10148,7 +10373,10 @@
             if (!state.milkVisible) return
             hideMilkCookie()
             const now = Date.now()
-            const duration = MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900
+            const duration = Math.floor(
+                (MILK_DURATION_BASE_MS + prestigeUpgradeLevel('milkResonance') * 900)
+                * permanentMilkDurationMult(),
+            )
             state.milkUntil = now + duration
             state.milkLevel = Math.max(0.08, state.milkLevel)
             state.milkLastRiseAt = now
@@ -10178,16 +10406,19 @@
             } else if (roll < 0.68) {
                 effect = 'lucky'
                 const bankReward = Math.min(state.cookies * 0.15 + 13, calcCps() * 900 + calcTap() * 120 + 13)
-                const reward = Math.max(25, bankReward) * dungeonRelicMult('eventReward')
+                const reward = Math.max(25, bankReward)
+                    * permanentEventRewardMult()
+                    * dungeonRelicMult('eventReward')
                 grantDirectCookies(reward)
                 showEventRewardToast('🍀', `Glückskeks: +${formatNum(reward)} Kekse`)
             } else if (roll < 0.9) {
                 effect = 'clickFrenzy'
-                state.clickFrenzyUntil = now + CLICK_FRENZY_MS
+                state.clickFrenzyUntil = now + clickFrenzyDurationMs()
                 showEventRewardToast('👆', `Klickrausch: x${CLICK_FRENZY_MULT} pro Klick`)
             } else {
                 effect = 'storm'
                 const reward = Math.max(100, calcCps() * 180 + calcTap() * 80)
+                    * permanentEventRewardMult()
                     * dungeonRelicMult('eventReward')
                 grantDirectCookies(reward)
                 showEventRewardToast('🍪', `Kekssturm: +${formatNum(reward)} Kekse`)
@@ -10210,7 +10441,7 @@
             if (!state.diamondVisible) return
             hideDiamondCookie()
             const now = Date.now()
-            const duration = Math.floor(frenzyDurationMs() * 1.25 * diamondDurationMult())
+            const duration = Math.floor(baseFrenzyDurationMs() * 1.25 * diamondDurationMult())
             state.diamondUntil = now + duration
             state.randomEventsTriggered++
             trackDailyProgress('events', 1)
